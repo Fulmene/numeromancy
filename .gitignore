@@ -4,3 +4,8 @@
 .*.sw[a-z]
 *~
 LOG
+
+.env
+demystify/data
+demystify/logging
+demystify/re
