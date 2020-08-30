@@ -88,7 +88,7 @@ def download(filename=JSONCACHE, metadata=None):
             return False
 
     save_metadata(metadata)
-    req = urllib.request.Request(metadata["permalink_uri"])
+    req = urllib.request.Request(metadata["download_uri"])
     try:
         with send_req(req) as response:
             with open(filename + ".tmp", 'wb') as f:
