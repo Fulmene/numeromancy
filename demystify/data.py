@@ -115,7 +115,7 @@ def maybe_download(filename=JSONCACHE):
     m2 = load_cached_metadata()
     if not m2:
         ulog.info("No saved metadata, redownloading JSON.")
-        return download(metadata)
+        return download(filename, metadata)
     # These will not be exactly equal since the timestamp updates daily.
     # Zipped file size will be the most telling, esp. when new cards are added.
     # URIs in objects shouldn't change, so it should be the case that only
@@ -125,7 +125,7 @@ def maybe_download(filename=JSONCACHE):
         return True
     ulog.info("Redownloading due to compressed file size change: {} => {}"
               .format(m2["compressed_size"], metadata["compressed_size"]))
-    return download(metadata)
+    return download(filename, metadata)
 
 ## Loader ##
 
