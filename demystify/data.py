@@ -87,13 +87,13 @@ def download(filename=JSONCACHE, metadata=None):
             # Bail, since we get the URI from the metadata.
             return False
 
-    save_metadata(metadata)
     req = urllib.request.Request(metadata["download_uri"])
     try:
         with send_req(req) as response:
             with open(filename + ".tmp", 'wb') as f:
                 shutil.copyfileobj(response, f)
                 os.rename(filename + ".tmp", filename)
+                save_metadata(metadata)
                 return True
     except urllib.error.URLError as e:
         ulog.error("Error retrieving JSON file: {}".format(e))
