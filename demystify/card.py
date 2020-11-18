@@ -349,7 +349,6 @@ def scryfall_card(layout=None, card_faces=None, all_parts=None,
         return [Card(**d), Card(**d2)]
     if layout == 'meld':
         d['multitype'] = layout
-        # the collector number is b for the meld target
         parts = [x['name'] for x in all_parts[:3] if x['component'] == 'meld_part']
         target = [x['name'] for x in all_parts[:3] if x['component'] == 'meld_result']
         if name == target[0]:
