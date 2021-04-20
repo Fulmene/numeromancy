@@ -112,6 +112,9 @@ def maybe_download(filename=JSONCACHE):
         ulog.info("Using recent JSON file.")
         return True
     metadata = get_metadata()
+    if not metadata:
+        ulog.info("Could not connect to the server, using cached JSON file.")
+        return True
     m2 = load_cached_metadata()
     if not m2:
         ulog.info("No saved metadata, redownloading JSON.")
