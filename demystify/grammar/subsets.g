@@ -129,7 +129,7 @@ total_int_prop : TOTAL^ int_prop_with_value ;
 
 prop_with_value : int_prop_with_value;
 
-int_prop_with_value : CONVERTED MANA COST comparison -> ^( CMC comparison )
+int_prop_with_value : MANA VALUE comparison -> ^( MV comparison )
                     | integer LIFE^
                     | LIFE^ comparison
                     | POWER^ comparison

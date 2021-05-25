@@ -165,7 +165,7 @@ prop_type : COLOR -> COLOR[]
           | cost_prop
           ;
 
-int_prop : CONVERTED MANA COST -> CMC
+int_prop : MAVA VALUE -> MV
          | LIFE TOTAL? -> LIFE[]
          | POWER -> POWER[]
          | TOUGHNESS -> TOUGHNESS[]

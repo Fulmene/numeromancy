@@ -37,7 +37,6 @@ tokens {
     ACTION;
     ADD_COUNTERS;
     ATTACHED_TO;
-    CMC;
     COINFLIP;
     CONDITION;
     COUNTER_GROUP;
@@ -55,6 +54,7 @@ tokens {
     MAX;
     MOVE_TO;
     MULT;
+    MV;
     NONCOMBAT;
     NTH;
     PAY_COST;
