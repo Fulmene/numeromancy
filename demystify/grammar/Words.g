@@ -46,6 +46,7 @@ tokens {
     ACTIVATING;
     ACTIVATION;
     ACTIVE;
+    ADAPT;
     ADD;
     ADDED;
     ADDING;
@@ -63,6 +64,7 @@ tokens {
     ALONE;
     ALREADY;
     ALSO;
+    AMASS;
     AMONG;
     AMOUNT;
     AMPLIFIED;
@@ -468,6 +470,7 @@ tokens {
     LABEL;
     LAND;
     LANDWALK;
+    LEARN;
     LEAST;
     LEAVE;
     LEAVING;
@@ -2395,10 +2398,12 @@ UPKEEP : 'upkeeps'
 VOTING : 'voting';
 WITHER : 'wither';
 ABOVE : 'above';
+ADAPT : 'adapt';
 ADDED : 'added';
 AFTER : 'after';
 AGAIN : 'again';
 ALONE : 'alone';
+AMASS : 'amass';
 AMONG : 'among';
 ANTED : 'anted';
 APPLY : 'applies'
@@ -2465,6 +2470,7 @@ HAUNT : 'haunts'
       | 'haunt';
 HEADS : 'heads';
 LABEL : 'label';
+LEARN : 'learn';
 LEAST : 'least';
 LEAVE : 'leaves'
       | 'leave';
