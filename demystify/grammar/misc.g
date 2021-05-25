@@ -64,7 +64,7 @@ number : integer
          ( OR integer -> ^( OR integer+ )
          | -> integer
          )
-       | ( ALL | EACH | EVERY ) -> ^( NUMBER ALL )
+       | all -> ^( NUMBER ALL )
        | ANY ( c=number_word -> ^( NUMBER[] $c )
              | NUMBER OF -> ^( NUMBER[] ANY )
              | -> ^( NUMBER[] NUMBER[$ANY, "1"] )
@@ -72,6 +72,8 @@ number : integer
        | A SINGLE? -> ^( NUMBER NUMBER[$A, "1"] )
        | NO -> ^( NUMBER NUMBER[$NO, "0"] )
        ;
+
+all : ALL | EACH | EVERY ;
 
 /* Not sure whether this should go in integer, or number, or somewhere else.
    Most references to "no more than" or "more than" are setting a maximum
@@ -85,6 +87,8 @@ integer : ( s=NUMBER_SYM | w=number_word )
           | OR ( FEWER | LESS ) -> ^( NUMBER ^( LEQ $s? $w? ) )
           | -> ^( NUMBER $s? $w? )
           )
+        | UP TO ( s=NUMBER_SYM | w=number_word )
+          -> ^( NUMBER ^( LEQ $s? $w? ) )
         | AT LEAST ( s=NUMBER_SYM | w=number_word )
           -> ^( NUMBER ^( GEQ $s? $w? ) )
         | EXACTLY ( s=NUMBER_SYM | w=number_word )
