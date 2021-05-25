@@ -1,0 +1,29 @@
+@DrawACard
+@spell_effect
+@draw a card.
+@(EFFECT (ACTION draw (NUMBER 1) card))
+
+@AncestralRecall
+@spell_effect
+@target player draws three cards.
+@(EFFECT (ACTION (SUBSET (PLAYER_GROUP target player)) draws (NUMBER three) cards))
+
+@GloriousAnthem
+@spell_effect
+@creatures you control get +1/+1.
+@(EFFECT (ACTION (SUBSET (NUMBER ALL) (PROPERTIES creatures (CONTROL you))) get (PT (PLUS 1) (PLUS 1))))
+
+@LightningBolt
+@spell_effect
+@SELF deals 3 damage to any target.
+@(EFFECT (ACTION (SUBSET SELF) (DAMAGE (NUMBER 3) (SUBSET (NUMBER ALL) any target))))
+
+@PortableHole
+@spell_effect
+@exile target nonland permanent an opponent controls with mana value 2 or less until SELF leaves the battlefield.
+@(EFFECT (ACTION exile (SUBSET (NUMBER all) target nonland permanent (CONTROL OPPONENT) (CMC LEQ 2) UNTIL)))
+
+@PowerWordKill
+@spell_effect
+@destroy target non-angel, non-demon, non-devil, non-dragon creature.
+@(EFFECT (ACTION destroy (SUBSET creature)))
