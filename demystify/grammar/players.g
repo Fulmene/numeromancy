@@ -56,7 +56,9 @@ ref_player : ref_obj_poss ( OWNER -> ^( OWNER[] ref_obj_poss )
                           )
            ;
 
-player_base : OPPONENT -> OPPONENT[]
+player_base : TARGET? player_word ;
+
+player_word : OPPONENT -> OPPONENT[]
             | TEAMMATE -> TEAMMATE[]
             | PLAYER -> PLAYER[]
             ;

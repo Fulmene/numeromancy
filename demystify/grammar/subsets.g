@@ -51,7 +51,7 @@ subset : number mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?
          -> ^( SUBSET player_group )
        ;
 
-mini_sub : properties restriction* ;
+mini_sub : TARGET? properties restriction* | ANY TARGET;
 
 // A full zone, for use as a subset
 full_zone : player_poss ind_zone -> ^( ZONE player_poss ind_zone )
