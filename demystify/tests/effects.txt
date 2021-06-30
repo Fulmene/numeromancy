@@ -21,9 +21,29 @@
 @PortableHole
 @spell_effect
 @exile target nonland permanent an opponent controls with mana value 2 or less until SELF leaves the battlefield.
-@(EFFECT (ACTION exile (SUBSET (NUMBER all) target nonland permanent (CONTROL OPPONENT) (CMC LEQ 2) UNTIL)))
+@(EFFECT (ACTION exile (SUBSET (NUMBER ALL) target (PROPERTIES (NON land) permanent (CONTROL (PLAYER_GROUP (NUMBER 1) OPPONENT))) (MV (NUMBER (LEQ 2))))) until SELF leaves the battlefield)
 
 @PowerWordKill
 @spell_effect
 @destroy target non-angel, non-demon, non-devil, non-dragon creature.
 @(EFFECT (ACTION destroy (SUBSET creature)))
+
+@Disenchant
+@spell_effect
+@destroy target artifact or enchantment.
+@(EFFECT (ACTION destroy (SUBSET (NUMBER ALL) target (PROPERTIES (or artifact enchantment)))))
+
+@Counterspell
+@spell_effect
+@counter target spell.
+@(EFFECT (ACTION counter (SUBSET (NUMBER ALL) target (PROPERTIES spell))))
+
+@Stifle
+@spell_effect
+@counter target activated or triggered ability.
+@(EFFECT (ACTION counter (SUBSET (NUMBER ALL) target (PROPERTIES spell))))
+
+@Murder
+@spell_effect
+@destroy target creature.
+@(EFFECT (ACTION destroy (SUBSET (NUMBER ALL) target (PROPERTIES creature))))
