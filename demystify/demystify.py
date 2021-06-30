@@ -279,7 +279,7 @@ def preprocess(args):
     raw_cards = []
     for obj in data.load():
         # filter down to vintage-legal only
-        if (obj["legalities"]["vintage"] in ("legal", "restricted") or obj["name"] == "Lurrus of the Dream-Den") and "token" not in obj["layout"]:
+        if obj["legalities"]["vintage"] in ("legal", "restricted") and "token" not in obj["layout"]:
             raw_cards.append(obj)
             _ = card.scryfall_card(**obj)
     numcards = len(raw_cards)
