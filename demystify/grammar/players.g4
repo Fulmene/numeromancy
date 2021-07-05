@@ -20,43 +20,35 @@ parser grammar players;
 
 /* Players, controllers, and owners. */
 
-player_subset : player_group ( conj^ player_group )? ;
+player_subset : player_group ( conj player_group )? ;
 
 // TODO: objects can have controllers and/or owners
 // TODO: Handle 'that player' etc refs differently?
 player_group : ( number OF )? player_poss ( OPPONENT | TEAMMATE )
-               -> ^( PLAYER_GROUP number? OPPONENT[]? TEAMMATE[]? player_poss )
-             | number player_base -> ^( PLAYER_GROUP number player_base )
-             | THAT player_base -> ^( PLAYER_GROUP THAT[] player_base )
+             | number player_base
+             | THAT player_base
              | ( CHOSEN | ENCHANTED )? player_base
-               -> ^( PLAYER_GROUP CHOSEN[]? ENCHANTED[]? player_base )
              | ( ACTIVE | DEFENDING ) PLAYER
-               -> ^( PLAYER_GROUP ACTIVE[]? DEFENDING[]? PLAYER[] )
-             | ANOTHER PLAYER -> ^( PLAYER_GROUP NOT YOU )
+             | ANOTHER PLAYER
              | YOU
              | ref_player
              ;
 
-player_poss : YOUR -> ^( POSS YOU )
-            | ( THAT | THOSE ) player_base poss -> ^( POSS THAT[] player_base )
-            | player_base poss -> ^( POSS player_base )
-            | ref_player_poss ( player_base poss
-                                -> ^( POSS player_base ref_player_poss)
-                              | -> ref_player_poss
-                              )
+player_poss : YOUR
+            | ( THAT | THOSE ) player_base poss
+            | player_base poss
+            | ref_player_poss ( player_base poss )?
             ;
 
-ref_player_poss : HIS OR HER -> ^( POSS THEM )
-                | THEIR -> ^( POSS THEM )
-                | ref_player poss -> ^( POSS ref_player )
+ref_player_poss : HIS OR HER
+                | THEIR
+                | ref_player poss
                 ;
 
-ref_player : ref_obj_poss ( OWNER -> ^( OWNER[] ref_obj_poss )
-                          | CONTROLLER -> ^( CONTROLLER[] ref_obj_poss )
-                          )
+ref_player : ref_obj_poss ( OWNER | CONTROLLER )
            ;
 
-player_base : OPPONENT -> OPPONENT[]
-            | TEAMMATE -> TEAMMATE[]
-            | PLAYER -> PLAYER[]
+player_base : OPPONENT
+            | TEAMMATE
+            | PLAYER
             ;

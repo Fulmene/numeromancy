@@ -22,52 +22,35 @@ parser grammar subsets;
 
 subsets : subset_list
         | mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?
-          -> {$conj.text}? ^( SUBSET ^( NUMBER ALL )
-                                     ^( conj ^( SUBSET mini_sub)+ ) )
-          -> ^( SUBSET ^( NUMBER ALL ) mini_sub )
         ;
 
 subset_list : subset ( options {greedy=true;}:
-                       ( COMMA! ( subset COMMA! )+ )? conj^ subset )? ;
+                       ( COMMA ( subset COMMA )+ )? conj subset )? ;
 
 subset : number mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?
-         -> {$conj.text}? ^( SUBSET number ^( conj ^( SUBSET mini_sub)+ ) )
-         -> ^( SUBSET number mini_sub )
        | number OTHER mini_sub
-         -> ^( SUBSET number ^( NOT SELF ) mini_sub )
        | AMONG mini_sub
-         -> ^( SUBSET ^( NUMBER ANY ) mini_sub )
        | ANOTHER mini_sub
-         -> ^( SUBSET ^( NOT SELF ) mini_sub )
        | THE LAST mini_sub
-         -> ^( SUBSET ^( LAST mini_sub ) )
        | full_zone
-         -> ^( SUBSET full_zone )
        | haunted_object
-         -> ^( SUBSET haunted_object )
        | ref_object in_zones?
-         -> ^( SUBSET ref_object in_zones? )
        | player_group
-         -> ^( SUBSET player_group )
        ;
 
 mini_sub : properties restriction* ;
 
 // A full zone, for use as a subset
-full_zone : player_poss ind_zone -> ^( ZONE player_poss ind_zone )
-          | THE ( TOP | BOTTOM ) number? properties
-            OF player_poss ( LIBRARY | GRAVEYARD )
-            -> {$number.text}? number properties
-               ^( ZONE player_poss LIBRARY? GRAVEYARD? TOP? BOTTOM? )
-            -> ^( NUMBER NUMBER[$THE, "1"] ) properties
-               ^( ZONE player_poss LIBRARY? GRAVEYARD? TOP? BOTTOM? );
+full_zone : player_poss ind_zone
+          | THE ( TOP | BOTTOM ) number? properties OF player_poss ( LIBRARY | GRAVEYARD )
+          ;
 
 // Restrictions are very similar to descriptors, but can reference properties.
-restriction : WITH! has_counters
-            | WITH! int_prop_with_value
+restriction : WITH has_counters
+            | WITH int_prop_with_value
             | share_feature
-            | WITH! n_distinct_values
-            | WITH! total_int_prop
+            | WITH n_distinct_values
+            | WITH total_int_prop
             | other_than
             | except_for
             | attached_to
@@ -79,58 +62,58 @@ restriction : WITH! has_counters
 
 // TODO: 'choose a creature type other than wall'. This may go elsewhere.
 other_than : OTHER THAN
-             ( ref_object -> ^( NOT ref_object )
-             | A? properties -> ^( NOT properties )
-             | zone_subset -> ^( NOT zone_subset )
+             ( ref_object
+             | A? properties
+             | zone_subset
              );
 
 // TODO: "except for creatures the player hasn't controlled continuously
 //        since the beginning of the turn".
 // put in descriptors? putting "...hasn't controlled" in restriction would
 // require except_for to not be in restriction.
-except_for : ','!? EXCEPT^ FOR! ( ref_object | properties );
+except_for : COMMA? EXCEPT FOR ( ref_object | properties );
 
-attached_to : ATTACHED TO ( ref_object | properties )
-              -> ^( ATTACHED_TO ref_object? properties? );
+attached_to : ATTACHED TO ( ref_object | properties ) ;
 
-chosen_prop : ( OF | WITH ) THE CHOSEN prop_type -> ^( CHOSEN[] prop_type );
+chosen_prop : ( OF | WITH ) THE CHOSEN prop_type ;
 
 not_chosen_prop : THAT IS NOT
-                  ( chosen_prop -> ^( NOT[] chosen_prop )
+                  ( chosen_prop
                   | OF A prop_type CHOSEN THIS WAY
-                    -> ^( NOT[] ^( CHOSEN[] prop_type ) )
-                  | THE NAMED CARD -> ^( NOT[] ^( CHOSEN[] NAME ) )
-                  );
+                  | THE NAMED CARD
+                  )
+                ;
 
-from_expansion : FROM THE expansion EXPANSION -> ^( EXPANSION[] expansion );
+from_expansion : FROM THE expansion EXPANSION ;
 
 expansion : ANTIQUITIES
           | ARABIAN_NIGHTS
           | HOMELANDS
           ;
 
-linked_ref : CHAMPIONED WITH SELF -> ^( LINKED CHAMPION )
-           | EXILED WITH SELF -> ^( LINKED EXILE )
-           | PUT ONTO THE BATTLEFIELD WITH SELF -> ^( LINKED BATTLEFIELD[] )
+linked_ref : CHAMPIONED WITH SELF
+           | EXILED WITH SELF
+           | PUT ONTO THE BATTLEFIELD WITH SELF
            ;
 
 /* Special properties, usually led by 'with', 'that', or 'if it has' */
 
 // Do we need to remember ref_object?
 has_counters : counter_subset ON ref_object
-               -> ^( HAS_COUNTERS counter_subset );
+             ;
 
-share_feature : THAT SHARE A prop_type -> ^( SHARE[] prop_type )
-              | WITH THE SAME prop_type -> ^( SAME[] prop_type );
+share_feature : THAT SHARE A prop_type
+              | WITH THE SAME prop_type
+              ;
 
-n_distinct_values : integer DIFFERENT^ prop_type;
+n_distinct_values : integer DIFFERENT prop_type;
 
-total_int_prop : TOTAL^ int_prop_with_value ;
+total_int_prop : TOTAL int_prop_with_value ;
 
-prop_with_value : int_prop_with_value;
+prop_with_value : int_prop_with_value ;
 
-int_prop_with_value : CONVERTED MANA COST comparison -> ^( CMC comparison )
-                    | integer LIFE^
-                    | LIFE^ comparison
-                    | POWER^ comparison
-                    | TOUGHNESS^ comparison;
+int_prop_with_value : CONVERTED MANA COST comparison
+                    | integer LIFE
+                    | LIFE comparison
+                    | POWER comparison
+                    | TOUGHNESS comparison;

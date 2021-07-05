@@ -21,7 +21,7 @@ parser grammar raw_keywords;
 /* Raw keyword definitions, for references within other abilities. */
 
 raw_keywords : raw_keyword
-               ( ( COMMA! ( raw_keyword COMMA! )+ )? conj^ raw_keyword )? ;
+               ( ( COMMA ( raw_keyword COMMA )+ )? conj raw_keyword )? ;
 
 raw_keyword : raw_keyword_no_args
             | raw_keyword_int

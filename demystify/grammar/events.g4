@@ -20,9 +20,7 @@ parser grammar events;
 
 /* Events and conditions. */
 
-triggers : trigger ( OR trigger )? trigger_descriptor?
-           -> {$OR}? ^( TRIGGER ^( OR[] trigger+ ) trigger_descriptor? )
-           -> ^( TRIGGER trigger trigger_descriptor? );
+triggers : trigger ( OR trigger )? trigger_descriptor?;
 
 // Although it doesn't look great, it was necessary to factor 'subset' out
 // of the event and condition rules. It's a bad idea to leave it unfactored
@@ -30,12 +28,10 @@ triggers : trigger ( OR trigger )? trigger_descriptor?
 // lookahead tables).
 trigger : subset_list
           ( event ( OR event )?
-            -> {$OR}? ^( EVENT subset_list ^( OR[] event+ ) )
-            -> ^( EVENT subset_list event )
-          | condition -> ^( CONDITION subset_list condition )
+          | condition
           )
-        | non_subset_event -> ^( EVENT non_subset_event )
-        | non_subset_condition -> ^( CONDITION non_subset_condition )
+        | non_subset_event
+        | non_subset_condition
         ;
 
 // An event is something that happens, usually an object taking an action
@@ -72,95 +68,76 @@ event : zone_transfer
 
 /* Events. */
 
-zone_transfer : ( ENTER | is_ ( PUT ( INTO | ONTO ) | RETURNED TO ) )
-                a=zone_subset ( FROM ( b=zone_subset | ANYWHERE ) )?
-                -> ^( ENTER[] $a ^( FROM[] $b? ANYWHERE[]? )? )
+zone_transfer : ( ENTER | is_ ( PUT ( INTO | ONTO ) | RETURNED TO ) ) zone_subset ( FROM ( zone_subset | ANYWHERE ) )?
               | LEAVE zone_subset
-                -> ^( LEAVE[] zone_subset )
               | DIE
-                -> ^( ENTER[] ^( ZONE_SET ^( NUMBER NUMBER[$DIE, "1"] ) GRAVEYARD )
-                              ^( FROM[] BATTLEFIELD ) )
               ;
 
-cause_transfer : PUT subset ( INTO | ONTO )
-                 a=zone_subset ( FROM ( b=zone_subset | ANYWHERE ) )?
-                 -> ^( PUT[] subset $a ^( FROM[] $b? ANYWHERE[]? )? );
+cause_transfer : PUT subset ( INTO | ONTO ) zone_subset ( FROM ( zone_subset | ANYWHERE ) )? ;
 
-phases_in_out : PHASE^ ( IN | OUT );
+phases_in_out : PHASE ( IN | OUT );
 
 state_change : BECOME ( BLOCKED BY subset
-                        -> ^( BECOME[] BLOCKED ^( BY[] subset ) )
-                      | status -> ^( BECOME[] status )
-                      | THE TARGET OF subset -> ^( TARGETED subset )
+                      | status
+                      | THE TARGET OF subset
                       | UNATTACHED FROM subset
-                        -> ^( BECOME UNATTACHED ^( FROM[] subset ) )
                       )
-             | ATTACK ( subset_list | ALONE )?
-               ( AND IS NOT BLOCKED
-                 -> ^( BECOME UNBLOCKED ALONE? subset_list? )
-               | -> ^( BECOME ATTACKING ALONE? subset_list? )
-               )
-             | BLOCK ( subset | ALONE )? -> ^( BECOME BLOCKING ALONE? subset? )
-             | is_ TURNED status -> ^( BECOME[] status )
+             | ATTACK ( subset_list | ALONE )? ( AND IS NOT BLOCKED )?
+             | BLOCK ( subset | ALONE )?
+             | is_ TURNED status
              ;
 
 cost_paid : poss cost_prop IS NOT? PAID
-            -> {$NOT}? ^( NOT[] ^( PAID[] cost_prop ) )
-            -> ^( PAID[] cost_prop )
           | ( DO NOT )? PAY ( A | subset poss ) cost_prop
-            -> {$NOT}? ^( NOT[] ^( PAY[] cost_prop subset? ) )
-            -> ^( PAY[] cost_prop subset? )
           ;
 
-attack_with_stuff : ATTACK^ WITH! subset ;
+attack_with_stuff : ATTACK WITH subset ;
 
 // TODO: Collect alike verbs together into one rule?
-cast_spell : CAST^ subset ;
+cast_spell : CAST subset ;
 
-clash_happens : CLASH AND ( WIN | LOSE ) -> ^( CLASH[] WIN[]? LOSE[]? )
-              | CLASH -> CLASH[]
+clash_happens : CLASH AND ( WIN | LOSE )
+              | CLASH
               ;
 
-coin_flip : FLIP A COIN -> COINFLIP
-          | ( LOSE | WIN ) A COIN FLIP -> ^( COINFLIP LOSE[]? WIN[]? );
+coin_flip : FLIP A COIN
+          | ( LOSE | WIN ) A COIN FLIP
+          ;
 
-counter_spell : COUNTER^ subset ;
+counter_spell : COUNTER subset ;
 
-cycle_card : CYCLE^ subset
-           | CYCLE OR^ DISCARD subset ;
+cycle_card : CYCLE subset
+           | CYCLE OR DISCARD subset ;
 
-deal_damage : DEAL integer? damage ( TO subset_list )?
-              -> ^( DEAL[] integer? damage subset_list? );
+deal_damage : DEAL integer? damage ( TO subset_list )? ;
 
-dealt_damage : is_ DEALT integer? damage ( BY subset )?
-               -> ^( DEALT[] integer? damage subset? );
+dealt_damage : is_ DEALT integer? damage ( BY subset )? ;
 
-dies_damaged : DEALT damage BY subset this_turn DIE
-               -> ^( DIE[] ^( DEALT damage subset ) );
+dies_damaged : DEALT damage BY subset this_turn DIE ;
 
-discard_card : DISCARD^ subset ;
+discard_card : DISCARD subset ;
 
-draw_card : DRAW^ A! CARD! ;
+draw_card : DRAW A CARD ;
 
-gain_life : GAIN^ integer? LIFE ;
+gain_life : GAIN integer? LIFE ;
 
-kick_stuff : KICK^ subset ;
+kick_stuff : KICK subset ;
 
-lose_control : LOSE CONTROL OF subset -> ^( LOSE[] CONTROL[] subset );
+lose_control : LOSE CONTROL OF subset ;
 
-lose_life : LOSE^ integer? LIFE ;
+lose_life : LOSE integer? LIFE ;
 
-lose_the_game : LOSE^ THE! GAME ;
+lose_the_game : LOSE THE GAME ;
 
-play_stuff : PLAY^ subset ;
+play_stuff : PLAY subset ;
 
-sacrifice_stuff : SACRIFICE^ subset ;
+sacrifice_stuff : SACRIFICE subset ;
 
-shuffle_library : SHUFFLE^ player_poss LIBRARY ;
+shuffle_library : SHUFFLE player_poss LIBRARY ;
 
-tap_stuff : TAP subset ( FOR MANA )? -> ^( TAP[] subset MANA[]? );
+tap_stuff : TAP subset ( FOR MANA )? ;
 
-is_tapped : is_ TAPPED FOR MANA -> ^( BECOME TAPPED[] MANA[] );
+is_tapped : is_ TAPPED FOR MANA ;
 
 // A condition is a true-or-false statement about the game state. These
 // types of triggered abilities (sometimes called "state triggers") will
@@ -173,7 +150,7 @@ condition : has_status
           | has_ability
           | has_cards
           | have_life
-          | HAS! has_counters
+          | HAS has_counters
           | int_prop_is
           | control_stuff
           | is_somewhere
@@ -181,20 +158,19 @@ condition : has_status
 
 /* Conditions. */
 
-has_status : HAS! THE! CITYS_BLESSING;
+has_status : HAS THE CITYS_BLESSING;
 
-has_ability : HAS raw_keyword -> ^( HAS[] raw_keyword );
+has_ability : HAS raw_keyword ;
 
-has_cards : HAS number CARD IN HAND -> ^( HAND[] number );
+has_cards : HAS number CARD IN HAND ;
 
-have_life : HAS integer LIFE -> ^( VALUE LIFE[] integer );
+have_life : HAS integer LIFE ;
 
-int_prop_is : poss int_prop IS magic_number
-              -> ^( VALUE int_prop magic_number );
+int_prop_is : poss int_prop IS magic_number ;
 
-control_stuff : CONTROL subset -> ^( CONTROL[] subset );
+control_stuff : CONTROL subset ;
 
-is_somewhere : is_ ( IN | ON ) zone_subset -> ^( IN[] zone_subset );
+is_somewhere : is_ ( IN | ON ) ;
 
 // Some triggers do not start with subsets, eg. "there are",
 // "a counter is" or "the chosen color is".
@@ -211,21 +187,16 @@ non_subset_condition : there_are
 counter_changed : ( THE ordinal_word | number )
                   base_counter is_
                   ( REMOVED FROM subset
-                    -> ^( REMOVED ordinal_word? number? base_counter subset )
                   | PUT ON subset
-                    -> ^( PUT ordinal_word? number? base_counter subset )
                   );
 
-damage_dealt : integer? damage is_ DEALT TO subset_list
-               -> ^( DEAL integer? damage subset_list );
+damage_dealt : integer? damage is_ DEALT TO subset_list ;
 
 /* Non-subset conditions. */
 
-there_are : THERE is_ number properties restriction*
-            -> ^( EQUAL number ^( SIZE properties restriction* ) );
+there_are : THERE is_ number properties restriction* ;
 
-there_counters : THERE is_ counter_subset ON subset
-                 -> ^( HAS_COUNTERS counter_subset subset );
+there_counters : THERE is_ counter_subset ON subset ;
 
 // A trigger descriptor is an additional check that comes after the event
 // triggers and conditions. Some of these may be (or include) conditions.
@@ -237,16 +208,12 @@ trigger_descriptor : while_condition
                    ;
 
 while_condition : WHILE ref_object ( condition | is_ status )
-                  -> ^( CONDITION ref_object condition? status? )
                 | WHILE non_subset_condition
-                  -> ^( CONDITION non_subset_condition )
                 ;
 
-during_turn : DURING player_poss TURN
-              -> ^( DURING[] ^( TURN[] player_poss ) );
+during_turn : DURING player_poss TURN ;
 
 // TODO: Other steps.
-during_step : DURING^ COMBAT ;
+during_step : DURING COMBAT ;
 
-nth_time_per_turn : FOR THE ordinal_word TIME THIS TURN
-                    -> ^( NTH ordinal_word ^( PER TURN[] ) );
+nth_time_per_turn : FOR THE ordinal_word TIME THIS TURN ;

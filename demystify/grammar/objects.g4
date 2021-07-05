@@ -20,8 +20,8 @@ parser grammar objects;
 
 /* Common object properties, such as types, colors, and statuses. */
 
-adj_list : a=adjective ( COMMA! ( ( b+=adjective | c+=noun ) COMMA! )+ )?
-           conj^ ( d=adjective | e=noun )
+adj_list : a=adjective ( COMMA ( ( b+=adjective | c+=noun ) COMMA )+ )?
+           conj ( d=adjective | e=noun )
            // Currently only Soldevi Adnate?
            { if $e.text or $c:
                 self.emitDebugMessage('Mixed list: {}'.format(
@@ -30,13 +30,11 @@ adj_list : a=adjective ( COMMA! ( ( b+=adjective | c+=noun ) COMMA! )+ )?
                               + [$d.text or $e.text])))
            };
 
-noun_list : noun ( COMMA! ( noun COMMA! )+ )? conj^ noun ;
+noun_list : noun ( COMMA ( noun COMMA )+ )? conj noun ;
 
 // Adjectives
 
-adjective : NON? ( supertype | color | color_spec | status )
-            -> {$NON}? ^( NON[] supertype? color? color_spec? status? )
-            -> supertype? color? color_spec? status? ;
+adjective : NON? ( supertype | color | color_spec | status ) ;
 
 color : WHITE | BLUE | BLACK | RED | GREEN ;
 color_spec : COLORED | COLORLESS | MONOCOLORED | MULTICOLORED ;
@@ -58,26 +56,23 @@ status : TAPPED
 
 // Nouns
 
-noun : NON? ( type | obj_subtype | obj_type )
-       -> {$NON}? ^( NON[] type? obj_subtype? obj_type? )
-       -> type? obj_subtype? obj_type? ;
+noun : NON? ( type | obj_subtype | obj_type ) ;
 
 /* Types, supertypes, subtypes, and other miscellaneous types. */
 
 // For use parsing a full typeline.
-typeline : supertypes? types ( MDASH subtypes )?
-           -> ^( TYPELINE supertypes? types subtypes? );
+typeline : supertypes? types ( MDASH subtypes )? ;
 
-supertypes : supertype+ -> ^( SUPERTYPES supertype+ );
+supertypes : supertype+ ;
 
 supertype : BASIC | LEGENDARY | SNOW | WORLD | ONGOING ;
 
 // Card types
 
-types : tribal_type? spell_type -> ^( TYPES tribal_type? spell_type )
-      | tribal_type n=noncreature_perm_types -> ^( TYPES tribal_type $n )
-      | permanent_types -> ^( TYPES permanent_types )
-      | other_type -> ^( TYPES other_type )
+types : tribal_type? spell_type
+      | tribal_type noncreature_perm_types
+      | permanent_types
+      | other_type
       ;
 
 type : permanent_type | spell_type | other_type | tribal_type ;
@@ -97,7 +92,7 @@ other_type : PLANE | SCHEME | VANGUARD ;
 tribal_type : TRIBAL ;
 
 // subtypes
-subtypes : obj_subtype+ -> ^( SUBTYPES obj_subtype+ );
+subtypes : obj_subtype+ ;
 
 // Object types
 
@@ -112,18 +107,18 @@ player_type : PLAYER | TEAMMATE | OPPONENT | CONTROLLER | OWNER | BIDDER ;
 // This rule is used for printed p/t, p/t setting abilities,
 // and p/t modifying abilities.
 
-pt : ( p=pt_signed_part | p=pt_part ) DIV_SYM ( t=pt_signed_part | t=pt_part )
-     -> ^( PT $p $t );
+pt : ( p=pt_signed_part | p=pt_part ) DIV_SYM ( t=pt_signed_part | t=pt_part ) ;
 
-pt_signed_part : PLUS_SYM pt_part -> ^( PLUS pt_part )
-               | MINUS_SYM pt_part -> ^( MINUS pt_part );
+pt_signed_part : PLUS_SYM pt_part
+               | MINUS_SYM pt_part
+               ;
 
 pt_part : NUMBER_SYM
-        | VAR_SYM -> ^( VAR VAR_SYM )
+        | VAR_SYM
         | STAR_SYM
         | a=NUMBER_SYM ( b=PLUS_SYM | b=MINUS_SYM ) c=STAR_SYM
           { plog.debug('Ignoring p/t value "{} {} {}" in {}; '
                        'deferring actual p/t calculation to rules text.'
                        .format($a.text, $b.text, $c.text,
                                self.getCardState())) }
-          -> STAR_SYM;
+        ;

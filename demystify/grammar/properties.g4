@@ -63,7 +63,6 @@ properties : a+=adjective*
              // Greedily match noun_list rather than split across the conj
              // in subset rules.
              ( options {greedy=true;}: adj_list noun+ descriptor*
-               -> ^( PROPERTIES adjective* adj_list noun* descriptor* )
              | nl=noun_list n+=noun* nd+=descriptor*
                {
                 if $n:
@@ -78,7 +77,6 @@ properties : a+=adjective*
                                  + [$nl.tree.toStringTree()]
                                  + [t.toStringTree() for t in ($nd or [])])))
                }
-               -> ^( PROPERTIES adjective* noun_list noun* descriptor* )
              | b+=noun+ 
                // Greedily match the conj rule here rather than in subset.
                ( options {greedy=true;}:
@@ -92,11 +90,7 @@ properties : a+=adjective*
                     + [$j.text]
                     + [$g.text]
                     + [t.toStringTree() for t in ($e or [])]))) }
-                 -> ^( PROPERTIES ^( $j ^( AND $a* $b+ )
-                                        ^( AND properties_case3_)+ )
-                                  descriptor* )
                | descriptor*
-                 -> ^( PROPERTIES adjective* noun+ descriptor* )
                )
              );
 
@@ -106,8 +100,9 @@ basic_properties : adjective* noun+ descriptor* ;
 
 // TODO: with descriptors? subsets would like a list of properties
 // that don't have adj_list or noun_list.
-simple_properties : basic_properties -> ^( PROPERTIES basic_properties )
-                  | adjective+ -> ^( PROPERTIES adjective+ );
+simple_properties : basic_properties
+                  | adjective+
+                  ;
 
 // status that can't be used as an adjective but can be used in descriptors
 desc_status : status
@@ -126,51 +121,42 @@ descriptor : named
            | in_zones
            | with_keywords
            | THAT is_
-             ( desc_status -> desc_status
-             | BOTH adjective AND adjective -> adjective+
+             ( desc_status
+             | BOTH adjective AND adjective
              | NOT ( desc_status | in_zones | ON spec_zone )
-               -> ^( NOT[] desc_status? in_zones? spec_zone? )
              )
            ;
 
-named : NOT? NAMED REFBYNAME
-        -> {$NOT}? ^( NOT[] ^( NAMED[] REFBYNAME ) )
-        -> ^( NAMED[] REFBYNAME );
+named : NOT? NAMED REFBYNAME ;
 
-control : player_subset ( DO NOT )? CONTROL
-          -> {$NOT}? ^( NOT[] ^( CONTROL[] player_subset ) )
-          -> ^( CONTROL[] player_subset );
-own : player_subset ( DO NOT )? OWN
-      -> {$NOT}? ^( NOT[] ^( OWN[] player_subset ) )
-      -> ^( OWN[] player_subset );
-cast : player_subset ( DO NOT )? CAST
-       -> {$NOT}? ^( NOT[] ^( CAST[] player_subset ) )
-       -> ^( CAST[] player_subset );
+control : player_subset ( DO NOT )? CONTROL ;
+own : player_subset ( DO NOT )? OWN ;
+cast : player_subset ( DO NOT )? CAST ;
 
-in_zones : ( IN | FROM ) zone_subset -> ^( IN[] zone_subset );
+in_zones : ( IN | FROM ) zone_subset ;
 
-with_keywords : WITH raw_keywords -> ^( KEYWORDS raw_keywords )
-              | WITHOUT raw_keywords -> ^( NOT ^( KEYWORDS raw_keywords ) )
+with_keywords : WITH raw_keywords
+              | WITHOUT raw_keywords
               ;
 
 /* Property names. */
 
-prop_types : prop_type ( ( COMMA! ( prop_type COMMA! )+ )? conj^ prop_type )? ;
+prop_types : prop_type ( ( COMMA ( prop_type COMMA )+ )? conj prop_type )? ;
 
-prop_type : COLOR -> COLOR[]
-          | NAME -> NAME[]
-          | type TYPE -> ^( SUBTYPE type )
-          | CARD? TYPE -> TYPE[]
+prop_type : COLOR
+          | NAME
+          | type TYPE
+          | CARD? TYPE
           | int_prop
           | cost_prop
           ;
 
-int_prop : CONVERTED MANA COST -> CMC
-         | LIFE TOTAL? -> LIFE[]
-         | POWER -> POWER[]
-         | TOUGHNESS -> TOUGHNESS[]
+int_prop : CONVERTED MANA COST
+         | LIFE TOTAL?
+         | POWER
+         | TOUGHNESS
          ;
 
-cost_prop : MANA COST -> COST[]
-          | raw_keyword_with_cost COST? -> ^( COST[] raw_keyword_with_cost )
+cost_prop : MANA COST
+          | raw_keyword_with_cost COST?
           ;

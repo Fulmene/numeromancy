@@ -34,45 +34,45 @@ options {
 import Words, events, keywords, costs, subsets, math, properties, counters, zones, players, misc, objects, raw_keywords, macro;
 
 tokens {
-    ADD_COUNTERS;
-    ATTACHED_TO;
-    CMC;
-    COINFLIP;
-    CONDITION;
-    COUNTER_GROUP;
-    COUNTER_SET;
-    ENERGY;
-    EVENT;
-    GEQ;
-    GT;
-    HAS_COUNTERS;
-    INT;
-    KEYWORDS;
-    LEQ;
-    LINKED;
-    LT;
-    MAX;
-    MOVE_TO;
-    MULT;
-    NONCOMBAT;
-    NTH;
-    PAY_COST;
-    PAY_LIFE;
-    PAY_PER;
-    PER;
-    PLAYER_GROUP;
-    POSS;
-    PROPERTIES;
-    PT;
-    REMOVE_COUNTERS;
-    SUBSET;
-    SUBTYPES;
-    SUPERTYPES;
-    TYPECYCLING;
-    TYPELINE;
-    TYPES;
-    VAR;
-    ZONE_SET;
+    ADD_COUNTERS,
+    ATTACHED_TO,
+    CMC,
+    COINFLIP,
+    CONDITION,
+    COUNTER_GROUP,
+    COUNTER_SET,
+    ENERGY,
+    EVENT,
+    GEQ,
+    GT,
+    HAS_COUNTERS,
+    INT,
+    KEYWORDS,
+    LEQ,
+    LINKED,
+    LT,
+    MAX,
+    MOVE_TO,
+    MULT,
+    NONCOMBAT,
+    NTH,
+    PAY_COST,
+    PAY_LIFE,
+    PAY_PER,
+    PER,
+    PLAYER_GROUP,
+    POSS,
+    PROPERTIES,
+    PT,
+    REMOVE_COUNTERS,
+    SUBSET,
+    SUBTYPES,
+    SUPERTYPES,
+    TYPECYCLING,
+    TYPELINE,
+    TYPES,
+    VAR,
+    ZONE_SET
 }
 
 @lexer::header {
@@ -183,7 +183,7 @@ tokens {
         self._state.card = name
 }
 
-card_mana_cost : mana -> ^( COST mana );
+card_mana_cost : mana;
 
 // Literals used in parsing rules don't have to be declared,
 // but for reference they are:

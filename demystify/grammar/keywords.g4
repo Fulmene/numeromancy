@@ -43,8 +43,8 @@ parser grammar keywords;
  * having keyword abilities.
  */
 
-keywords : keyword ( ( COMMA | SEMICOLON ) keyword )* -> ^( KEYWORDS keyword+ )
-         | keyword_one_line -> ^( KEYWORDS keyword_one_line )
+keywords : keyword ( ( COMMA | SEMICOLON ) keyword )*
+         | keyword_one_line
          ;
 
 keyword_one_line : keyword_int_cost
@@ -67,62 +67,54 @@ keyword : keyword_int
 
 /* Special case keywords. */
 
-keyword_affinity : AFFINITY^ FOR! keyword_arg_quality ;
+keyword_affinity : AFFINITY FOR keyword_arg_quality ;
 
-keyword_champion : CHAMPION A keyword_arg_quality
-                   ( OR keyword_arg_quality
-                     -> ^( CHAMPION ^( OR keyword_arg_quality+ ) )
-                   | -> ^( CHAMPION keyword_arg_quality )
-                   )
-                 ;
+keyword_champion : CHAMPION A keyword_arg_quality ( OR keyword_arg_quality )? ;
 
-keyword_enchant : ENCHANT^ ( properties | player_subset );
+keyword_enchant : ENCHANT ( properties | player_subset );
 
 // todo: keyword_equip : EQUIP^ properties? cost'
 
-keyword_hexproof : HEXPROOF^
-                 ( FROM! keyword_arg_prot
-                   ( ( COMMA! ( FROM! keyword_arg_prot COMMA! )+ )?
-                       AND! FROM! keyword_arg_prot )? )? ;
+keyword_hexproof : HEXPROOF
+                 ( FROM keyword_arg_prot
+                   ( ( COMMA ( FROM keyword_arg_prot COMMA )+ )?
+                       AND FROM keyword_arg_prot )? )? ;
 
-keyword_kicker : KICKER^ keyword_arg_cost ( AND_OR! keyword_arg_cost )? ;
+keyword_kicker : KICKER keyword_arg_cost ( AND_OR keyword_arg_cost )? ;
 
 keyword_landwalk : keyword_arg_quality WALK
-                   -> ^( LANDWALK keyword_arg_quality )
                  | keyword_arg_quality LANDWALK
-                   -> ^( LANDWALK[] keyword_arg_quality );
+                 ;
 
-keyword_offering : keyword_arg_quality OFFERING^ ;
+keyword_offering : keyword_arg_quality OFFERING ;
 
-keyword_protection : PROTECTION^ FROM! keyword_arg_prot
-                     ( ( COMMA! ( FROM! keyword_arg_prot COMMA! )+ )?
-                       AND! FROM! keyword_arg_prot )? ;
+keyword_protection : PROTECTION FROM keyword_arg_prot
+                     ( ( COMMA ( FROM keyword_arg_prot COMMA )+ )?
+                       AND FROM keyword_arg_prot )? ;
 
-keyword_splice : SPLICE^ ONTO! keyword_arg_quality keyword_arg_cost ;
+keyword_splice : SPLICE ONTO keyword_arg_quality keyword_arg_cost ;
 
-keyword_typecycling : keyword_arg_quality CYCLING keyword_arg_cost
-                      -> ^( TYPECYCLING keyword_arg_quality keyword_arg_cost );
+keyword_typecycling : keyword_arg_quality CYCLING keyword_arg_cost;
 
 /* Keywords with arguments in a generic form. */
 
-keyword_int : raw_keyword_int^ keyword_arg_int ;
+keyword_int : raw_keyword_int keyword_arg_int ;
 
-keyword_cost : raw_keyword_cost^ keyword_arg_cost ;
+keyword_cost : raw_keyword_cost keyword_arg_cost ;
 
 keyword_no_args : raw_keyword_with_no_args ;
 
-keyword_int_cost : raw_keyword_int_cost^ keyword_arg_int
-                   MDASH! keyword_arg_cost ;
+keyword_int_cost : raw_keyword_int_cost keyword_arg_int MDASH keyword_arg_cost ;
 
-keyword_quality : raw_keyword_quality^ keyword_arg_quality ;
+keyword_quality : raw_keyword_quality keyword_arg_quality ;
 
 /* Argument rules. */
 
 // TODO: This could have VAR_SYM followed by the respective var_def,
 // eg. Thromok's "Devour X, where X is the number of creatures devoured".
-keyword_arg_int : NUMBER_SYM -> ^( INT NUMBER_SYM )
-                | VAR_SYM -> ^( INT ^( VAR VAR_SYM ) )
-                | MDASH SUNBURST -> ^( INT SUNBURST[] )
+keyword_arg_int : NUMBER_SYM
+                | VAR_SYM
+                | MDASH SUNBURST
                 ;
 
 // Costs can include standard cost items, plus some new ones:
@@ -145,8 +137,8 @@ keyword_arg_cost : cost ;
 //            protection takes this, and enchant takes properties)
 keyword_arg_prot : keyword_arg_quality
                  | int_prop_with_value
-                 | EVERYTHING -> ALL
-                 | ALL COLOR -> COLORED
+                 | EVERYTHING
+                 | ALL COLOR
                  ;
 
 // Quality can include generic properties as well as other special qualities

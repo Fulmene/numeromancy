@@ -26,8 +26,9 @@ parser grammar costs;
 // either of the methods to pay for the ability,
 // eg. 3, TAP or U, TAP.
 
-cost : cost_list ( OR^ cost_list )?
-     | loyalty_cost -> ^( COST loyalty_cost );
+cost : cost_list ( OR cost_list )?
+     | loyalty_cost
+     ;
 
 // The AND case here is usually for costs where a latter item
 // references a preceding item,
@@ -37,19 +38,15 @@ cost : cost_list ( OR^ cost_list )?
 // a cost item. More simply, MTG doesn't normally use 'and' in cost lists
 // eg: "{2}{u}, {t}, discard a card, sacrifice a land".
 
-cost_list : cost_item ( COMMA cost_item )* ( AND cost_item )?
-            -> ^( COST cost_item+ );
+cost_list : cost_item ( COMMA cost_item )* ( AND cost_item )? ;
 
 cost_item : TAP_SYM
           | UNTAP_SYM
           | mana
-          | repeatable_cost_item_ 
-            ( for_each -> ^( PAY_PER repeatable_cost_item_ for_each )
-            | -> repeatable_cost_item_
-            )
+          | repeatable_cost_item_ for_each?
           ;
 
-repeatable_cost_item_ : PAY! mana
+repeatable_cost_item_ : PAY mana
                       | discard
                       | exile
                       | move_cards
@@ -68,44 +65,38 @@ repeatable_cost_item_ : PAY! mana
 // Loyalty
 
 loyalty_cost : PLUS_SYM? ( NUMBER_SYM | VAR_SYM )
-               -> ^( LOYALTY PLUS NUMBER_SYM? ^( VAR VAR_SYM )? )
              | MINUS_SYM ( NUMBER_SYM | VAR_SYM )
-               -> ^( LOYALTY MINUS NUMBER_SYM? ^( VAR VAR_SYM )? );
+             ;
 
 // Mana symbols and mana costs
 
-mana : ( MANA_SYM | VAR_MANA_SYM )+
-       -> ^( MANA MANA_SYM* ^( VAR VAR_MANA_SYM )* );
+mana : ( MANA_SYM | VAR_MANA_SYM )+ ;
 
-discard : DISCARD subsets ( AT RANDOM )? -> ^( DISCARD RANDOM? subsets );
+discard : DISCARD subsets ( AT RANDOM )? ;
 
-exile : EXILE^ subsets ;
+exile : EXILE subsets ;
 
-move_cards : ( PUT | RETURN ) subsets ( TO | ON | INTO ) zone_subset
-           -> ^( MOVE_TO subsets zone_subset );
+move_cards : ( PUT | RETURN ) subsets ( TO | ON | INTO ) zone_subset ;
 
-pay_energy : PAY ( ANY AMOUNT OF ENERGY_SYM -> ^( ENERGY ANY[] )
+pay_energy : PAY ( ANY AMOUNT OF ENERGY_SYM
                  | A AMOUNT OF ENERGY_SYM EQUAL TO magic_number
-                   -> ^( ENERGY ^( EQUAL[] magic_number ))
-                 | e+=ENERGY_SYM+ -> ^( ENERGY NUMBER[str(len($e))] )
+                 | ENERGY_SYM+
                  );
 
-pay_life : PAY magic_life_number -> ^( PAY_LIFE magic_life_number );
+pay_life : PAY magic_life_number ;
 
-pay_mana_cost : PAY ref_obj_poss MANA COST -> ^( PAY_COST ref_obj_poss );
+pay_mana_cost : PAY ref_obj_poss MANA COST ;
 
-put_counters : PUT counter_subset ON subsets
-               -> ^( ADD_COUNTERS counter_subset subsets ) ;
+put_counters : PUT counter_subset ON subsets ;
 
-remove_counters : REMOVE counter_subset FROM subsets
-                  -> ^( REMOVE_COUNTERS counter_subset subsets ) ;
+remove_counters : REMOVE counter_subset FROM subsets ;
 
-reveal : REVEAL^ subsets ;
+reveal : REVEAL subsets ;
 
-sacrifice : SACRIFICE^ subsets ;
+sacrifice : SACRIFICE subsets ;
 
-tap : TAP^ subsets ;
+tap : TAP subsets ;
 
-unattach : UNATTACH^ subsets ;
+unattach : UNATTACH subsets ;
 
-untap : UNTAP^ subsets ;
+untap : UNTAP subsets ;

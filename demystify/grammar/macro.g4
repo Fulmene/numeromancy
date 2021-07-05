@@ -24,9 +24,11 @@ parser grammar macro;
  * DO NOT EDIT DIRECTLY
  */
 
+// TODO Many more D&D ability words
 ability_word : ABILITY_WORD
-             | SPELL MASTERY -> SPELL_MASTERY
-             | WILL OF THE COUNCIL -> WILL_OF_THE_COUNCIL;
+             | SPELL MASTERY
+             | WILL OF THE COUNCIL
+             ;
 
 arb_choice : ARB_CHOICE
            | DEATH
@@ -35,15 +37,15 @@ arb_choice : ARB_CHOICE
            | NUMBER
            | TIME;
 
-aura_swap : AURA SWAP -> AURA_SWAP;
+aura_swap : AURA SWAP;
 
-bands_with_other : BAND WITH OTHER -> BANDS_WITH_OTHER;
+bands_with_other : BAND WITH OTHER;
 
-double_strike : DOUBLE STRIKE -> DOUBLE_STRIKE;
+double_strike : DOUBLE STRIKE;
 
-first_strike : FIRST STRIKE -> FIRST_STRIKE;
+first_strike : FIRST STRIKE;
 
-level_up : LEVEL UP -> LEVEL_UP;
+level_up : LEVEL UP;
 
 number_word : NUMBER_WORD;
 
@@ -76,8 +78,8 @@ obj_subtype : OBJ_SUBTYPE
             | TRAP
             | TREASURE
             | WILL
-            | BOLAS APOS_S MEDITATION REALM -> BOLASS_MEDITATION_REALM
-            | NEW PHYREXIA -> NEW_PHYREXIA;
+            | BOLAS APOS_S MEDITATION REALM
+            | NEW PHYREXIA;
 
 ordinal_word : ORDINAL_WORD
              | FIRST;
