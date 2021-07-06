@@ -22,7 +22,6 @@ grammar Demystify;
 
 options {
     language = Python3;
-    output = AST;
 }
 
 // Order is absurdly relevant. eg. subsets invokes rules in zones,

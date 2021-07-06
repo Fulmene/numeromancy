@@ -24,8 +24,7 @@ subsets : subset_list
         | mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?
         ;
 
-subset_list : subset ( options {greedy=true;}:
-                       ( COMMA ( subset COMMA )+ )? conj subset )? ;
+subset_list : subset ( ( COMMA ( subset COMMA )+ )? conj subset )? ;
 
 subset : number mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?
        | number OTHER mini_sub

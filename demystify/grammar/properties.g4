@@ -62,7 +62,7 @@ parser grammar properties;
 properties : a+=adjective*
              // Greedily match noun_list rather than split across the conj
              // in subset rules.
-             ( options {greedy=true;}: adj_list noun+ descriptor*
+             ( adj_list noun+ descriptor*
              | nl=noun_list n+=noun* nd+=descriptor*
                {
                 if $n:
@@ -79,8 +79,7 @@ properties : a+=adjective*
                }
              | b+=noun+ 
                // Greedily match the conj rule here rather than in subset.
-               ( options {greedy=true;}:
-                 ( COMMA ( c+=properties_case3_ COMMA )+ )?
+               ( ( COMMA ( c+=properties_case3_ COMMA )+ )?
                  j=conj g=properties_case3_ e+=descriptor*
                  { self.emitDebugMessage('properties case 3: {}'
                                          .format(' '.join(

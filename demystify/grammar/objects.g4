@@ -107,7 +107,7 @@ player_type : PLAYER | TEAMMATE | OPPONENT | CONTROLLER | OWNER | BIDDER ;
 // This rule is used for printed p/t, p/t setting abilities,
 // and p/t modifying abilities.
 
-pt : ( p=pt_signed_part | p=pt_part ) DIV_SYM ( t=pt_signed_part | t=pt_part ) ;
+pt : ( pt_signed_part | pt_part ) DIV_SYM ( pt_signed_part | pt_part ) ;
 
 pt_signed_part : PLUS_SYM pt_part
                | MINUS_SYM pt_part
