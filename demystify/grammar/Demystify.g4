@@ -67,7 +67,6 @@ tokens {
     SUBSET,
     SUBTYPES,
     SUPERTYPES,
-    TYPECYCLING,
     TYPELINE,
     TYPES,
     VAR,
