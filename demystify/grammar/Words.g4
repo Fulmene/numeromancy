@@ -1755,7 +1755,7 @@ MELD : 'melds'
 MINE : 'mine';
 MODE : 'modes'
      | 'mode';
-MORE : 'more';
+MORE_: 'more'; // Add underscore because MORE is reserved
 MOST : 'most';
 MOVE : 'moves'
      | 'move';
@@ -1791,7 +1791,7 @@ SAME : 'same';
 SCRY : 'scries'
      | 'scry';
 SIZE : 'size';
-SKIP : 'skips'
+SKIP_: 'skips' // Add underscore because SKIP is reserved
      | 'skip';
 SNOW : 'snow';
 SOME : 'some';

@@ -20,7 +20,7 @@ parser grammar math;
 
 /* Mathematical constructs and calculations. */
 
-comparison : ( EQUAL TO OR )? ( MORE | GREATER ) THAN magic_number
+comparison : ( EQUAL TO OR )? ( MORE_ | GREATER ) THAN magic_number
            | ( FEWER | LESS ) THAN ( OR EQUAL TO )? magic_number
            | EQUAL TO magic_number
            | integer
