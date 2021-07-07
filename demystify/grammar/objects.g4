@@ -21,14 +21,8 @@ parser grammar objects;
 /* Common object properties, such as types, colors, and statuses. */
 
 adj_list : a=adjective ( COMMA ( ( b+=adjective | c+=noun ) COMMA )+ )?
-           conj ( d=adjective | e=noun )
-           // Currently only Soldevi Adnate?
-           { if $e.text or $c:
-                self.emitDebugMessage('Mixed list: {}'.format(
-                    ', '.join([$a.text]
-                              + [adj.text for adj in ($b or []) + ($c or [])]
-                              + [$d.text or $e.text])))
-           };
+           conj ( d=adjective | e=noun ) // Currently only Soldevi Adnate?
+         ;
 
 noun_list : noun ( COMMA ( noun COMMA )+ )? conj noun ;
 
@@ -117,8 +111,9 @@ pt_part : NUMBER_SYM
         | VAR_SYM
         | STAR_SYM
         | a=NUMBER_SYM ( b=PLUS_SYM | b=MINUS_SYM ) c=STAR_SYM
-          { plog.debug('Ignoring p/t value "{} {} {}" in {}; '
-                       'deferring actual p/t calculation to rules text.'
-                       .format($a.text, $b.text, $c.text,
-                               self.getCardState())) }
+          {plog.debug('Ignoring p/t value "{} {} {}" in {}; '
+                      'deferring actual p/t calculation to rules text.'
+                      .format($a.text, $b.text, $c.text,
+                              self.getCardState()))
+          }
         ;
