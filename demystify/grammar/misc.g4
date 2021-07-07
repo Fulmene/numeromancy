@@ -68,17 +68,17 @@ number : integer ( OR integer )?
 /* Not sure whether this should go in integer, or number, or somewhere else.
    Most references to "no more than" or "more than" are setting a maximum
    value, eg. "can't be blocked by more than one creature".
-        | NO? ( MORE | GREATER ) THAN ( s=NUMBER_SYM | w=number_word )
+        | NO? ( MORE_ | GREATER ) THAN ( s=NUMBER_SYM | w=number_word )
           -> {$NO}? ^( NUMBER ^( LEQ $s? $w? ) )
           -> ^( NUMBER ^( GT $s? $w? ) )
 */
 integer : ( s=NUMBER_SYM | w=number_word )
-          ( OR ( MORE | GREATER )
+          ( OR ( MORE_ | GREATER )
           | OR ( FEWER | LESS )
           )?
         | AT LEAST ( s=NUMBER_SYM | w=number_word )
         | EXACTLY ( s=NUMBER_SYM | w=number_word )
-        | b=VAR_SYM ( OR ( MORE | GREATER )
+        | b=VAR_SYM ( OR ( MORE_ | GREATER )
                     | OR ( FEWER | LESS )
                     )?
         | ANY AMOUNT OF
