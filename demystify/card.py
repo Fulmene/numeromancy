@@ -349,13 +349,12 @@ def scryfall_card(layout=None, card_faces=None, all_parts=None,
         return [Card(**d), Card(**d2)]
     if layout == 'meld':
         d['multitype'] = layout
-        parts = [x['name'] for x in all_parts[:3] if x['component'] == 'meld_part']
-        target = [x['name'] for x in all_parts[:3] if x['component'] == 'meld_result']
-        if name == target[0]:
+        parts = [x['name'] for x in all_parts if x['component'] == 'meld_part']
+        target = [x['name'] for x in all_parts if x['component'] == 'meld_result']
+        if len(target) == 0:
             return [Card(meld_pair='; '.join(parts), **d)]
         else:
-            pair = name == parts[0] and parts[1] or parts[0]
-            return [Card(meld_pair=pair, melded=target[0], **d)]
+            return [Card(meld_pair=parts[0], melded=target[0], **d)]
     if layout not in ('normal', 'leveler', 'saga'):
         logger.error("Not a valid card: {} ({})".format(name, layout))
         return []
