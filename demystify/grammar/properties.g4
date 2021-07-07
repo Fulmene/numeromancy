@@ -64,31 +64,10 @@ properties : a+=adjective*
              // in subset rules.
              ( adj_list noun+ descriptor*
              | nl=noun_list n+=noun* nd+=descriptor*
-               {
-                if $n:
-                    self.emitDebugMessage('properties case 2a: {}'.format(
-                        ' '.join([t.text for t in ($a or [])]
-                                 + [$nl.tree.toStringTree()]
-                                 + [t.text for t in ($n or [])]
-                                 + [t.toStringTree() for t in ($nd or [])])))
-                elif $a:
-                    self.emitDebugMessage('properties case 2b: {}'.format(
-                        ' '.join([t.text for t in ($a or [])]
-                                 + [$nl.tree.toStringTree()]
-                                 + [t.toStringTree() for t in ($nd or [])])))
-               }
              | b+=noun+ 
                // Greedily match the conj rule here rather than in subset.
                ( ( COMMA ( c+=properties_case3_ COMMA )+ )?
                  j=conj g=properties_case3_ e+=descriptor*
-                 { self.emitDebugMessage('properties case 3: {}'
-                                         .format(' '.join(
-                    [t.text for t in ($a or []) + ($b or [])]
-                    + [', ' + t.toStringTree() for t in ($c or [])]
-                    + ($c and [','] or [])
-                    + [$j.text]
-                    + [$g.text]
-                    + [t.toStringTree() for t in ($e or [])]))) }
                | descriptor*
                )
              );
