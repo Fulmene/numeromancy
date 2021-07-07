@@ -144,7 +144,7 @@ prop_types : prop_type ( ( COMMA ( prop_type COMMA )+ )? conj prop_type )? ;
 
 prop_type : COLOR
           | NAME
-          | type TYPE
+          | card_type TYPE
           | CARD? TYPE
           | int_prop
           | cost_prop

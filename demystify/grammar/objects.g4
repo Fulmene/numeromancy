@@ -56,12 +56,12 @@ status : TAPPED
 
 // Nouns
 
-noun : NON? ( type | obj_subtype | obj_type ) ;
+noun : NON? ( card_type | obj_subtype | obj_type ) ;
 
 /* Types, supertypes, subtypes, and other miscellaneous types. */
 
 // For use parsing a full typeline.
-typeline : supertypes? types ( MDASH subtypes )? ;
+typeline : supertypes? card_types ( MDASH subtypes )? ;
 
 supertypes : supertype+ ;
 
@@ -69,13 +69,13 @@ supertype : BASIC | LEGENDARY | SNOW | WORLD | ONGOING ;
 
 // Card types
 
-types : tribal_type? spell_type
-      | tribal_type noncreature_perm_types
-      | permanent_types
-      | other_type
-      ;
+card_types : tribal_type? spell_type
+           | tribal_type noncreature_perm_types
+           | permanent_types
+           | other_type
+           ;
 
-type : permanent_type | spell_type | other_type | tribal_type ;
+card_type : permanent_type | spell_type | other_type | tribal_type ;
 
 permanent_types : permanent_type+ ;
 permanent_type : noncreature_perm_type | creature_type ;

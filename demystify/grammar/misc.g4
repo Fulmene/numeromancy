@@ -22,7 +22,7 @@ parser grammar misc;
 
 /* Special references to related objects. */
 
-haunted_object : THE ( type | obj_type ) ref_object HAUNT ;
+haunted_object : THE ( card_type | obj_type ) ref_object HAUNT ;
 
 // TODO: target
 ref_object : SELF
@@ -52,9 +52,9 @@ ref_obj_poss : SELF APOS_S
              ;
 
 // eg. this creature, this permanent, this spell.
-this_ref : THIS ( type | obj_type ) ;
+this_ref : THIS ( card_type | obj_type ) ;
 
-that_ref : (THAT | THOSE) ( type | obj_type | obj_subtype ) ;
+that_ref : (THAT | THOSE) ( card_type | obj_type | obj_subtype ) ;
 
 /* Numbers and quantities. */
 
