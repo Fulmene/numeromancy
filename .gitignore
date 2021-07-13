@@ -4,6 +4,7 @@
 .*.sw[a-z]
 *~
 LOG
+*.interp
 
 .env
 demystify/data
