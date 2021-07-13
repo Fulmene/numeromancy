@@ -1735,7 +1735,6 @@ KIND : 'kinds'
      | 'kind';
 LAND : 'lands'
      | 'land';
-LAST : 'last';
 LEFT : 'left';
 LESS : 'less';
 LIFE : 'life';

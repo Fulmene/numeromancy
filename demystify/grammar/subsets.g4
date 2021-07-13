@@ -30,7 +30,7 @@ subset : number mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?
        | number OTHER mini_sub
        | AMONG mini_sub
        | ANOTHER mini_sub
-       | THE LAST mini_sub
+       | THE ORDINAL_WORD mini_sub
        | full_zone
        | haunted_object
        | ref_object in_zones?
