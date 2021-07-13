@@ -110,10 +110,5 @@ pt_signed_part : PLUS_SYM pt_part
 pt_part : NUMBER_SYM
         | VAR_SYM
         | STAR_SYM
-        | a=NUMBER_SYM ( b=PLUS_SYM | b=MINUS_SYM ) c=STAR_SYM
-          {plog.debug('Ignoring p/t value "{} {} {}" in {}; '
-                      'deferring actual p/t calculation to rules text.'
-                      .format($a.text, $b.text, $c.text,
-                              self.getCardState()))
-          }
+        | NUMBER_SYM ( PLUS_SYM | MINUS_SYM ) STAR_SYM
         ;
