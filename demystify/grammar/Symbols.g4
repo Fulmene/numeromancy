@@ -32,25 +32,23 @@ REFBYNAME : 'NAME_' ( 'A'..'Z' | 'a'..'z' | '_' | '\u00c6' | '\u00e6' )+;
 // elsewhere.
 
 MANA_SYM
-    : '{' ( WUBRGC | DIGIT_SYM | SNOW_SYM ) ( '/' WUBRGCP )? '}'
-      { setText(_text[1:-1].upper()) };
+    : '{' ( WUBRGC | DIGIT_SYM | SNOW_SYM ) ( '/' WUBRGCP )? '}' ;
 
 // Appearance in rules text
-PHYREXIA_SYM : '{p}' { setText('P') };
+PHYREXIA_SYM : '{p}';
 
-VAR_MANA_SYM : '{' ('x'..'z') '}' { setText(_text[1:-1].upper()) };
+VAR_MANA_SYM : '{' VAR_SYM '}';
 
-TAP_SYM : '{t}' { setText('T') };
+TAP_SYM : '{t}';
 
-UNTAP_SYM : '{q}' { setText('Q') };
+UNTAP_SYM : '{q}';
 
-VAR_SYM : 'x'..'z' { setText(_text.upper()) };
+VAR_SYM : 'x'..'z';
 
-ENERGY_SYM : '{e}' { setText('E') };
+ENERGY_SYM : '{e}';
 
 // Level up
-LEVEL_SYM : '{level ' ( NUMBER_SYM '-' NUMBER_SYM | NUMBER_SYM '+' ) '}'
-            { setText(_text[6:-1].strip()) };
+LEVEL_SYM : '{level ' ( NUMBER_SYM '-' NUMBER_SYM | NUMBER_SYM '+' ) '}';
 
 NUMBER_SYM : DIGIT_SYM;
 
