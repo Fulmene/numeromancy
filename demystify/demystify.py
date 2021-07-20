@@ -30,11 +30,13 @@ _stdout.setLevel(logging.WARNING)
 _stdout.setFormatter(logging.Formatter(fmt='%(levelname)s: %(message)s'))
 plog.addHandler(_stdout)
 
-import antlr3
+from antlr4 import InputStream, CommonTokenStream
+
+from grammar.DemystifyLexer import DemystifyLexer
+from grammar.DemystifyParser import DemystifyParser
 
 import card
 import data
-from grammar import DemystifyLexer, DemystifyParser
 import test
 
 # What we don't handle:
@@ -54,13 +56,18 @@ def get_cards():
 
 ## Lexer / Parser entry points ##
 
+def lex(text):
+    char_stream = InputStream(text)
+    lexer = DemystifyLexer(char_stream)
+    return CommonTokenStream(lexer)
+
 def _token_stream(name, text):
     """ Helper method for generating a token stream from text. """
-    char_stream = antlr3.ANTLRStringStream(text)
-    lexer = DemystifyLexer.DemystifyLexer(char_stream)
-    lexer.card = name
+    char_stream = InputStream(text)
+    lexer = DemystifyLexer(char_stream)
+    # lexer.card = name
     # tokenizes completely and logs on errors
-    return antlr3.CommonTokenStream(lexer)
+    return CommonTokenStream(lexer)
 
 def _lex(c):
     try:
@@ -95,14 +102,13 @@ def pprint_tokens(tokens):
         return
     tlen = max(len(t.text) for t in tokens)
     for t in tokens:
-        if t.channel != antlr3.HIDDEN_CHANNEL:
-            print('{0.line:>2} {0.charPositionInLine:>4} {0.index:>3} '
-                  '{0.text:{tlen}} {0.typeName}'
-                  .format(t, tlen=tlen))
+        print('{0.line:>2} {0.charPositionInLine:>4} {0.index:>3} '
+              '{0.text:{tlen}} {0.typeName}'
+              .format(t, tlen=tlen))
 
 def parse_card(c):
     """ Test the parser against a card. """
-    Parser = DemystifyParser.DemystifyParser
+    Parser = DemystifyParser
     if isinstance(c, str):
         c = card.get_card(c)
     # mana cost
@@ -127,7 +133,6 @@ def test_parse(rule, text, name=''):
     """ Give the starting rule and try to parse text. """
     ts = _token_stream(name or 'Sample text', text)
     p = DemystifyParser.DemystifyParser(ts)
-    p.setCardState(name)
     result = getattr(p, rule)()
     print(text)
     pprint_tokens(ts.getTokens())
@@ -162,7 +167,7 @@ def _crawl_tree_for_errors(name, lineno, text, tree):
         n = queue.pop(0)
         if n.children:
             queue.extend(n.children)
-        if isinstance(n, antlr3.tree.CommonErrorNode):
+        if isinstance(n, antlr4.tree.CommonErrorNode):
             mstart = n.trappedException.token.start
             mend = text.find(',', mstart)
             if mend < 0:
@@ -302,6 +307,8 @@ def preprocess(args):
     logging.debug("Transform cards: " + "; ".join(sorted(trans)))
     if trans != xtrans:
         logging.error("Difference: " + "; ".join(trans ^ xtrans))
+    # TODO Adventure
+    # TODO MDFC
     s = int(len(split) / 2)
     f = int(len(flip) / 2)
     t = int(len(trans) / 2)
