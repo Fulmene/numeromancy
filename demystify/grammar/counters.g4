@@ -22,16 +22,28 @@ parser grammar counters;
 
 /* Counter subsets. */
 
-counter_subset : counter_group
-                 ( ( COMMA ( counter_group COMMA )+ )? conj counter_group )?
-               ;
+counterSubset : counterGroup ( ( COMMA ( counterGroup COMMA )+ )? conj counterGroup )? ;
  
-counter_group : number ( obj_counter | pt )? COUNTER ;
+counterGroup : number baseCounter ;
 
-base_counter_set : base_counter
-                   ( ( COMMA ( base_counter COMMA )+ )? conj base_counter )?
-                 ;
+baseCounterSet : baseCounter ( ( COMMA ( baseCounter COMMA )+ )? conj baseCounter )? ;
 
-base_counter : ( obj_counter | pt ) COUNTER
-             | COUNTER
-             ;
+baseCounter : ( objCounter | pt )? COUNTER ;
+
+objCounter : OBJ_COUNTER
+           | DEATH
+           | DEVOTION
+           | ECHO
+           | EGG
+           | FEATHER
+           | FUNGUS
+           | FUSE
+           | LEVEL
+           | LOYALTY
+           | MINE
+           | POISON
+           | TIME
+           | TOWER
+           | TRAP
+           | TREASURE
+           ;
