@@ -20,35 +20,32 @@ parser grammar players;
 
 /* Players, controllers, and owners. */
 
-player_subset : player_group ( conj player_group )? ;
+playerSubset : playerGroup ( ( ( COMMA playerGroup )+ COMMA)? conj playerGroup )? ;
 
-// TODO: objects can have controllers and/or owners
-// TODO: Handle 'that player' etc refs differently?
-player_group : ( number OF )? player_poss ( OPPONENT | TEAMMATE )
-             | number player_base
-             | THAT player_base
-             | ( CHOSEN | ENCHANTED )? player_base
-             | ( ACTIVE | DEFENDING ) PLAYER
-             | ANOTHER PLAYER
-             | YOU
-             | ref_player
-             ;
-
-player_poss : YOUR
-            | ( THAT | THOSE ) player_base poss
-            | player_base poss
-            | ref_player_poss ( player_base poss )?
+playerGroup : ( quantity OF )? playerPoss ( OPPONENT | TEAMMATE )
+            | quantity player
+            | refPlayer
             ;
 
-ref_player_poss : HIS OR HER
-                | THEIR
-                | ref_player poss
-                ;
+playerPoss : refPlayerPoss ( player poss )? ;
 
-ref_player : ref_obj_poss ( OWNER | CONTROLLER )
-           ;
+refPlayerPoss : THEIR
+              | YOUR
+              | refPlayer poss
+              ;
 
-player_base : OPPONENT
-            | TEAMMATE
-            | PLAYER
-            ;
+refPlayer : refObjPoss ( OWNER | CONTROLLER )
+          | ( THAT | THOSE ) player
+          | ( CHOSEN | ENCHANTED ) player
+          | DEFENDING PLAYER
+          | YOU
+          ;
+
+// Player types
+
+playerType : PLAYER | TEAMMATE | OPPONENT | CONTROLLER | OWNER | BIDDER ;
+
+player : OPPONENT
+       | TEAMMATE
+       | PLAYER
+       ;

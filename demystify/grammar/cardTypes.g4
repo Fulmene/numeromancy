@@ -1,4 +1,4 @@
-parser grammar objects;
+parser grammar cardTypes;
 
 // This file is part of Demystify.
 // 
@@ -28,10 +28,10 @@ noun_list : noun ( COMMA ( noun COMMA )+ )? conj noun ;
 
 // Adjectives
 
-adjective : NON? ( supertype | color | color_spec | status ) ;
+adjective : NON? ( supertype | color | colorSpec | status ) ;
 
 color : WHITE | BLUE | BLACK | RED | GREEN ;
-color_spec : COLORED | COLORLESS | MONOCOLORED | MULTICOLORED ;
+colorSpec : COLORED | COLORLESS | MONOCOLORED | MULTICOLORED ;
 status : TAPPED
        | UNTAPPED
        | EXILED
@@ -63,52 +63,50 @@ supertype : BASIC | LEGENDARY | SNOW | WORLD | ONGOING ;
 
 // Card types
 
-card_types : tribal_type? spell_type
-           | tribal_type noncreature_perm_types
-           | permanent_types
-           | other_type
-           ;
+cardTypes : cardType+ ;
 
-card_type : permanent_type | spell_type | other_type | tribal_type ;
+cardType : permanentType | spellType | tribalType ;
 
-permanent_types : permanent_type+ ;
-permanent_type : noncreature_perm_type | creature_type ;
+permanentType : CREATURE | ARTIFACT | ENCHANTMENT | LAND | PLANESWALKER ;
 
-creature_type : CREATURE ;
+spellType : INSTANT | SORCERY ;
 
-noncreature_perm_types : noncreature_perm_type+ ;
-noncreature_perm_type : ARTIFACT | ENCHANTMENT | LAND | PLANESWALKER ;
-
-spell_type : INSTANT | SORCERY ;
-
-other_type : PLANE | SCHEME | VANGUARD ;
-
-tribal_type : TRIBAL ;
+tribalType : TRIBAL ;
 
 // subtypes
-subtypes : obj_subtype+ ;
+subtypes : subtype+ ;
+
+subtype : OBJ_SUBTYPE
+        | AURA
+        | BOLAS
+        | DRAGONS
+        | EGG
+        | FUNGUS
+        | MINE
+        | PHYREXIA
+        | TOWER
+        | TRAP
+        | TREASURE
+        | WILL
+        ;
 
 // Object types
 
-obj_type : OBJECT | ABILITY | CARD | PERMANENT | SOURCE | SPELL | TOKEN ;
-
-// Player types
-
-player_type : PLAYER | TEAMMATE | OPPONENT | CONTROLLER | OWNER | BIDDER ;
+objectType : CARD | PERMANENT | SPELL | ABILITY | SOURCE | TOKEN ;
 
 /* Power/toughness */
 
 // This rule is used for printed p/t, p/t setting abilities,
 // and p/t modifying abilities.
 
-pt : ( pt_signed_part | pt_part ) DIV_SYM ( pt_signed_part | pt_part ) ;
+pt : ptPart SLASH ptPart ;
 
-pt_signed_part : PLUS_SYM pt_part
-               | MINUS_SYM pt_part
-               ;
+ptMod : ptPartSigned SLASH ptPartSigned ;
 
-pt_part : NUMBER_SYM
-        | VAR_SYM
-        | STAR_SYM
-        | NUMBER_SYM ( PLUS_SYM | MINUS_SYM ) STAR_SYM
-        ;
+ptPartSigned : ( PLUS_SYM | MINUS_SYM ) ( NUMBER_SYM | VAR_SYM ) ;
+
+ptPart : NUMBER_SYM
+       | VAR_SYM
+       | STAR_SYM
+       | NUMBER_SYM ( PLUS_SYM | MINUS_SYM ) STAR_SYM
+       ;
