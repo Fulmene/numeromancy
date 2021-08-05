@@ -1,4 +1,4 @@
-parser grammar keywords;
+parser grammar keywordAbilities;
 
 // This file is part of Demystify.
 // 
