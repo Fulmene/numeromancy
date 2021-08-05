@@ -20,14 +20,16 @@ parser grammar costs;
 
 /* Costs and payments */
 
+cardManaCost : mana;
+
 // TODO: "as an additional cost" items: "you may", "choose" type/number.
 
 // The OR case here is where the player has the option to choose
 // either of the methods to pay for the ability,
 // eg. 3, TAP or U, TAP.
 
-cost : cost_list ( OR cost_list )?
-     | loyalty_cost
+cost : costList ( OR costList )?
+     | loyaltyCost
      ;
 
 // The AND case here is usually for costs where a latter item
@@ -38,39 +40,41 @@ cost : cost_list ( OR cost_list )?
 // a cost item. More simply, MTG doesn't normally use 'and' in cost lists
 // eg: "{2}{u}, {t}, discard a card, sacrifice a land".
 
-cost_list : cost_item ( COMMA cost_item )* ( AND cost_item )? ;
+costList : costItem ( COMMA costItem )* ( AND costItem )? ;
 
-cost_item : TAP_SYM
-          | UNTAP_SYM
-          | mana
-          | repeatable_cost_item_ for_each?
-          ;
+costItem : TAP_SYM
+         | UNTAP_SYM
+         | mana
+         | repeatableCostItem forEach?
+         ;
 
-repeatable_cost_item_ : PAY mana
-                      | discard
-                      | exile
-                      | move_cards
-                      | pay_mana_cost
-                      | pay_energy
-                      | pay_life
-                      | put_counters
-                      | remove_counters
-                      | reveal
-                      | sacrifice
-                      | tap
-                      | unattach
-                      | untap
-                      ;
+repeatableCostItem : PAY mana
+                   | discard
+                   | exile
+                   | move_cards
+                   | pay_mana_cost
+                   | pay_energy
+                   | pay_life
+                   | put_counters
+                   | remove_counters
+                   | reveal
+                   | sacrifice
+                   | tap
+                   | unattach
+                   | untap
+                   ;
 
 // Loyalty
 
-loyalty_cost : PLUS_SYM? ( NUMBER_SYM | VAR_SYM )
-             | MINUS_SYM ( NUMBER_SYM | VAR_SYM )
-             ;
+loyaltyCost : PLUS_SYM? ( NUMBER_SYM | VAR_SYM )
+            | MINUS_SYM ( NUMBER_SYM | VAR_SYM )
+            ;
 
 // Mana symbols and mana costs
 
 mana : ( MANA_SYM | VAR_MANA_SYM )+ ;
+
+// TODO these are just game actions
 
 discard : DISCARD subsets ( AT RANDOM )? ;
 
