@@ -59,45 +59,38 @@ parser grammar properties;
  * blue".
  */
 
-properties : a+=adjective*
-             // Greedily match noun_list rather than split across the conj
-             // in subset rules.
-             ( adj_list noun+ descriptor*
-             | nl=noun_list n+=noun* nd+=descriptor*
-             | b+=noun+ 
-               // Greedily match the conj rule here rather than in subset.
-               ( ( COMMA ( c+=properties_case3_ COMMA )+ )?
-                 j=conj g=properties_case3_ e+=descriptor*
-               | descriptor*
-               )
-             );
+// Property of cards or objects
 
-properties_case3_ : adjective+ noun+ ;
+property : adjectiveList noun descriptorList
+         | nounList descriptorList
+         ;
 
-basic_properties : adjective* noun+ descriptor* ;
+// For use parsing a full typeline.
 
-// TODO: with descriptors? subsets would like a list of properties
-// that don't have adj_list or noun_list.
-simple_properties : basic_properties
-                  | adjective+
-                  ;
+typeline : supertypes? cardTypes ( MDASH subtypes )? ;
 
-// status that can't be used as an adjective but can be used in descriptors
-desc_status : status
-            | ENCHANTED
-            | EQUIPPED
-            | FORTIFIED
-            | HAUNTED
-            ;
+// Adjectives
+
+adjective : NON? ( supertype | cardType | subtype | typeSpec | color | colorSpec | status ) ;
+
+adjectiveList : adjective+
+              | adjective ( COMMA adjective )+
+              | adjective ( ( COMMA adjective )+ COMMA )? conj adjective
+              |
+              ;
+
+// Nouns
+
+noun : cardType | subtype | objectType ;
+
+nounList : noun ( ( COMMA noun )+ COMMA )? conj noun ;
 
 // Descriptors
 
-descriptor : named
-           | control
-           | own
-           | cast
-           | in_zones
-           | with_keywords
+descriptor : nameDescriptor
+           | playerDescriptor
+           | zoneDescriptor
+           | keywordDescriptor
            | THAT is_
              ( desc_status
              | BOTH adjective AND adjective
@@ -105,36 +98,87 @@ descriptor : named
              )
            ;
 
-named : NOT? NAMED REFBYNAME ;
+nameDescriptor : NOT? NAMED REFBYNAME ;
 
-control : player_subset ( DO NOT )? CONTROL ;
-own : player_subset ( DO NOT )? OWN ;
-cast : player_subset ( DO NOT )? CAST ;
+playerDescriptor : playerSubset ( DO NOT )? ( CONTROL | OWN | CAST | BOTH? OWN conj CONTROL ) ;
 
-in_zones : ( IN | FROM ) zone_subset ;
+zoneDescriptor : ( IN | FROM ) zoneSubset ;
 
-with_keywords : WITH raw_keywords
-              | WITHOUT raw_keywords
-              ;
+keywordDescriptor : ( WITH | WITHOUT ) keywords ;
 
-/* Property names. */
+statusDescriptor : THAT is_ status ;
 
-prop_types : prop_type ( ( COMMA ( prop_type COMMA )+ )? conj prop_type )? ;
+status : TAPPED
+       | UNTAPPED
+       | ENCHANTED
+       | EQUIPPED
+       | FORTIFIED
+       | HAUNTED
+       | EXILED
+       | KICKED
+       | SUSPENDED
+       | ATTACKING
+       | BLOCKING
+       | BLOCKED
+       | UNBLOCKED
+       | FACE_UP
+       | FACE_DOWN
+       | FLIPPED
+       | REVEALED
+       | MONSTROUS
+       ;
 
-prop_type : COLOR
-          | NAME
-          | card_type TYPE
-          | CARD? TYPE
-          | int_prop
-          | cost_prop
-          ;
+// Card properties
 
-int_prop : CONVERTED MANA COST
-         | LIFE TOTAL?
-         | POWER
-         | TOUGHNESS
+color : WHITE | BLUE | BLACK | RED | GREEN ;
+colorSpec : COLORED | COLORLESS | MONOCOLORED | MULTICOLORED ;
+
+supertypes : supertype+ ;
+supertype : BASIC | LEGENDARY | SNOW | WORLD | ONGOING ;
+
+cardTypes : cardType+ ;
+cardType : permanentType | spellType | tribalType ;
+permanentType : CREATURE | ARTIFACT | ENCHANTMENT | LAND | PLANESWALKER ;
+spellType : INSTANT | SORCERY ;
+tribalType : TRIBAL ;
+
+subtypes : subtype+ ;
+subtype : OBJ_SUBTYPE
+        | AURA
+        | BOLAS
+        | DRAGONS
+        | EGG
+        | FUNGUS
+        | MINE
+        | PHYREXIA
+        | TOWER
+        | TRAP
+        | TREASURE
+        | WILL
+        ;
+
+typeSpec : HISTORIC ;
+
+objectType : CARD | PERMANENT | SPELL | ABILITY | SOURCE | TOKEN ;
+
+// Property names
+
+propertyTypes : propertyType ( ( COMMA ( propertyType COMMA )+ )? conj propertyType )? ;
+
+propertyType : COLOR
+             | NAME
+             | cardType TYPE
+             | CARD? TYPE
+             | intProp
+             | costProp
+             ;
+
+intProp : MANA_VALUE
+        | LIFE TOTAL?
+        | POWER
+        | TOUGHNESS
+        ;
+
+costProp : MANA COST
+         | ( keywordCost | keywordIntCost | keywordQualityCost ) COST?
          ;
-
-cost_prop : MANA COST
-          | raw_keyword_with_cost COST?
-          ;
