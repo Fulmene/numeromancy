@@ -32,27 +32,25 @@ REFBYNAME : 'NAME_' ( 'A'..'Z' | 'a'..'z' | '_' | '\u00c6' | '\u00e6' )+;
 // elsewhere.
 
 MANA_SYM
-    : '{' ( WUBRGC | DIGIT_SYM | SNOW_SYM ) ( '/' WUBRGCP )? '}'
-      { $text = $text[1:-1].upper() };
+    : '{' ( WUBRGC | NUMBER_SYM | SNOW_SYM ) ( '/' WUBRGCP )? '}' ;
 
 // Appearance in rules text
-PHYREXIA_SYM : '{p}' { $text = 'P' };
+PHYREXIA_SYM : '{p}';
 
-VAR_MANA_SYM : '{' ('x'..'z') '}' { $text = $text[1:-1].upper() };
+VAR_MANA_SYM : '{' VAR_SYM '}';
 
-TAP_SYM : '{t}' { $text = 'T' };
+TAP_SYM : '{t}';
 
-UNTAP_SYM : '{q}' { $text = 'Q' };
+UNTAP_SYM : '{q}';
 
-VAR_SYM : 'x'..'z' { $text = $text.upper() };
+VAR_SYM : 'x'..'z';
 
-ENERGY_SYM : '{e}' { $text = 'E' };
+ENERGY_SYM : '{e}';
 
 // Level up
-LEVEL_SYM : '{level ' ( NUMBER_SYM '-' NUMBER_SYM | NUMBER_SYM '+' ) '}'
-            { $text = $text[6:-1].strip() };
+LEVEL_SYM : '{level ' ( NUMBER_SYM '-' NUMBER_SYM | NUMBER_SYM '+' ) '}';
 
-NUMBER_SYM : DIGIT_SYM;
+NUMBER_SYM : DIGIT_SYM+;
 
 MDASH : ( '\u2014' | '--' );
 
@@ -60,7 +58,7 @@ BULLET : '\u2022';
 
 APOS_S : '\'s' ;
 
-WS : ( ' ' | '\t' | '\n' ) { $channel=HIDDEN };
+WS : ( ' ' | '\t' | '\n' ) -> skip ;
 
 fragment SNOW_SYM : 's';
 
@@ -68,4 +66,4 @@ fragment WUBRGC : ('w'|'u'|'b'|'r'|'g'|'c');
 
 fragment WUBRGCP : ( WUBRGC | 'p' );
 
-fragment DIGIT_SYM : ('1'..'9' '0'..'9') | ('0'..'9');
+fragment DIGIT_SYM : ('0'..'9');
