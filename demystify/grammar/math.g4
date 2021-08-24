@@ -20,17 +20,39 @@ parser grammar math;
 
 /* Mathematical constructs and calculations. */
 
-comparison : ( EQUAL TO OR )? ( MORE_ | GREATER ) THAN magic_number
-           | ( FEWER | LESS ) THAN ( OR EQUAL TO )? magic_number
-           | EQUAL TO magic_number
+/* Numbers and quantities. */
+
+quantity : number ( ( ( COMMA number )+ COMMA )? conj number )?
+         | number OR ( MORE_ | GREATER )
+         | number OR ( LESS | FEWER )
+         | EXACTLY number
+         | NO? ( MORE_ | GREATER ) THAN number
+         | UP TO number
+         | AT LEAST number
+         | ( ALL | EACH | EVERY )
+         | ANY number
+         | ANY AMOUNT OF
+         | A SINGLE?
+         | ANOTHER
+         | NO
+         ;
+
+number : NUMBER_SYM | VAR_SYM | NUMBER_WORD ;
+
+varDef : WHERE VAR_SYM IS quantity ;
+
+/*
+comparison : ( EQUAL TO OR )? ( MORE_ | GREATER ) THAN mtgNumber
+           | ( FEWER | LESS ) THAN ( OR EQUAL TO )? mtgNumber
+           | EQUAL TO mtgNumber
            | integer
            ;
 
-magic_number : integer
-             | object_count
-             | max_among
-             | that_ref poss int_prop
-             ;
+mtgNumber : integer
+          | object_count
+          | max_among
+          | that_ref poss int_prop
+          ;
 
 object_count : THE NUMBER OF 
                ( DIFFERENTLY NAMED properties
@@ -51,15 +73,11 @@ for_each : FOR EACH
                               | player_group HAS )
            );
 
-multiplier : HALF
-           | THIRD
-           | TWICE
-           | integer TIMES
+multiplier : TWICE
+           | NUMBER_WORD TIMES
            ;
 
-// Specifically for talking about amounts of life.
-magic_life_number : integer LIFE
-                  | multiplier player_poss LIFE
-                    ( ',' ROUNDED ( u=UP | d=DOWN ) )?
-                  | LIFE EQUAL TO magic_number
-                  ;
+divisor : HALF
+        | ORDINAL_WORD
+        ;
+*/

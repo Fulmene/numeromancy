@@ -28,7 +28,7 @@ cardManaCost : mana;
 // either of the methods to pay for the ability,
 // eg. 3, TAP or U, TAP.
 
-cost : costList ( OR costList )?
+cost : costList ( conj costList )?
      | loyaltyCost
      ;
 
@@ -40,12 +40,13 @@ cost : costList ( OR costList )?
 // a cost item. More simply, MTG doesn't normally use 'and' in cost lists
 // eg: "{2}{u}, {t}, discard a card, sacrifice a land".
 
-costList : costItem ( COMMA costItem )* ( AND costItem )? ;
+costList : costItem ( COMMA costItem )*
+         | costItem AND costItem ;
 
 costItem : TAP_SYM
          | UNTAP_SYM
          | mana
-         | repeatableCostItem forEach?
+         //| repeatableCostItem forEach?
          ;
 
 repeatableCostItem : PAY mana
@@ -53,8 +54,8 @@ repeatableCostItem : PAY mana
                    | exile
                    | move_cards
                    | pay_mana_cost
-                   | pay_energy
-                   | pay_life
+                   //| pay_energy
+                   //| pay_life
                    | put_counters
                    | remove_counters
                    | reveal
@@ -76,31 +77,31 @@ mana : ( MANA_SYM | VAR_MANA_SYM )+ ;
 
 // TODO these are just game actions
 
-discard : DISCARD subsets ( AT RANDOM )? ;
+discard : DISCARD subsetList ( AT RANDOM )? ;
 
-exile : EXILE subsets ;
+exile : EXILE subsetList ;
 
-move_cards : ( PUT | RETURN ) subsets ( TO | ON | INTO ) zone_subset ;
+move_cards : ( PUT | RETURN ) subsetList ( TO | ON | INTO ) zoneSubset ;
 
 pay_energy : PAY ( ANY AMOUNT OF ENERGY_SYM
-                 | A AMOUNT OF ENERGY_SYM EQUAL TO magic_number
+                 //| A AMOUNT OF ENERGY_SYM EQUAL TO magic_number
                  | ENERGY_SYM+
                  );
 
-pay_life : PAY magic_life_number ;
+//pay_life : PAY magic_life_number ;
 
-pay_mana_cost : PAY ref_obj_poss MANA COST ;
+pay_mana_cost : PAY refObjPoss MANA COST ;
 
-put_counters : PUT counter_subset ON subsets ;
+put_counters : PUT counterSubset ON subsetList ;
 
-remove_counters : REMOVE counter_subset FROM subsets ;
+remove_counters : REMOVE counterSubset FROM subsetList ;
 
-reveal : REVEAL subsets ;
+reveal : REVEAL subsetList ;
 
-sacrifice : SACRIFICE subsets ;
+sacrifice : SACRIFICE subsetList ;
 
-tap : TAP subsets ;
+tap : TAP subsetList ;
 
-unattach : UNATTACH subsets ;
+unattach : UNATTACH subsetList ;
 
-untap : UNTAP subsets ;
+untap : UNTAP subsetList ;

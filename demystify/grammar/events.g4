@@ -20,18 +20,22 @@ parser grammar events;
 
 /* Events and conditions. */
 
-triggers : trigger ( OR trigger )? trigger_descriptor?;
+triggers : trigger ( OR trigger )? triggerDescriptor?;
 
 // Although it doesn't look great, it was necessary to factor 'subset' out
 // of the event and condition rules. It's a bad idea to leave it unfactored
 // since ANTLR will run itself out of memory (presumably trying to generate
 // lookahead tables).
-trigger : subset_list
+trigger : subsetList
           ( event ( OR event )?
           | condition
           )
-        | non_subset_event
+        | nonSubsetEvent
         | non_subset_condition
+        ;
+
+trigger : event ( COMMA IF condition )?
+        | condition
         ;
 
 // An event is something that happens, usually an object taking an action
@@ -68,12 +72,12 @@ event : zone_transfer
 
 /* Events. */
 
-zone_transfer : ( ENTER | is_ ( PUT ( INTO | ONTO ) | RETURNED TO ) ) zone_subset ( FROM ( zone_subset | ANYWHERE ) )?
-              | LEAVE zone_subset
+zone_transfer : ( ENTER | is_ ( PUT ( INTO | ONTO ) | RETURNED TO ) ) zoneSubset ( FROM ( zoneSubset | ANYWHERE ) )?
+              | LEAVE zoneSubset
               | DIE
               ;
 
-cause_transfer : PUT subset ( INTO | ONTO ) zone_subset ( FROM ( zone_subset | ANYWHERE ) )? ;
+cause_transfer : PUT subset ( INTO | ONTO ) zoneSubset ( FROM ( zoneSubset | ANYWHERE ) )? ;
 
 phases_in_out : PHASE ( IN | OUT );
 
@@ -82,13 +86,13 @@ state_change : BECOME ( BLOCKED BY subset
                       | THE TARGET OF subset
                       | UNATTACHED FROM subset
                       )
-             | ATTACK ( subset_list | ALONE )? ( AND IS NOT BLOCKED )?
+             | ATTACK ( subsetList | ALONE )? ( AND IS NOT BLOCKED )?
              | BLOCK ( subset | ALONE )?
              | is_ TURNED status
              ;
 
-cost_paid : poss cost_prop IS NOT? PAID
-          | ( DO NOT )? PAY ( A | subset poss ) cost_prop
+cost_paid : poss costProp IS NOT? PAID
+          | ( DO NOT )? PAY ( A | subset poss ) costProp
           ;
 
 attack_with_stuff : ATTACK WITH subset ;
@@ -109,23 +113,23 @@ counter_spell : COUNTER subset ;
 cycle_card : CYCLE subset
            | CYCLE OR DISCARD subset ;
 
-deal_damage : DEAL integer? damage ( TO subset_list )? ;
+deal_damage : DEAL number? damage ( TO subsetList )? ;
 
-dealt_damage : is_ DEALT integer? damage ( BY subset )? ;
+dealt_damage : is_ DEALT number? damage ( BY subset )? ;
 
-dies_damaged : DEALT damage BY subset this_turn DIE ;
+dies_damaged : DEALT damage BY subset THIS TURN DIE ;
 
 discard_card : DISCARD subset ;
 
 draw_card : DRAW A CARD ;
 
-gain_life : GAIN integer? LIFE ;
+gain_life : GAIN number? LIFE ;
 
 kick_stuff : KICK subset ;
 
 lose_control : LOSE CONTROL OF subset ;
 
-lose_life : LOSE integer? LIFE ;
+lose_life : LOSE number? LIFE ;
 
 lose_the_game : LOSE THE GAME ;
 
@@ -133,7 +137,7 @@ play_stuff : PLAY subset ;
 
 sacrifice_stuff : SACRIFICE subset ;
 
-shuffle_library : SHUFFLE player_poss LIBRARY ;
+shuffle_library : SHUFFLE playerPoss LIBRARY ;
 
 tap_stuff : TAP subset ( FOR MANA )? ;
 
@@ -150,7 +154,7 @@ condition : has_status
           | has_ability
           | has_cards
           | have_life
-          | HAS has_counters
+          //| HAS has_counters
           | int_prop_is
           | control_stuff
           | is_somewhere
@@ -160,21 +164,21 @@ condition : has_status
 
 has_status : HAS THE CITYS_BLESSING;
 
-has_ability : HAS raw_keyword ;
+has_ability : HAS keyword ;
 
 has_cards : HAS number CARD IN HAND ;
 
-have_life : HAS integer LIFE ;
+have_life : HAS number LIFE ;
 
-int_prop_is : poss int_prop IS magic_number ;
+int_prop_is : poss intProp IS number ;
 
 control_stuff : CONTROL subset ;
 
 is_somewhere : is_ ( IN | ON ) ;
 
-// Some triggers do not start with subsets, eg. "there are",
+// Some triggers do not start with subsetList, eg. "there are",
 // "a counter is" or "the chosen color is".
-non_subset_event : counter_changed
+nonSubsetEvent : counter_changed
                  | damage_dealt
                  ;
 
@@ -184,36 +188,36 @@ non_subset_condition : there_are
 
 /* Non-subset events. */
 
-counter_changed : ( THE ordinal_word | number )
-                  base_counter is_
+counter_changed : ( THE ordinalWord | number )
+                  baseCounter is_
                   ( REMOVED FROM subset
                   | PUT ON subset
                   );
 
-damage_dealt : integer? damage is_ DEALT TO subset_list ;
+damage_dealt : number? damage is_ DEALT TO subsetList ;
 
 /* Non-subset conditions. */
 
-there_are : THERE is_ number properties restriction* ;
+there_are : THERE is_ number subsetList ;
 
-there_counters : THERE is_ counter_subset ON subset ;
+there_counters : THERE is_ counterSubset ON subset ;
 
 // A trigger descriptor is an additional check that comes after the event
 // triggers and conditions. Some of these may be (or include) conditions.
-trigger_descriptor : while_condition
-                   | during_turn
-                   | during_step
-                   | nth_time_per_turn
-                   | this_turn
-                   ;
+triggerDescriptor : while_condition
+                  | during_turn
+                  | during_step
+                  | nth_time_per_turn
+                  | THIS TURN
+                  ;
 
-while_condition : WHILE ref_object ( condition | is_ status )
+while_condition : WHILE refObject ( condition | is_ status )
                 | WHILE non_subset_condition
                 ;
 
-during_turn : DURING player_poss TURN ;
+during_turn : DURING playerPoss TURN ;
 
 // TODO: Other steps.
 during_step : DURING COMBAT ;
 
-nth_time_per_turn : FOR THE ordinal_word TIME THIS TURN ;
+nth_time_per_turn : FOR THE ordinalWord TIME THIS TURN ;

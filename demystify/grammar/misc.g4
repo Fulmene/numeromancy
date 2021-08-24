@@ -20,80 +20,47 @@ parser grammar misc;
 
 /* Miscellaneous rules. */
 
+// TODO Nuke this file and move everything to their respective domains
+
 /* Special references to related objects. */
 
-haunted_object : THE ( card_type | obj_type ) ref_object HAUNT ;
-
 // TODO: target
-ref_object : SELF
-           | PARENT
-           | IT
-           | THEM
-             // planeswalker pronouns
-           | HIM
+refObject : SELF
+          | PARENT
+          | IT
+          | THEM
+          // planeswalker pronouns
+          | HIM
+          | HER
+          // We probably don't actually need to remember what the
+          // nouns were here, but keep them in for now.
+          | ( ENCHANTED | EQUIPPED | FORTIFIED ) noun+
+          | thisRef
+          | thatRef
+          ;
+
+refObjPoss : SELF APOS_S
+           | PARENT APOS_S
+           | ITS
+           | THEIR
+           // planeswalker pronouns
+           | HIS
            | HER
-             // We probably don't actually need to remember what the
-             // nouns were here, but keep them in for now.
-           | ( ENCHANTED | EQUIPPED | FORTIFIED ) noun+
-           | this_ref
-           | that_ref
+           | ( ENCHANTED | EQUIPPED | FORTIFIED ) noun+ poss
+           | thisRef poss
+           | thatRef poss
            ;
 
-ref_obj_poss : SELF APOS_S
-             | PARENT APOS_S
-             | ITS
-             | THEIR
-               // planeswalker pronouns
-             | HIS
-             | HER
-             | ( ENCHANTED | EQUIPPED | FORTIFIED ) noun+ poss
-             | this_ref poss
-             | that_ref poss
-             ;
-
 // eg. this creature, this permanent, this spell.
-this_ref : THIS ( card_type | obj_type ) ;
+thisRef : THIS ( cardType | objectType ) ;
 
-that_ref : (THAT | THOSE) ( card_type | obj_type | obj_subtype ) ;
-
-/* Numbers and quantities. */
-
-number : integer ( OR integer )?
-       | ( ALL | EACH | EVERY )
-       | ANY ( c=number_word )?
-       | A SINGLE?
-       | NO
-       ;
-
-/* Not sure whether this should go in integer, or number, or somewhere else.
-   Most references to "no more than" or "more than" are setting a maximum
-   value, eg. "can't be blocked by more than one creature".
-        | NO? ( MORE_ | GREATER ) THAN ( s=NUMBER_SYM | w=number_word )
-          -> {$NO}? ^( NUMBER ^( LEQ $s? $w? ) )
-          -> ^( NUMBER ^( GT $s? $w? ) )
-*/
-integer : ( s=NUMBER_SYM | w=number_word )
-          ( OR ( MORE_ | GREATER )
-          | OR ( FEWER | LESS )
-          )?
-        | AT LEAST ( s=NUMBER_SYM | w=number_word )
-        | EXACTLY ( s=NUMBER_SYM | w=number_word )
-        | b=VAR_SYM ( OR ( MORE_ | GREATER )
-                    | OR ( FEWER | LESS )
-                    )?
-        | ANY AMOUNT OF
-        ;
+thatRef : (THAT | THOSE) ( cardType | objectType | subtype ) ;
 
 /* Others */
 
 conj : AND | OR | AND_OR ;
 
-damage : NON COMBAT DAMAGE
-       | COMBAT DAMAGE
-       | DAMAGE
-       ;
-
-this_turn : THIS TURN ;
+damage : ( NON? COMBAT )? DAMAGE ;
 
 // Unfortunately we can't have the lexer rule match just a single quote
 // in some cases but not others, so we use a parser rule to handle this.

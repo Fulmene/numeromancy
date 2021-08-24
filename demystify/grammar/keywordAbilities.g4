@@ -50,6 +50,7 @@ keywordAbility : keywordAbilityNoArgs
                | keywordAbilityCost
                | keywordAbilityIntCost
                | keywordAbilityQuality
+               | keywordAbilityFrom
                | keywordAbilityQualityCost
                ;
 
@@ -59,7 +60,7 @@ keywordAbilityInt : keywordInt keywordArgInt;
 
 keywordAbilityCost : keywordCost keywordArgCost;
 
-keywordAbilityIntCost : keywordIntCost KeywordArgInt keywordArgCost;
+keywordAbilityIntCost : keywordIntCost keywordArgInt keywordArgCost;
 
 keywordAbilityQuality : keywordAbilityEnchant
                       | keywordAbilityHexproof
@@ -70,6 +71,8 @@ keywordAbilityQuality : keywordAbilityEnchant
                       | keywordAbilityLandwalk
                       | keywordAbilityOffering
                       ;
+
+keywordAbilityFrom : keywordFrom FROM keywordArgFrom ( ( ( COMMA FROM keywordArgFrom )+ COMMA )? AND FROM keywordArgFrom)? ;
 
 keywordAbilityQualityCost : keywordAbilityEquipQuality
                           | keywordAbilitySplice
@@ -110,7 +113,7 @@ keywordAbilityTypecyling : keywordArgQuality CYCLING keywordArgCost ;
 /* Argument rules. */
 
 keywordArgInt : NUMBER_SYM
-              | VAR_SYM ( COMMA varDef)? ;
+              | VAR_SYM ( COMMA varDef)?
               | MDASH SUNBURST
               ;
 
@@ -136,4 +139,9 @@ keywordArgCost : MDASH? cost;
 // Quality can include generic properties as well as other special qualities
 // as in "protection from everything" or "protection from all colors".
 // More than that, it can include adjectives on their own.
-keywordArgQuality : subsets ;
+keywordArgQuality : property_;
+
+keywordArgFrom : property_
+               | color
+               | EVERYTHING
+               ;

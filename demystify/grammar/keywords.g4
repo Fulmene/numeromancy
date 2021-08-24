@@ -169,14 +169,16 @@ keywordIntCost : AWAKEN
                ;
 
 keywordQuality : ENCHANT
-               | HEXPROOF
-               | PROTECTION
                | AFFINITY
                | BAND
                | CHAMPION
                | LANDWALK
                | OFFERING
                ;
+
+keywordFrom : HEXPROOF
+            | PROTECTION
+            ;
 
 keywordQualityCost : EQUIP
                    | CYCLING

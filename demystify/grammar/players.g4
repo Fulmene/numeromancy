@@ -20,12 +20,12 @@ parser grammar players;
 
 /* Players, controllers, and owners. */
 
-playerSubset : playerGroup ( ( ( COMMA playerGroup )+ COMMA)? conj playerGroup )? ;
+playerSubsets : playerSubset ( ( ( COMMA playerSubset )+ COMMA)? conj playerSubset )? ;
 
-playerGroup : ( quantity OF )? playerPoss ( OPPONENT | TEAMMATE )
-            | quantity player
-            | refPlayer
-            ;
+playerSubset : ( quantity OF )? playerPoss ( OPPONENT )
+             | quantity player
+             | refPlayer
+             ;
 
 playerPoss : refPlayerPoss ( player poss )? ;
 
@@ -43,9 +43,8 @@ refPlayer : refObjPoss ( OWNER | CONTROLLER )
 
 // Player types
 
-playerType : PLAYER | TEAMMATE | OPPONENT | CONTROLLER | OWNER | BIDDER ;
+playerType : PLAYER | OPPONENT | CONTROLLER | OWNER | BIDDER ;
 
 player : OPPONENT
-       | TEAMMATE
        | PLAYER
        ;

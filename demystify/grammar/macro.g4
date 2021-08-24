@@ -25,61 +25,29 @@ parser grammar macro;
  */
 
 // TODO Many more D&D ability words
-ability_word : ABILITY_WORD
-             | SPELL MASTERY
-             | WILL OF THE COUNCIL
-             ;
+abilityWord : ABILITY_WORD
+            | SPELL MASTERY
+            | WILL OF THE COUNCIL
+            ;
 
-arb_choice : ARB_CHOICE
-           | DEATH
-           | DRAGONS
-           | FEATHER
-           | NUMBER
-           | TIME;
+arbitraryChoice : ARB_CHOICE
+                | DEATH
+                | DRAGONS
+                | FEATHER
+                | NUMBER
+                | TIME;
 
-aura_swap : AURA SWAP;
+auraSwap : AURA SWAP;
 
-bands_with_other : BAND WITH OTHER;
+bandsWithOther : BAND WITH OTHER;
 
-double_strike : DOUBLE STRIKE;
+doubleStrike : DOUBLE STRIKE;
 
-first_strike : FIRST STRIKE;
+firstStrike : FIRST STRIKE;
 
-level_up : LEVEL UP;
+levelUp : LEVEL UP;
 
-number_word : NUMBER_WORD;
+numberWord : NUMBER_WORD;
 
-obj_counter : OBJ_COUNTER
-            | DEATH
-            | DEVOTION
-            | ECHO
-            | EGG
-            | FEATHER
-            | FUNGUS
-            | FUSE
-            | LEVEL
-            | LOYALTY
-            | MINE
-            | POISON
-            | TIME
-            | TOWER
-            | TRAP
-            | TREASURE;
-
-obj_subtype : OBJ_SUBTYPE
-            | AURA
-            | BOLAS
-            | DRAGONS
-            | EGG
-            | FUNGUS
-            | MINE
-            | PHYREXIA
-            | TOWER
-            | TRAP
-            | TREASURE
-            | WILL
-            | BOLAS APOS_S MEDITATION REALM
-            | NEW PHYREXIA;
-
-ordinal_word : ORDINAL_WORD
-             | FIRST;
+ordinalWord : ORDINAL_WORD
+            | FIRST;

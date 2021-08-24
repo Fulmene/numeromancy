@@ -20,15 +20,18 @@ parser grammar subsets;
 
 /* Rules for describing subsets of objects. */
 
-subsets : subset_list
-        | mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?
-        ;
+subsetList : subset ( ( COMMA ( subset COMMA )+ )? conj subset )? ;
 
-subset_list : subset ( ( COMMA ( subset COMMA )+ )? conj subset )? ;
+subset : objectSubset
+       | playerSubset
+       ;
 
+objectSubset : quantity property_ ;
+
+/*
 subset : number mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?
        | number OTHER mini_sub
-       | AMONG mini_sub
+       //| AMONG mini_sub
        | ANOTHER mini_sub
        | THE ORDINAL_WORD mini_sub
        | full_zone
@@ -85,6 +88,8 @@ not_chosen_prop : THAT IS NOT
 
 from_expansion : FROM THE expansion EXPANSION ;
 
+haunted_object : THE ( card_type | obj_type ) ref_object HAUNT ;
+
 expansion : ANTIQUITIES
           | ARABIAN_NIGHTS
           | HOMELANDS
@@ -95,15 +100,15 @@ linked_ref : CHAMPIONED WITH SELF
            | PUT ONTO THE BATTLEFIELD WITH SELF
            ;
 
-/* Special properties, usually led by 'with', 'that', or 'if it has' */
+/* Special properties, usually led by 'with', 'that', or 'if it has' *
 
 // Do we need to remember ref_object?
 has_counters : counter_subset ON ref_object
              ;
 
-share_feature : THAT SHARE A prop_type
-              | WITH THE SAME prop_type
-              ;
+shareFeature : THAT SHARE A prop_type
+             | WITH THE SAME prop_type
+             ;
 
 n_distinct_values : integer DIFFERENT prop_type;
 
@@ -116,3 +121,4 @@ int_prop_with_value : CONVERTED MANA COST comparison
                     | LIFE comparison
                     | POWER comparison
                     | TOUGHNESS comparison;
+*/

@@ -32,7 +32,7 @@ REFBYNAME : 'NAME_' ( 'A'..'Z' | 'a'..'z' | '_' | '\u00c6' | '\u00e6' )+;
 // elsewhere.
 
 MANA_SYM
-    : '{' ( WUBRGC | DIGIT_SYM | SNOW_SYM ) ( '/' WUBRGCP )? '}' ;
+    : '{' ( WUBRGC | NUMBER_SYM | SNOW_SYM ) ( '/' WUBRGCP )? '}' ;
 
 // Appearance in rules text
 PHYREXIA_SYM : '{p}';
@@ -50,7 +50,7 @@ ENERGY_SYM : '{e}';
 // Level up
 LEVEL_SYM : '{level ' ( NUMBER_SYM '-' NUMBER_SYM | NUMBER_SYM '+' ) '}';
 
-NUMBER_SYM : DIGIT_SYM;
+NUMBER_SYM : DIGIT_SYM+;
 
 MDASH : ( '\u2014' | '--' );
 
@@ -66,4 +66,4 @@ fragment WUBRGC : ('w'|'u'|'b'|'r'|'g'|'c');
 
 fragment WUBRGCP : ( WUBRGC | 'p' );
 
-fragment DIGIT_SYM : ('1'..'9' '0'..'9') | ('0'..'9');
+fragment DIGIT_SYM : ('0'..'9');

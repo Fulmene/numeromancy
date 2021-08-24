@@ -30,7 +30,7 @@ options {
 // optional or repeated parts, where LL(1) can't correctly predict which rule
 // to use to parse the next tokens. See the graph output from deps.py.
 // Note further that rules in *this* file are handled as if imported last.
-import Words, events, keywords, costs, subsets, math, properties, counters, zones, players, misc, objects, raw_keywords, macro;
+import Words, math, events, keywordAbilities, subsets, costs, properties, counters, zones, players, misc, keywords, pt, macro;
 
 tokens {
     ADD_COUNTERS,
@@ -73,8 +73,6 @@ tokens {
     ZONE_SET
 }
 
-card_mana_cost : mana;
-
 // Literals used in parsing rules don't have to be declared,
 // but for reference they are:
 // ,:;."'+-*/
@@ -88,6 +86,6 @@ SQUOTE : '\'';
 PLUS_SYM : '+';
 MINUS_SYM : '-';
 STAR_SYM : '*';
-DIV_SYM : '/';
+SLASH : '/';
 LBRACKET : '[';
 RBRACKET : ']';

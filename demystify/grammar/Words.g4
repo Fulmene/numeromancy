@@ -28,12 +28,15 @@ import Symbols;
 
 CUMULATIVE_UPKEEP : 'cumulative upkeep';
 SETTING_IN_MOTION : 'setting in motion';
+
 ARABIAN_NIGHTS : 'arabian nights';
 CITYS_BLESSING : 'city\'s blessing';
 INDESTRUCTIBLE : 'indestructible';
 REDISTRIBUTING : 'redistributing';
 REDISTRIBUTION : 'redistribution';
 SIMULTANEOUSLY : 'simultaneously';
+
+DOUBLE_STRIKE : DOUBLE STRIKE;
 LIVING_WEAPON : 'living weapon';
 PLANESWALKING : 'planeswalking';
 PROLIFERATING : 'proliferating';
@@ -41,6 +44,7 @@ PROLIFERATION : 'proliferation';
 REDISTRIBUTED : 'redistributed';
 SET_IN_MOTION : 'sets in motion'
               | 'set in motion';
+
 ABILITY_WORD : 'council\'s dilemma'
              | 'tempting offer'
              | 'constellation'
@@ -82,6 +86,7 @@ BOOSTER_PACK : 'booster packs'
 CONTINUOUSLY : 'continuously';
 DISTRIBUTING : 'distributing';
 DISTRIBUTION : 'distribution';
+FIRST_STRIKE : FIRST STRIKE;
 HORSEMANSHIP : 'horsemanship';
 INVESTIGATED : 'investigated';
 JUST_BENEATH : 'just beneath';
@@ -100,6 +105,7 @@ REDISTRIBUTE : 'redistributes'
 REGENERATING : 'regenerating';
 REGENERATION : 'regeneration';
 SPLIT_SECOND : 'split second';
+
 ABANDONMENT : 'abandonment';
 ANNIHILATOR : 'annihilator';
 ANTIQUITIES : 'antiquities';
@@ -845,6 +851,7 @@ TRANSFIGURE : 'transfigure';
 TRANSFORMED : 'transformed';
 TYPECYCLING : 'typecycling';
 UNATTACHING : 'unattaching';
+
 ABANDONING : 'abandoning';
 ACTIVATING : 'activating';
 ACTIVATION : 'activations'
@@ -897,6 +904,7 @@ FATESEALED : 'fatesealed';
 GRAVESTORM : 'gravestorm';
 IMPROVISED : 'improvised';
 INTIMIDATE : 'intimidate';
+MANA_VALUE : MANA VALUE;
 MANIFESTED : 'manifested';
 MEDITATION : 'meditation';
 ORIGINALLY : 'originally';
@@ -922,6 +930,7 @@ RESTARTING : 'restarting';
 SACRIFICED : 'sacrificed';
 TRANSMUTED : 'transmuted';
 UNATTACHED : 'unattached';
+
 ABANDONED : 'abandoned';
 ABSORBING : 'absorbing';
 ACTIVATED : 'activated';
@@ -933,6 +942,7 @@ ASSIGNING : 'assigning';
 ATTACHING : 'attaching';
 ATTACKERS : 'attackers';
 ATTACKING : 'attacking';
+AURA_SWAP : AURA SWAP;
 BEGINNING : 'beginning';
 BOLSTERED : 'bolstered';
 COLORLESS : 'colorless';
@@ -1022,6 +1032,7 @@ UNLEASHED : 'unleashed';
 UNTAPPING : 'untapping';
 VANISHING : 'vanishing';
 VIGILANCE : 'vigilance';
+
 ABSORBED : 'absorbed';
 ACCEPTED : 'accepted';
 ACTIVATE : 'activates'
@@ -1094,6 +1105,7 @@ INCREASE : 'increases'
 INSTANCE : 'instances'
          | 'instance';
 LANDWALK : 'landwalk';
+LEVEL_UP : LEVEL UP;
 LIFELINK : 'lifelink';
 LIKEWISE : 'likewise';
 MANIFEST : 'manifests'
@@ -1147,6 +1159,7 @@ UNPAIRED : 'unpaired';
 UNTAPPED : 'untapped';
 VANGUARD : 'vanguards'
          | 'vanguard';
+
 ABANDON : 'abandons'
         | 'abandon';
 ABILITY : 'abilities'
@@ -1323,6 +1336,7 @@ UNSPENT : 'unspent';
 WHETHER : 'whether';
 WINNING : 'winning';
 WITHOUT : 'without';
+
 ABSORB : 'absorbs'
        | 'absorb';
 ACCEPT : 'accepts'
@@ -1505,6 +1519,7 @@ UPKEEP : 'upkeeps'
        | 'upkeep';
 VOTING : 'voting';
 WITHER : 'wither';
+
 ABOVE : 'above';
 ADDED : 'added';
 AFTER : 'after';
@@ -1634,7 +1649,6 @@ SURGE : 'surges'
 TAILS : 'tails';
 THEIR : 'their';
 THERE : 'there';
-THIRD : 'third';
 THOSE : 'those';
 TIMES : 'times';
 TOKEN : 'tokens'
@@ -1662,6 +1676,7 @@ WHOSE : 'whose';
 WORLD : 'world';
 WOULD : 'would';
 WRONG : 'wrong';
+
 ABLE : 'able';
 ALSO : 'also';
 ANTE : 'antes'
@@ -1835,6 +1850,7 @@ YOUR : 'yours'
      | 'your';
 ZONE : 'zones'
      | 'zone';
+
 ADD : 'adds'
     | 'add';
 ALL : 'all';
@@ -1903,6 +1919,7 @@ WIN : 'wins'
 WON : 'won';
 YET : 'yet';
 YOU : 'you';
+
 AS : 'as';
 AT : 'at';
 BE : 'be';
@@ -1924,6 +1941,7 @@ OR : 'or';
 SO : 'so';
 TO : 'to';
 UP : 'up';
+
 A : 'an'
   | 'a';
 I : 'i';

@@ -61,9 +61,9 @@ parser grammar properties;
 
 // Property of cards or objects
 
-property : adjectiveList noun descriptorList
-         | nounList descriptorList
-         ;
+property_ : adjectiveList? noun descriptorList?
+          | nounList descriptorList?
+          ;
 
 // For use parsing a full typeline.
 
@@ -71,12 +71,11 @@ typeline : supertypes? cardTypes ( MDASH subtypes )? ;
 
 // Adjectives
 
-adjective : NON? ( supertype | cardType | subtype | typeSpec | color | colorSpec | status ) ;
+adjective : NON? ( supertype | cardType | subtype | objectType | typeSpec | color | colorSpec | status ) ;
 
 adjectiveList : adjective+
               | adjective ( COMMA adjective )+
               | adjective ( ( COMMA adjective )+ COMMA )? conj adjective
-              |
               ;
 
 // Nouns
@@ -87,14 +86,16 @@ nounList : noun ( ( COMMA noun )+ COMMA )? conj noun ;
 
 // Descriptors
 
+descriptorList : descriptor ;
+
 descriptor : nameDescriptor
            | playerDescriptor
            | zoneDescriptor
            | keywordDescriptor
            | THAT is_
-             ( desc_status
+             ( statusDescriptor
              | BOTH adjective AND adjective
-             | NOT ( desc_status | in_zones | ON spec_zone )
+             //| NOT ( desc_status | in_zones | ON spec_zone )
              )
            ;
 
