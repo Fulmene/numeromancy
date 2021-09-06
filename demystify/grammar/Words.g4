@@ -1769,6 +1769,8 @@ MANA : 'mana';
 MANY : 'many';
 MELD : 'melds'
      | 'meld';
+MILL : 'mills'
+     | 'mill';
 MINE : 'mine';
 MODE : 'modes'
      | 'mode';
