@@ -86,3 +86,6 @@ class DemystifyDataVisitor(DemystifyVisitor):
             return Ability("triggered", effect, trigger=trigger)
         else:
             return Ability("static", effect)
+
+
+demystify_visitor = DemystifyDataVisitor()
