@@ -45,70 +45,30 @@ parser grammar keywordAbilities;
 
 keywordLine : keywordAbility ( ( COMMA | SEMICOLON ) keywordAbility )* ;
 
-keywordAbility : keywordAbilityNoArgs
-               | keywordAbilityInt
-               | keywordAbilityCost
-               | keywordAbilityIntCost
-               | keywordAbilityQuality
-               | keywordAbilityFrom
-               | keywordAbilityQualityCost
+keywordAbility : kw=keywordNoArgs                               # keywordAbilityIntCost
+               | kw=keywordInt keywordArgInt                    # keywordAbilityIntCost
+               | kw=keywordCost keywordArgCost                  # keywordAbilityIntCost
+               | kw=keywordIntCost keywordArgInt keywordArgCost # keywordAbilityIntCost
+               | keywordAbilityFrom                             # keywordAbilityOther
+               | keywordAbilityQuality                          # keywordAbilityOther
+               | keywordAbilityQualityCost                      # keywordAbilityOther
                ;
-
-keywordAbilityNoArgs : keywordNoArgs;
-
-keywordAbilityInt : keywordInt keywordArgInt;
-
-keywordAbilityCost : keywordCost keywordArgCost;
-
-keywordAbilityIntCost : keywordIntCost keywordArgInt keywordArgCost;
-
-keywordAbilityQuality : keywordAbilityEnchant
-                      | keywordAbilityHexproof
-                      | keywordAbilityProtection
-                      | keywordAbilityAffinity
-                      | keywordAbilityBandsWithOther
-                      | keywordAbilityChampion
-                      | keywordAbilityLandwalk
-                      | keywordAbilityOffering
-                      ;
 
 keywordAbilityFrom : keywordFrom FROM keywordArgFrom ( ( ( COMMA FROM keywordArgFrom )+ COMMA )? AND FROM keywordArgFrom)? ;
 
-keywordAbilityQualityCost : keywordAbilityEquipQuality
-                          | keywordAbilitySplice
-                          | keywordAbilityTypecyling
+keywordAbilityQuality : kw=ENCHANT keywordArgQuality
+                      | kw=AFFINITY FOR keywordArgQuality
+                      | kw=BAND WITH OTHER keywordArgQuality
+                      | kw=CHAMPION A keywordArgQuality
+                      | keywordArgQuality kw=WALK
+                      | keywordArgQuality kw=LANDWALK
+                      | keywordArgQuality kw=OFFERING
+                      ;
+
+keywordAbilityQualityCost : kw=EQUIP keywordArgQuality keywordArgCost
+                          | kw=SPLICE ONTO keywordArgQuality keywordArgCost
+                          | keywordArgQuality kw=CYCLING keywordArgCost
                           ;
-
-/* Special case keywords. */
-
-keywordAbilityEnchant : ENCHANT keywordArgQuality ;
-
-keywordAbilityHexproof : HEXPROOF
-                         ( FROM keywordArgQuality
-                             ( ( COMMA ( FROM keywordArgQuality COMMA )+ )?
-                                 AND FROM keywordArgQuality )? )? ;
-
-keywordAbilityProtection : PROTECTION FROM keywordArgQuality
-                           ( ( COMMA ( FROM keywordArgQuality COMMA )+ )?
-                               AND FROM keywordArgQuality )? ;
-
-keywordAbilityAffinity : AFFINITY FOR keywordArgQuality ;
-
-keywordAbilityBandsWithOther : BAND WITH OTHER keywordArgQuality ;
-
-keywordAbilityChampion : CHAMPION A keywordArgQuality ;
-
-keywordAbilityLandwalk : keywordArgQuality WALK
-                       | keywordArgQuality LANDWALK
-                       ;
-
-keywordAbilityOffering : keywordArgQuality OFFERING ;
-
-keywordAbilityEquipQuality : EQUIP keywordArgQuality keywordArgCost ;
-
-keywordAbilitySplice : SPLICE ONTO keywordArgQuality keywordArgCost ;
-
-keywordAbilityTypecyling : keywordArgQuality CYCLING keywordArgCost ;
 
 /* Argument rules. */
 

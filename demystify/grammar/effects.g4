@@ -18,20 +18,25 @@ parser grammar effects;
 // You should have received a copy of the GNU Lesser General Public License
 // along with Demystify.  If not, see <http://www.gnu.org/licenses/>.
 
+ability : spellEffect                  // Static ability
+        | cost COLON spellEffect       // Activated ability
+        | trigger COMMA spellEffect    // Triggered ability
+        ;
+
 /* Spell effects */
 
-spell_effect : sentence+;
+spellEffect : sentence+;
 
-sentence : atomic_effect PERIOD;
+sentence : atomicEffect PERIOD;
 
-atomic_effect : game_action duration? full_condition? ;
-              // | duration COMMA game_action -> ^(game_action duration);
+atomicEffect : gameAction duration? fullCondition? ;
+              // | duration COMMA gameAction -> ^(gameAction duration);
 
-full_condition : IF subsetList condition
+fullCondition : IF subsetList condition
                | UNLESS subsetList condition
                ;
 
-game_action : ( subsetList MAY? )? keywordAction ;
+gameAction : ( subsetList MAY? )? keywordAction ;
             //| game_object_action
 
 //player_action : ( playerSubset MAY? )? player_keywordAction ;
@@ -81,7 +86,7 @@ keywordAction : (ATTACH|UNATTACH) subsetList TO subsetList
                | GAIN CONTROL OF subsetList
                | (GAIN|LOSE) number LIFE
                // TODO | GAIN ability
-               | GET pt
+               | GET ptMod
                | PUT counterSubset ON subsetList
                | PAY mana
                | ADD mana
@@ -96,7 +101,7 @@ keywordAction : (ATTACH|UNATTACH) subsetList TO subsetList
  // effect with condition
 
 atomicEffect : subsetList DEAL number DAMAGE TO subsetList
-             | game_action
+             | gameAction
              | playerSubset player_action
              | player_action -> ^(YOU player_action)
              | staticAbility duration?
@@ -119,11 +124,11 @@ player_action : SACRIFICE subsetList
              | SEARCH zone_subset FOR subsetList
              | SCRY number
              | MILL number CARD
-             | HAVE game_action
+             | HAVE gameAction
              ;
 
 // Other game actions
-game_action : DESTROY subsetList
+gameAction : DESTROY subsetList
            | EXILE subsetList
            | TAP subsetList
            | UNTAP subsetList
@@ -151,6 +156,6 @@ permanentMod : subsetList (GET pt) AND ((GAIN|HAVE) keywords) // TODO change thi
              //| subsetList DO NOT UNTAP DURING player_poss UNTAP STEP
              ;
 
-replacementEffect : IF subsetList WOULD game_action COMMA game_action INSTEAD PERIOD
+replacementEffect : IF subsetList WOULD gameAction COMMA gameAction INSTEAD PERIOD
                   ;
 */

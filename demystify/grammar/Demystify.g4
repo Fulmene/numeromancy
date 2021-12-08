@@ -73,6 +73,16 @@ tokens {
     ZONE_SET
 }
 
+cardManaCost : mana;
+
+typeline : supertype* cardType+ ( MDASH subtype+ )? ;
+
+rulesText : line+ ;
+
+line : keywordLine
+     | ability
+     ;
+
 // Literals used in parsing rules don't have to be declared,
 // but for reference they are:
 // ,:;."'+-*/

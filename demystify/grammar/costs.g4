@@ -20,8 +20,6 @@ parser grammar costs;
 
 /* Costs and payments */
 
-cardManaCost : mana;
-
 // TODO: "as an additional cost" items: "you may", "choose" type/number.
 
 // The OR case here is where the player has the option to choose
@@ -73,7 +71,9 @@ loyaltyCost : PLUS_SYM? ( NUMBER_SYM | VAR_SYM )
 
 // Mana symbols and mana costs
 
-mana : ( MANA_SYM | VAR_MANA_SYM )+ ;
+mana : manaSymbol+ ;
+
+manaSymbol : MANA_SYM | VAR_MANA_SYM ;
 
 // TODO these are just game actions
 

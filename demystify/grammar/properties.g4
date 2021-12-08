@@ -65,10 +65,6 @@ property_ : adjectiveList? noun descriptorList?
           | nounList descriptorList?
           ;
 
-// For use parsing a full typeline.
-
-typeline : supertypes? cardTypes ( MDASH subtypes )? ;
-
 // Adjectives
 
 adjective : NON? ( supertype | cardType | subtype | objectType | typeSpec | color | colorSpec | status ) ;
@@ -134,16 +130,13 @@ status : TAPPED
 color : WHITE | BLUE | BLACK | RED | GREEN ;
 colorSpec : COLORED | COLORLESS | MONOCOLORED | MULTICOLORED ;
 
-supertypes : supertype+ ;
 supertype : BASIC | LEGENDARY | SNOW | WORLD | ONGOING ;
 
-cardTypes : cardType+ ;
 cardType : permanentType | spellType | tribalType ;
 permanentType : CREATURE | ARTIFACT | ENCHANTMENT | LAND | PLANESWALKER ;
 spellType : INSTANT | SORCERY ;
 tribalType : TRIBAL ;
 
-subtypes : subtype+ ;
 subtype : OBJ_SUBTYPE
         | AURA
         | BOLAS
