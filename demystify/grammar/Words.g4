@@ -36,7 +36,7 @@ REDISTRIBUTING : 'redistributing';
 REDISTRIBUTION : 'redistribution';
 SIMULTANEOUSLY : 'simultaneously';
 
-DOUBLE_STRIKE : DOUBLE STRIKE;
+DOUBLE_STRIKE : DOUBLE WS STRIKE;
 LIVING_WEAPON : 'living weapon';
 PLANESWALKING : 'planeswalking';
 PROLIFERATING : 'proliferating';
@@ -86,7 +86,7 @@ BOOSTER_PACK : 'booster packs'
 CONTINUOUSLY : 'continuously';
 DISTRIBUTING : 'distributing';
 DISTRIBUTION : 'distribution';
-FIRST_STRIKE : FIRST STRIKE;
+FIRST_STRIKE : FIRST WS STRIKE;
 HORSEMANSHIP : 'horsemanship';
 INVESTIGATED : 'investigated';
 JUST_BENEATH : 'just beneath';
@@ -904,7 +904,7 @@ FATESEALED : 'fatesealed';
 GRAVESTORM : 'gravestorm';
 IMPROVISED : 'improvised';
 INTIMIDATE : 'intimidate';
-MANA_VALUE : MANA VALUE;
+MANA_VALUE : MANA WS VALUE;
 MANIFESTED : 'manifested';
 MEDITATION : 'meditation';
 ORIGINALLY : 'originally';
@@ -942,7 +942,7 @@ ASSIGNING : 'assigning';
 ATTACHING : 'attaching';
 ATTACKERS : 'attackers';
 ATTACKING : 'attacking';
-AURA_SWAP : AURA SWAP;
+AURA_SWAP : AURA WS SWAP;
 BEGINNING : 'beginning';
 BOLSTERED : 'bolstered';
 COLORLESS : 'colorless';
@@ -1105,7 +1105,7 @@ INCREASE : 'increases'
 INSTANCE : 'instances'
          | 'instance';
 LANDWALK : 'landwalk';
-LEVEL_UP : LEVEL UP;
+LEVEL_UP : LEVEL WS UP;
 LIFELINK : 'lifelink';
 LIKEWISE : 'likewise';
 MANIFEST : 'manifests'
