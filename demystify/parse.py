@@ -29,6 +29,13 @@ def parse(rule: str, text: str):
         parser = DemystifyParser(stream)
         return getattr(parser, rule)()
 
+def print_lex(text: str):
+    lexer = DemystifyLexer(InputStream(text))
+    stream = CommonTokenStream(lexer)
+    stream.fill()
+    for token in stream.tokens:
+        print('%s: %s' % (token.text, DemystifyLexer.symbolicNames[token.type]))
+
 def parse_ability(text: str) -> Ability:
     return parse('ability', text)
 
