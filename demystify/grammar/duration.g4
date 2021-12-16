@@ -1,13 +1,13 @@
 parser grammar duration;
 
 // TODO add more duration
-duration : UNTIL durationEndEvent
+duration : UNTIL durationEnd
          | FOR AS LONG AS durationSpan
          ;
 
-durationEndEvent : END OF TURN
-                 | SELF LEAVE THE BATTLEFIELD
-                 ;
+durationEnd : END OF TURN
+            | refObject LEAVE THE BATTLEFIELD
+            ;
 
 durationSpan : refObject REMAIN EXILED
              ;
