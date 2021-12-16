@@ -1,10 +1,10 @@
-from typing import Literal, NamedTuple, Union
+from typing import Literal, NamedTuple
 
 Color = Literal["white", "blue", "black", "red", "green"]
 
 class ManaSymbol(NamedTuple):
     symbol: str
-    hybrid_symbol: Union[str, None] = None
+    hybrid_symbol: str|None = None
 
     @classmethod
     def from_str(cls, symbol_str: str):
@@ -39,10 +39,10 @@ class Typeline(NamedTuple):
 
 class KeywordAbility(NamedTuple):
     keyword: str
-    arg_int: Union[str, None] = None
-    arg_cost: Union[str, None] = None
-    arg_quality: Union[str, None] = None
-    arg_from: Union[list[str], None] = None
+    arg_int: str|None = None
+    arg_cost: str|None = None
+    arg_quality: str|None = None
+    arg_from: list[str]|None = None
 
 class Subset(NamedTuple):
     noun: str
@@ -67,12 +67,12 @@ class AtomicEffect(NamedTuple):
 class Ability(NamedTuple):
     ability_type: Literal["static", "triggered", "activated"]
     effect: list[Sentence]
-    cost: list[Union[Mana, Sentence]] = []
-    trigger: Union[Sentence, None] = None
-    keyword: Union[str, None] = None
+    cost: list[Mana|Sentence] = []
+    trigger: Sentence|None = None
+    keyword: str|None = None
 
 KeywordLine = list[KeywordAbility]
-Line = Union[KeywordLine, Ability]
+Line = KeywordLine|Ability
 RulesText = list[Line]
 
 class ParsedCard(NamedTuple):
