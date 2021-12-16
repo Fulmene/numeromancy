@@ -52,7 +52,17 @@ class Subset(NamedTuple):
 class Sentence(NamedTuple):
     subj: str # Noun
     verb: str # Verb
-    obj:  str # Noun
+    direct_obj: str | None = None # Noun
+    indirect_obj: str | None = None
+
+class Duration(NamedTuple):
+    duration_end: str | None = None
+    duration_span: str | None = None
+
+class AtomicEffect(NamedTuple):
+    effect: Sentence
+    duration: Duration | None = None
+    condition: Sentence | None = None
 
 class Ability(NamedTuple):
     ability_type: Literal["static", "triggered", "activated"]
