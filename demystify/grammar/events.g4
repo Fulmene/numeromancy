@@ -26,7 +26,7 @@ triggers : trigger ( OR trigger )? triggerDescriptor?;
 // of the event and condition rules. It's a bad idea to leave it unfactored
 // since ANTLR will run itself out of memory (presumably trying to generate
 // lookahead tables).
-trigger : subsetList
+trigger : subset
           ( event ( OR event )?
           | condition
           )
@@ -86,7 +86,7 @@ state_change : BECOME ( BLOCKED BY subset
                       | THE TARGET OF subset
                       | UNATTACHED FROM subset
                       )
-             | ATTACK ( subsetList | ALONE )? ( AND IS NOT BLOCKED )?
+             | ATTACK ( subset | ALONE )? ( AND IS NOT BLOCKED )?
              | BLOCK ( subset | ALONE )?
              | is_ TURNED status
              ;
@@ -113,7 +113,7 @@ counter_spell : COUNTER subset ;
 cycle_card : CYCLE subset
            | CYCLE OR DISCARD subset ;
 
-deal_damage : DEAL number? damage ( TO subsetList )? ;
+deal_damage : DEAL number? damage ( TO subset )? ;
 
 dealt_damage : is_ DEALT number? damage ( BY subset )? ;
 
@@ -176,7 +176,7 @@ control_stuff : CONTROL subset ;
 
 is_somewhere : is_ ( IN | ON ) ;
 
-// Some triggers do not start with subsetList, eg. "there are",
+// Some triggers do not start with subset, eg. "there are",
 // "a counter is" or "the chosen color is".
 nonSubsetEvent : counter_changed
                  | damage_dealt
@@ -194,11 +194,11 @@ counter_changed : ( THE ordinalWord | number )
                   | PUT ON subset
                   );
 
-damage_dealt : number? damage is_ DEALT TO subsetList ;
+damage_dealt : number? damage is_ DEALT TO subset ;
 
 /* Non-subset conditions. */
 
-there_are : THERE is_ number subsetList ;
+there_are : THERE is_ number subset ;
 
 there_counters : THERE is_ counterSubset ON subset ;
 

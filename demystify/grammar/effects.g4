@@ -30,74 +30,75 @@ spellEffect : (atomicEffect PERIOD)+;
 atomicEffect : gameAction duration? fullCondition? ;
               // | duration COMMA gameAction -> ^(gameAction duration);
 
-fullCondition : IF subsetList condition
-               | UNLESS subsetList condition
+fullCondition : IF subset condition
+               | UNLESS subset condition
                ;
 
-gameAction : ( subsetList MAY? )? keywordAction ;
+gameAction : ( subset MAY? )? keywordAction ;
             //| game_object_action
 
 //player_action : ( playerSubset MAY? )? player_keywordAction ;
-//game_object_action : subsetList game_object_keywordAction ;
+//game_object_action : subset game_object_keywordAction ;
 
-keywordAction : verb=(ATTACH|UNATTACH) subsetList conj=TO subsetList                        #keywordActionTwoSubsets
-              | verb=CAST subsetList                                                        #keywordActionSubset
-              | verb=COUNTER subsetList                                                     #keywordActionSubset
+keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                               #keywordActionTwoSubsets
+              | verb=CAST subset                                                        #keywordActionSubset
+              | verb=COUNTER subset                                                     #keywordActionSubset
               // TODO | CREATE token
-              | verb=DISCARD subsetList                                                     #keywordActionSubset
-              | verb=DRAW number CARD                                                       #keywordActionNumber
-              | verb=DEAL number DAMAGE TO subsetList                                       #keywordActionDamage
-              | verb=DESTROY subsetList                                                     #keywordActionSubset
+              | verb=DISCARD subset                                                     #keywordActionSubset
+              | verb=DRAW number CARD                                                   #keywordActionNumber
+              | verb=DEAL number DAMAGE TO subset                                       #keywordActionDamage
+              | verb=DESTROY subset                                                     #keywordActionSubset
               // TODO | DOUBLE
               // TODO | EXCHANGE
-              | verb=EXILE subsetList                                                       #keywordActionSubset
-              | verb=FIGHT subsetList                                                       #keywordActionSubset
-              | verb=MILL number CARD                                                       #keywordActionNumber
-              | verb=PLAY subsetList                                                        #keywordActionSubset
-              | verb=REGENERATE subsetList                                                  #keywordActionSubset
-              | verb=REVEAL subsetList                                                      #keywordActionSubset
-              | verb=SACRIFICE subsetList                                                   #keywordActionSubset
-              | verb=SCRY number                                                            #keywordActionNumber
+              | verb=EXILE subset                                                       #keywordActionSubset
+              | verb=FIGHT subset                                                       #keywordActionSubset
+              | verb=MILL number CARD                                                   #keywordActionNumber
+              | verb=PLAY subset                                                        #keywordActionSubset
+              | verb=REGENERATE subset                                                  #keywordActionSubset
+              | verb=REVEAL subset                                                      #keywordActionSubset
+              | verb=SACRIFICE subset                                                   #keywordActionSubset
+              | verb=SCRY number                                                        #keywordActionNumber
               // TODO | SEARCH
               // TODO | SHUFFLE
-              | verb=(TAP|UNTAP) subsetList                                                 #keywordActionSubset
-              | verb=FATESEAL number                                                        #keywordActionNumber
-              | verb=CLASH WITH subsetList                                                  #keywordActionSubset
-              | verb=PROLIFERATE                                                            #keywordActionIntransitive
-              | verb=TRANSFORM subsetList                                                   #keywordActionSubset
-              | verb=DETAIN subsetList                                                      #keywordActionSubset
-              | verb=POPULATE                                                               #keywordActionIntransitive
-              | verb=MONSTROSITY number                                                     #keywordActionNumber
-              | verb=BOLSTER number                                                         #keywordActionNumber
-              | verb=MANIFEST subsetList                                                    #keywordActionSubset
-              | verb=SUPPORT number                                                         #keywordActionNumber
-              | verb=INVESTIGATE                                                            #keywordActionIntransitive
-              | verb=MELD THEM INTO name=REFBYNAME                                          #keywordActionName
-              | verb=GOAD subsetList                                                        #keywordActionSubset
-              | verb=EXERT subsetList                                                       #keywordActionSubset
-              | verb=EXPLORE                                                                #keywordActionIntransitive
-              | verb=SURVEIL number                                                         #keywordActionNumber
-              | verb=ADAPT number                                                           #keywordActionNumber
-              | verb=AMASS number                                                           #keywordActionNumber
-              | verb=LEARN                                                                  #keywordActionIntransitive
+              | verb=(TAP|UNTAP) subset                                                 #keywordActionSubset
+              | verb=FATESEAL number                                                    #keywordActionNumber
+              | verb=CLASH WITH subset                                                  #keywordActionSubset
+              | verb=PROLIFERATE                                                        #keywordActionIntransitive
+              | verb=TRANSFORM subset                                                   #keywordActionSubset
+              | verb=DETAIN subset                                                      #keywordActionSubset
+              | verb=POPULATE                                                           #keywordActionIntransitive
+              | verb=MONSTROSITY number                                                 #keywordActionNumber
+              | verb=BOLSTER number                                                     #keywordActionNumber
+              | verb=MANIFEST subset                                                    #keywordActionSubset
+              | verb=SUPPORT number                                                     #keywordActionNumber
+              | verb=INVESTIGATE                                                        #keywordActionIntransitive
+              | verb=MELD THEM INTO name=REFBYNAME                                      #keywordActionName
+              | verb=GOAD subset                                                        #keywordActionSubset
+              | verb=EXERT subset                                                       #keywordActionSubset
+              | verb=EXPLORE                                                            #keywordActionIntransitive
+              | verb=SURVEIL number                                                     #keywordActionNumber
+              | verb=ADAPT number                                                       #keywordActionNumber
+              | verb=AMASS number                                                       #keywordActionNumber
+              | verb=LEARN                                                              #keywordActionIntransitive
 
-              | GAIN verb=CONTROL OF subsetList                                             #keywordActionSubset
-              | verb=(GAIN|LOSE) number LIFE                                                #keywordActionNumber
+              | GAIN verb=CONTROL OF subset                                             #keywordActionSubset
+              | verb=(GAIN|LOSE) number LIFE                                            #keywordActionNumber
               // TODO | GAIN ability
-              | verb=GET ptMod                                                              #keywordActionPT
-              | verb=PUT counterSubset ON subsetList                                        #keywordActionPutCounter
-              | verb=PAY mana                                                               #keywordActionMana
-              | verb=ADD mana                                                               #keywordActionMana
-              | verb=(IS|BECOME) subsetList (IN ADDITION TO refObjPoss OTHER propertyType)? #keywordActionBecome
-              | verb=CHOOSE subsetList conj=FROM subsetList                                 #keywordActionTwoSubsets
-              // TODO | RETURN subsetList TO 
-              | verb=(WIN|LOSE) THE GAME                                                    #keywordActionIntransitive
+              | verb=GET ptMod                                                          #keywordActionPT
+              | verb=PUT counterSubset ON subset                                        #keywordActionPutCounter
+              | verb=PAY mana                                                           #keywordActionMana
+              | verb=ADD mana                                                           #keywordActionMana
+              | verb=(IS|BECOME) NOT? subset
+                    (IN ADDITION TO refObjPoss OTHER propertyType)?                     #keywordActionBecome
+              | verb=CHOOSE subset c=FROM subset                                        #keywordActionTwoSubsets
+              // TODO | RETURN subset TO 
+              | verb=(WIN|LOSE) THE GAME                                                #keywordActionIntransitive
               ;
 
 /*
  // effect with condition
 
-atomicEffect : subsetList DEAL number DAMAGE TO subsetList
+atomicEffect : subset DEAL number DAMAGE TO subset
              | gameAction
              | playerSubset player_action
              | player_action -> ^(YOU player_action)
@@ -105,33 +106,33 @@ atomicEffect : subsetList DEAL number DAMAGE TO subsetList
              ;
 
 // Keyword actions that require a playerSubset as a subject. If the playerSubset is omitted, the default playerSubset is YOU.
-player_action : SACRIFICE subsetList
+player_action : SACRIFICE subset
              | GAIN number LIFE
              //| CREATE token
-             | RETURN subsetList (FROM zone_subset)? TO player_poss HAND // possession?
-             | PUT counterSubset ON subsetList
-             | SHUFFLE subsetList INTO zone_subset
+             | RETURN subset (FROM zone_subset)? TO player_poss HAND // possession?
+             | PUT counterSubset ON subset
+             | SHUFFLE subset INTO zone_subset
              // | GET A EMBLEM WITH '"' rulesText '"'
              | PAY mana
-             | PUT subsetList (FROM zone_subset)? (INTO|ONTO|ON) zone_subset
+             | PUT subset (FROM zone_subset)? (INTO|ONTO|ON) zone_subset
              | ADD mana
              | DRAW number CARD
              | DISCARD number CARD
-             | GAIN CONTROL OF subsetList
-             | SEARCH zone_subset FOR subsetList
+             | GAIN CONTROL OF subset
+             | SEARCH zone_subset FOR subset
              | SCRY number
              | MILL number CARD
              | HAVE gameAction
              ;
 
 // Other game actions
-gameAction : DESTROY subsetList
-           | EXILE subsetList
-           | TAP subsetList
-           | UNTAP subsetList
-           | COUNTER subsetList
+gameAction : DESTROY subset
+           | EXILE subset
+           | TAP subset
+           | UNTAP subset
+           | COUNTER subset
            | END THE TURN
-           | subsetList BECOME subsetList // or become something else
+           | subset BECOME subset // or become something else
            | subset FIGHT subset
            | subset PHASE OUT
            ;
@@ -143,16 +144,16 @@ staticAbility : condition (
                 )
               ;
 
-spellMod : AS A ADDITIONAL COST TO CAST subsetList COMMA cost PERIOD // -> COST_ADDITIONAL subsetList cost
-         //| subsetList COST cost (MORE|LESS) TO CAST (FOR EACH number)? PERIOD -> COST_ADD|COST_REDUCTION subsetList cost number
-         //| YOU MAY PAY cost RATHER THAN PAY subsetList MANA COST PERIOD -> COST_ALTERNATE subsetList cost
+spellMod : AS A ADDITIONAL COST TO CAST subset COMMA cost PERIOD // -> COST_ADDITIONAL subset cost
+         //| subset COST cost (MORE|LESS) TO CAST (FOR EACH number)? PERIOD -> COST_ADD|COST_REDUCTION subset cost number
+         //| YOU MAY PAY cost RATHER THAN PAY subset MANA COST PERIOD -> COST_ALTERNATE subset cost
          ;
 
-permanentMod : subsetList (GET pt) AND ((GAIN|HAVE) keywords) // TODO change this to ability
-             //| subsetList CANT actions
-             //| subsetList DO NOT UNTAP DURING player_poss UNTAP STEP
+permanentMod : subset (GET pt) AND ((GAIN|HAVE) keywords) // TODO change this to ability
+             //| subset CANT actions
+             //| subset DO NOT UNTAP DURING player_poss UNTAP STEP
              ;
 
-replacementEffect : IF subsetList WOULD gameAction COMMA gameAction INSTEAD PERIOD
+replacementEffect : IF subset WOULD gameAction COMMA gameAction INSTEAD PERIOD
                   ;
 */

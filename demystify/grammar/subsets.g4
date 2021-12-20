@@ -20,13 +20,10 @@ parser grammar subsets;
 
 /* Rules for describing subsets of objects. */
 
-subsetList : subset ( ( COMMA ( subset COMMA )+ )? conj subset )? ;
-
-subset : objectSubset
-       | playerSubset
+subset : quantity? TARGET? propertyList descriptor?
+       | ANY TARGET
+       | refObject
        ;
-
-objectSubset : quantity property_ ;
 
 /*
 subset : number mini_sub ( ( COMMA ( mini_sub COMMA )+ )? conj mini_sub )?

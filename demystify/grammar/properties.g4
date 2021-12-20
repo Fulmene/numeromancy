@@ -61,17 +61,23 @@ parser grammar properties;
 
 // Property of cards or objects
 
-property_ : adjectiveList? noun descriptorList?
-          | nounList descriptorList?
+propertyList : property_ ( ( ( COMMA property_ )+ COMMA)? conj property_)? ;
+
+property_ : objectProperty
+          | playerProperty
           ;
+
+objectProperty : adjectiveList? noun
+               | noun THAT is_ adjectiveList
+               ;
 
 // Adjectives
 
 adjective : NON? ( supertype | cardType | subtype | objectType | typeSpec | color | colorSpec | status ) ;
 
-adjectiveList : adjective+
+adjectiveList : adjective ( ( COMMA adjective )+ COMMA )? conj adjective
               | adjective ( COMMA adjective )+
-              | adjective ( ( COMMA adjective )+ COMMA )? conj adjective
+              | adjective+?
               ;
 
 // Nouns

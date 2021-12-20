@@ -92,13 +92,13 @@ class DemystifyDataVisitor(DemystifyVisitor):
 
     def visitAtomicEffect(self, ctx) -> AtomicEffect:
         game_action = self.visit(ctx.gameAction())
-        duration = self.visit(ctx.duration())
-        condition = self.visit(ctx.fullCondition())
+        duration = self.visit(ctx.duration()) if ctx.duration() is not None else None
+        condition = self.visit(ctx.fullCondition()) if ctx.duration() is not None else None
         return AtomicEffect(game_action, duration=duration, condition=condition)
 
     def visitGameAction(self, ctx) -> Sentence:
-        if ctx.subsetList() is not None:
-            subj = self.visit(ctx.subsetList())
+        if ctx.subset() is not None:
+            subj = self.visit(ctx.subset())
         else:
             subj = "you"
         action, dir_obj, ind_obj = self.visit(ctx.keywordAction())
@@ -108,20 +108,20 @@ class DemystifyDataVisitor(DemystifyVisitor):
         return (ctx.verb.text, None, None)
 
     def visitKeywordActionSubset(self, ctx) -> Tuple[str, str, None]:
-        return (ctx.verb.text, self.visit(ctx.subsetList()), None)
+        return (ctx.verb.text, self.visit(ctx.subset()), None)
 
     def visitKeywordActionNumber(self, ctx) -> Tuple[str, None, str]:
         return (ctx.verb.text, None, self.visit(ctx.number()))
 
     def visitKeywordActionDamage(self, ctx) -> Tuple[str, str, str]:
-        return (ctx.verb.text, self.visit(ctx.subsetList()), self.visit(ctx.number()))
+        return (ctx.verb.text, self.visit(ctx.subset()), self.visit(ctx.number()))
 
     def visitKeywordActionTwoSubsets(self, ctx) -> Tuple[str, str, str]:
-        subsetList = ctx.subsetList()
-        if ctx.conj.text == 'from':
-            return (ctx.verb.text, self.visit(subsetList[0]), self.visit(subsetList[1]))
+        subset = ctx.subset()
+        if ctx.c.text == 'from':
+            return (ctx.verb.text, self.visit(subset[0]), self.visit(subset[1]))
         else:
-            return (ctx.verb.text, self.visit(subsetList[1]), self.visit(subsetList[0]))
+            return (ctx.verb.text, self.visit(subset[1]), self.visit(subset[0]))
 
     def visitKeywordActionMana(self, ctx) -> Tuple[str, None, str]:
         return (ctx.verb.text, None, self.visit(ctx.mana()))
@@ -133,11 +133,11 @@ class DemystifyDataVisitor(DemystifyVisitor):
         return (ctx.verb.text, None, ctx.name.text)
 
     def visitKeywordActionPutCounter(self, ctx) -> Tuple[str, str, str]:
-        return (ctx.verb.text, self.visit(ctx.subsetList()), self.visit(ctx.counterSubset()))
+        return (ctx.verb.text, self.visit(ctx.subset()), self.visit(ctx.counterSubset()))
 
     def visitKeywordActionBecome(self, ctx) -> Tuple[str, str, str|None]:
         # TODO in addition to
-        return (ctx.verb.text, self.visit(ctx.subsetList()), None)
+        return (ctx.verb.text, self.visit(ctx.subset()), None)
 
     def visitDurationEnd(self, ctx) -> Duration:
         return Duration(duration_end=ctx.getText())

@@ -27,6 +27,10 @@ playerSubset : ( quantity OF )? playerPoss ( OPPONENT )
              | refPlayer
              ;
 
+playerProperty : playerPoss? player
+               | refPlayer
+               ;
+
 playerPoss : refPlayerPoss ( player poss )? ;
 
 refPlayerPoss : THEIR

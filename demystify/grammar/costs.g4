@@ -77,11 +77,11 @@ manaSymbol : MANA_SYM | VAR_MANA_SYM ;
 
 // TODO these are just game actions
 
-discard : DISCARD subsetList ( AT RANDOM )? ;
+discard : DISCARD subset ( AT RANDOM )? ;
 
-exile : EXILE subsetList ;
+exile : EXILE subset ;
 
-move_cards : ( PUT | RETURN ) subsetList ( TO | ON | INTO ) zoneSubset ;
+move_cards : ( PUT | RETURN ) subset ( TO | ON | INTO ) zoneSubset ;
 
 pay_energy : PAY ( ANY AMOUNT OF ENERGY_SYM
                  //| A AMOUNT OF ENERGY_SYM EQUAL TO magic_number
@@ -92,16 +92,16 @@ pay_energy : PAY ( ANY AMOUNT OF ENERGY_SYM
 
 pay_mana_cost : PAY refObjPoss MANA COST ;
 
-put_counters : PUT counterSubset ON subsetList ;
+put_counters : PUT counterSubset ON subset ;
 
-remove_counters : REMOVE counterSubset FROM subsetList ;
+remove_counters : REMOVE counterSubset FROM subset ;
 
-reveal : REVEAL subsetList ;
+reveal : REVEAL subset ;
 
-sacrifice : SACRIFICE subsetList ;
+sacrifice : SACRIFICE subset ;
 
-tap : TAP subsetList ;
+tap : TAP subset ;
 
-unattach : UNATTACH subsetList ;
+unattach : UNATTACH subset ;
 
-untap : UNTAP subsetList ;
+untap : UNTAP subset ;
