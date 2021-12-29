@@ -25,7 +25,9 @@ ability : spellEffect                  // Static ability
 
 /* Spell effects */
 
-spellEffect : (atomicEffect PERIOD)+;
+spellEffect : sentence+;
+
+sentence : atomicEffect ( ( COMMA atomicEffect )* COMMA (THEN|conj) atomicEffect )? PERIOD;
 
 atomicEffect : gameAction duration? fullCondition? ;
               // | duration COMMA gameAction -> ^(gameAction duration);
@@ -89,7 +91,7 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
               | verb=PAY mana                                                           #keywordActionMana
               | verb=ADD mana                                                           #keywordActionMana
               | verb=(IS|BECOME) NOT? subset
-                    (IN ADDITION TO refObjPoss OTHER propertyType)?                     #keywordActionBecome
+                     (IN ADDITION TO refObjPoss OTHER propertyType)?                    #keywordActionBecome
               | verb=CHOOSE subset c=FROM subset                                        #keywordActionTwoSubsets
               // TODO | RETURN subset TO 
               | verb=(WIN|LOSE) THE GAME                                                #keywordActionIntransitive

@@ -61,7 +61,7 @@ parser grammar properties;
 
 // Property of cards or objects
 
-propertyList : property_ ( ( ( COMMA property_ )+ COMMA)? conj property_)? ;
+propertyList : property_ ( ( ( COMMA property_ )+? COMMA)? conj property_)? ;
 
 property_ : objectProperty
           | playerProperty
@@ -90,27 +90,46 @@ nounList : noun ( ( COMMA noun )+ COMMA )? conj noun ;
 
 descriptorList : descriptor ;
 
-descriptor : nameDescriptor
-           | playerDescriptor
-           | zoneDescriptor
-           | keywordDescriptor
-           | THAT is_
-             ( statusDescriptor
-             | BOTH adjective AND adjective
-             //| NOT ( desc_status | in_zones | ON spec_zone )
-             )
+descriptor : NOT? NAMED REFBYNAME                                       #nameDescriptor
+           | playerSubset ( DO NOT )?
+             ( CONTROL | OWN | CAST | (BOTH? OWN conj CONTROL) )        #playerDescriptor
+           | ( IN | FROM | ON THE ) zoneSubset                          #zoneDescriptor
+           | player OWN IN EXILE                                        #zoneDescriptor
+           | ( WITH | WITHOUT ) keywords                                #keywordDescriptor
+           | ( WITH | WITHOUT ) counterSubset ON refObject              #counterDescriptor
            ;
 
-nameDescriptor : NOT? NAMED REFBYNAME ;
+// Card properties
 
-playerDescriptor : playerSubset ( DO NOT )? ( CONTROL | OWN | CAST | BOTH? OWN conj CONTROL ) ;
+color : WHITE | BLUE | BLACK | RED | GREEN ;
+colorSpec : COLORED | COLORLESS | MONOCOLORED | MULTICOLORED ;
 
-zoneDescriptor : ( IN | FROM ) zoneSubset ;
+supertype : BASIC | LEGENDARY | SNOW | WORLD | ONGOING ;
 
-keywordDescriptor : ( WITH | WITHOUT ) keywords ;
+cardType : CREATURE | ARTIFACT | ENCHANTMENT | LAND | PLANESWALKER
+         | INSTANT | SORCERY
+         | TRIBAL
+         ;
 
-statusDescriptor : THAT is_ status ;
+subtype : OBJ_SUBTYPE
+        | AURA
+        | BOLAS
+        | DRAGONS
+        | EGG
+        | FUNGUS
+        | MINE
+        | PHYREXIA
+        | TOWER
+        | TRAP
+        | TREASURE
+        | WILL
+        ;
 
+typeSpec : HISTORIC ;
+
+objectType : CARD | PERMANENT | SPELL | ABILITY | SOURCE | TOKEN ;
+
+// Object (mostly permanent) status
 status : TAPPED
        | UNTAPPED
        | ENCHANTED
@@ -131,39 +150,9 @@ status : TAPPED
        | MONSTROUS
        ;
 
-// Card properties
-
-color : WHITE | BLUE | BLACK | RED | GREEN ;
-colorSpec : COLORED | COLORLESS | MONOCOLORED | MULTICOLORED ;
-
-supertype : BASIC | LEGENDARY | SNOW | WORLD | ONGOING ;
-
-cardType : permanentType | spellType | tribalType ;
-permanentType : CREATURE | ARTIFACT | ENCHANTMENT | LAND | PLANESWALKER ;
-spellType : INSTANT | SORCERY ;
-tribalType : TRIBAL ;
-
-subtype : OBJ_SUBTYPE
-        | AURA
-        | BOLAS
-        | DRAGONS
-        | EGG
-        | FUNGUS
-        | MINE
-        | PHYREXIA
-        | TOWER
-        | TRAP
-        | TREASURE
-        | WILL
-        ;
-
-typeSpec : HISTORIC ;
-
-objectType : CARD | PERMANENT | SPELL | ABILITY | SOURCE | TOKEN ;
-
 // Property names
 
-propertyTypes : propertyType ( ( COMMA ( propertyType COMMA )+ )? conj propertyType )? ;
+propertyTypeList : propertyType ( ( COMMA ( propertyType COMMA )+ )? conj propertyType )? ;
 
 propertyType : COLOR
              | NAME

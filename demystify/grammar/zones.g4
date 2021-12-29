@@ -45,11 +45,6 @@ specificZone : THE BATTLEFIELD
              | EXILE
              ;
 
-zoneDescriptor : IN playerPoss pileZone
-               | player OWN IN EXILE
-               | ON THE specificZone
-               ;
-
 // While exile is a zone, cards in it are referred to as exiled cards,
 // and not cards in exile, hence no zone rules are necessary for it.
 // This is true except that cards may be moved "from exile".
