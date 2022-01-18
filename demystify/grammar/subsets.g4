@@ -23,6 +23,7 @@ parser grammar subsets;
 subset : quantity? TARGET? propertyList descriptor?
        | ANY TARGET
        | refObject
+       | zoneSubset
        ;
 
 /*

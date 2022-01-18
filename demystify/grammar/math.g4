@@ -32,12 +32,12 @@ quantity : number ( ( ( COMMA number )+ COMMA )? conj number )?
          | ( ALL | EACH | EVERY )
          | ANY number
          | ANY AMOUNT OF
-         | A SINGLE?
+         | A SINGLE
          | ANOTHER
          | NO
          ;
 
-number : NUMBER_SYM | VAR_SYM | NUMBER_WORD ;
+number : NUMBER_SYM | VAR_SYM | NUMBER_WORD | A ;
 
 varDef : WHERE VAR_SYM IS quantity ;
 
