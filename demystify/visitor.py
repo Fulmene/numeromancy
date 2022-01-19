@@ -105,39 +105,39 @@ class DemystifyDataVisitor(DemystifyVisitor):
         return Sentence(subj, action, direct_obj=dir_obj, indirect_obj=ind_obj)
 
     def visitKeywordActionIntransitive(self, ctx) -> Tuple[str, None, None]:
-        return (ctx.verb.text, None, None)
+        return ctx.verb.text, None, None
 
     def visitKeywordActionSubset(self, ctx) -> Tuple[str, str, None]:
-        return (ctx.verb.text, self.visit(ctx.subset()), None)
+        return ctx.verb.text, self.visit(ctx.subset()), None
 
     def visitKeywordActionNumber(self, ctx) -> Tuple[str, None, str]:
-        return (ctx.verb.text, None, self.visit(ctx.number()))
+        return ctx.verb.text, None, self.visit(ctx.number())
 
     def visitKeywordActionDamage(self, ctx) -> Tuple[str, str, str]:
-        return (ctx.verb.text, self.visit(ctx.subset()), self.visit(ctx.number()))
+        return ctx.verb.text, self.visit(ctx.subset()), self.visit(ctx.number())
 
     def visitKeywordActionTwoSubsets(self, ctx) -> Tuple[str, str, str]:
         subset = ctx.subset()
         if ctx.c.text == 'from':
-            return (ctx.verb.text, self.visit(subset[0]), self.visit(subset[1]))
+            return ctx.verb.text, self.visit(subset[0]), self.visit(subset[1])
         else:
-            return (ctx.verb.text, self.visit(subset[1]), self.visit(subset[0]))
+            return ctx.verb.text, self.visit(subset[1]), self.visit(subset[0])
 
     def visitKeywordActionMana(self, ctx) -> Tuple[str, None, str]:
-        return (ctx.verb.text, None, self.visit(ctx.mana()))
+        return ctx.verb.text, None, self.visit(ctx.mana())
 
     def visitKeywordActionPT(self, ctx) -> Tuple[str, None, str]:
-        return (ctx.verb.text, None, self.visit(ctx.pt()))
+        return ctx.verb.text, None, self.visit(ctx.pt())
 
     def visitKeywordActionName(self, ctx) -> Tuple[str, None, str]:
-        return (ctx.verb.text, None, ctx.name.text)
+        return ctx.verb.text, None, ctx.name.text
 
     def visitKeywordActionPutCounter(self, ctx) -> Tuple[str, str, str]:
-        return (ctx.verb.text, self.visit(ctx.subset()), self.visit(ctx.counterSubset()))
+        return ctx.verb.text, self.visit(ctx.subset()), self.visit(ctx.counterSubset())
 
     def visitKeywordActionBecome(self, ctx) -> Tuple[str, str, str|None]:
         # TODO in addition to
-        return (ctx.verb.text, self.visit(ctx.subset()), None)
+        return ctx.verb.text, self.visit(ctx.subset()), None
 
     def visitDurationEnd(self, ctx) -> Duration:
         return Duration(duration_end=ctx.getText())
