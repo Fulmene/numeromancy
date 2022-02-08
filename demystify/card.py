@@ -361,29 +361,20 @@ def scryfall_card(layout=None, card_faces=None, all_parts=None,
     return [Card(**d)]
 
 
-class CardWidget(progressbar.widgets.WidgetBase):
-    def __init__(self):
-        self.current_card = ' '
-
-    def __call__(self, progress, data):
-        if len(self.current_card) < 16:
-            return self.current_card + (16 - len(self.current_card)) * ' '
-        else:
-            return self.current_card[:16]
-
 class CardProgressBar(list):
     """ A list-like object that writes a progress bar to stdout
         when iterated over. """
     def __iter__(self):
         """ A generator that writes a progress bar to stdout as its elements
             are accessed. """
-        widgets = [CardWidget(), ' ', progressbar.widgets.Bar(left='[', right=']'), ' ',
-                   progressbar.widgets.SimpleProgress(), ' ', progressbar.widgets.ETA()]
+        widgets = [progressbar.widgets.Variable('cardname', format='{formatted_value}', width=16, precision=16), ' ',
+                   progressbar.widgets.Bar(left='[', right=']'), ' ',
+                   progressbar.widgets.SimpleProgress(), ' ',
+                   progressbar.widgets.ETA()]
         pbar = progressbar.bar.ProgressBar(widgets=widgets, max_value=len(self))
         pbar.start()
         for i, card in enumerate(super(CardProgressBar, self).__iter__()):
-            widgets[0].current_card = card.name
-            pbar.update(i)
+            pbar.update(i, cardname=card.name[:16])
             yield card
         pbar.finish()
 
@@ -393,24 +384,24 @@ class CardProgressQueue(multiprocessing.queues.JoinableQueue):
     def __init__(self, cards):
         super(CardProgressQueue, self).__init__(
                 len(cards), ctx=multiprocessing.get_context())
-        self._cw = CardWidget()
-        widgets = [self._cw, ' ', progressbar.widgets.Bar(left='[', right=']'), ' ',
-                   progressbar.widgets.SimpleProgress(), ' ', progressbar.widgets.ETA()]
+        widgets = [progressbar.widgets.Variable('cardname', format='{formatted_value}', width=16, precision=16), ' ',
+                   progressbar.widgets.Bar(left='[', right=']'), ' ',
+                   progressbar.widgets.SimpleProgress(), ' ',
+                   progressbar.widgets.ETA()]
         self._pbar = progressbar.bar.ProgressBar(widgets=widgets, max_value=len(cards))
         self._pbar.start()
         for c in cards:
             self.put(c)
 
-    def task_done(self, cname=None):
+    def task_done(self, cname=' '):
         with self._cond:
             if not self._unfinished_tasks.acquire(False):
                 raise ValueError('task_done() called too many times')
-            self._cw.current_card = cname or ' '
             if self._unfinished_tasks._semlock._is_zero():
                 self._pbar.finish()
                 self._cond.notify_all()
             else:
-                self._pbar.update(self._sem._semlock._get_value())
+                self._pbar.update(self._sem._semlock._get_value(), cardname=cname[:16])
 
 def _card_worker(work_queue, res_queue, func):
     logger.debug("Card worker starting up - Python {}".format(sys.version))
