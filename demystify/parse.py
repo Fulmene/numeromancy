@@ -9,6 +9,7 @@ from antlr4.ParserRuleContext import ParserRuleContext
 from antlr4.StdinStream import InputStream
 from antlr4.atn.PredictionMode import PredictionMode
 from antlr4.error.ErrorStrategy import BailErrorStrategy
+from antlr4.error.ErrorListener import ConsoleErrorListener
 from antlr4.error.Errors import ParseCancellationException
 from antlr4.tree.Tree import TerminalNode
 from antlr4.tree.Trees import Trees
@@ -19,14 +20,18 @@ from mtg_types import Ability
 
 def parse(rule: str, text: str):
     lexer = DemystifyLexer(InputStream(text))
+    lexer.removeErrorListener(ConsoleErrorListener.INSTANCE)
     stream = CommonTokenStream(lexer)
     try:
         parser = DemystifyParser(stream)
         parser._interp.predictionMode = PredictionMode.SLL
         parser._errHandler = BailErrorStrategy()
+        parser.removeErrorListener(ConsoleErrorListener.INSTANCE)
         return getattr(parser, rule)()
     except ParseCancellationException:
         parser = DemystifyParser(stream)
+        parser._errHandler = BailErrorStrategy()
+        parser.removeErrorListener(ConsoleErrorListener.INSTANCE)
         return getattr(parser, rule)()
 
 def print_lex(text: str):
