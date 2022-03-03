@@ -37,17 +37,8 @@ arbitraryChoice : ARB_CHOICE
                 | NUMBER
                 | TIME;
 
-auraSwap : AURA SWAP;
-
-bandsWithOther : BAND WITH OTHER;
-
-doubleStrike : DOUBLE STRIKE;
-
-firstStrike : FIRST STRIKE;
-
-levelUp : LEVEL UP;
-
 numberWord : NUMBER_WORD;
 
 ordinalWord : ORDINAL_WORD
-            | FIRST;
+            | FIRST
+            ;

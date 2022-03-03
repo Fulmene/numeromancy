@@ -72,7 +72,7 @@ event : zone_transfer
 
 /* Events. */
 
-zone_transfer : ( ENTER | is_ ( PUT ( INTO | ONTO ) | RETURNED TO ) ) zoneSubset ( FROM ( zoneSubset | ANYWHERE ) )?
+zone_transfer : ( ENTER | ( is_ ( PUT ( INTO | ONTO ) | RETURNED TO ) ) ) zoneSubset ( FROM ( zoneSubset | ANYWHERE ) )?
               | LEAVE zoneSubset
               | DIE
               ;

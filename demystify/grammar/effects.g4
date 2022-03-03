@@ -20,7 +20,7 @@ parser grammar effects;
 
 ability : spellEffect                  // Static ability
         | cost COLON spellEffect       // Activated ability
-        | trigger COMMA spellEffect    // Triggered ability
+        | (WHEN|AT) trigger COMMA spellEffect    // Triggered ability
         ;
 
 /* Spell effects */
@@ -93,7 +93,7 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
               | verb=(IS|BECOME) NOT? subset
                      (IN ADDITION TO refObjPoss OTHER propertyType)?                    #keywordActionBecome
               | verb=CHOOSE subset c=FROM subset                                        #keywordActionTwoSubsets
-              // TODO | RETURN subset TO 
+              | verb=RETURN subset TO zoneSubset                                        #keywordActionZone
               | verb=(WIN|LOSE) THE GAME                                                #keywordActionIntransitive
               ;
 
