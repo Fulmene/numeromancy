@@ -157,6 +157,7 @@ keywordCost : AURA_SWAP
             | RECOVER
             | REPLICATE
             | SCAVENGE
+            | SPECTACLE
             | SURGE
             | TRANSFIGURE
             | TRANSMUTE

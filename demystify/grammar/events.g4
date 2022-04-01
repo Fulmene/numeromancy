@@ -154,7 +154,7 @@ condition : has_status
           | has_ability
           | has_cards
           | have_life
-          //| HAS has_counters
+          //| HAVE has_counters
           | int_prop_is
           | control_stuff
           | is_somewhere
@@ -162,13 +162,13 @@ condition : has_status
 
 /* Conditions. */
 
-has_status : HAS THE CITYS_BLESSING;
+has_status : HAVE THE CITYS_BLESSING;
 
-has_ability : HAS keyword ;
+has_ability : HAVE keyword ;
 
-has_cards : HAS number CARD IN HAND ;
+has_cards : HAVE number CARD IN HAND ;
 
-have_life : HAS number LIFE ;
+have_life : HAVE number LIFE ;
 
 int_prop_is : poss intProp IS number ;
 

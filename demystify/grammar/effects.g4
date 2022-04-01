@@ -18,14 +18,22 @@ parser grammar effects;
 // You should have received a copy of the GNU Lesser General Public License
 // along with Demystify.  If not, see <http://www.gnu.org/licenses/>.
 
-ability : spellEffect                  // Static ability
-        | cost COLON spellEffect       // Activated ability
-        | (WHEN|AT) trigger COMMA spellEffect    // Triggered ability
+ability : (abilityWord MDASH)? abilityText ;
+
+abilityText : spellEffect                                   // Static ability
+            | cost COLON spellEffect activateCondition?     // Activated ability
+            | (WHEN|AT) trigger COMMA spellEffect           // Triggered ability
+            ;
+
+activateCondition : ACTIVATE ONLY actCond PERIOD ;
+
+actCond : AS A SORCERY
+        | ONCE EACH TURN
         ;
 
 /* Spell effects */
 
-spellEffect : sentence+;
+spellEffect : sentence+ ;
 
 sentence : atomicEffect ( ( COMMA atomicEffect )* COMMA (THEN|conj) atomicEffect )? PERIOD;
 
@@ -33,14 +41,12 @@ atomicEffect : gameAction duration? fullCondition? ;
               // | duration COMMA gameAction -> ^(gameAction duration);
 
 fullCondition : IF subset condition
-               | UNLESS subset condition
-               ;
+              | UNLESS subset condition
+              ;
 
-gameAction : ( subset MAY? )? keywordAction ;
-            //| game_object_action
+gameAction : ( subset MAY? )? keywordActionList ;
 
-//player_action : ( playerSubset MAY? )? player_keywordAction ;
-//game_object_action : subset game_object_keywordAction ;
+keywordActionList : keywordAction ( ( COMMA ( keywordAction COMMA )+ )? conj keywordAction )? ;
 
 keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                               #keywordActionTwoSubsets
               | verb=CAST subset                                                        #keywordActionSubset
@@ -61,7 +67,7 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
               | verb=SACRIFICE subset                                                   #keywordActionSubset
               | verb=SCRY number                                                        #keywordActionNumber
               // TODO | SEARCH
-              // TODO | SHUFFLE
+              | verb=SHUFFLE                                                            #keywordActionIntransitive
               | verb=(TAP|UNTAP) subset                                                 #keywordActionSubset
               | verb=FATESEAL number                                                    #keywordActionNumber
               | verb=CLASH WITH subset                                                  #keywordActionSubset
@@ -85,7 +91,7 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
 
               | GAIN verb=CONTROL OF subset                                             #keywordActionSubset
               | verb=(GAIN|LOSE) number LIFE                                            #keywordActionNumber
-              // TODO | GAIN ability
+              | verb=(GAIN|HAVE) (keywordAbility | DQUOTE ability DQUOTE)               #keywordActionAbility
               | verb=GET ptMod                                                          #keywordActionPT
               | verb=PUT counterSubset ON subset                                        #keywordActionPutCounter
               | verb=PAY mana                                                           #keywordActionMana
@@ -94,6 +100,7 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
                      (IN ADDITION TO refObjPoss OTHER propertyType)?                    #keywordActionBecome
               | verb=CHOOSE subset c=FROM subset                                        #keywordActionTwoSubsets
               | verb=RETURN subset TO zoneSubset                                        #keywordActionZone
+              | verb=SHUFFLE subset INTO zoneSubset                                     #keywordActionZone
               | verb=(WIN|LOSE) THE GAME                                                #keywordActionIntransitive
               ;
 

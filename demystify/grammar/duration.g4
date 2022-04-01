@@ -10,4 +10,5 @@ durationEnd : END OF TURN
             ;
 
 durationSpan : refObject REMAIN EXILED
+             | refPlayer CONTROL refObject
              ;

@@ -111,19 +111,7 @@ cardType : CREATURE | ARTIFACT | ENCHANTMENT | LAND | PLANESWALKER
          | TRIBAL
          ;
 
-subtype : OBJ_SUBTYPE
-        | AURA
-        | BOLAS
-        | DRAGONS
-        | EGG
-        | FUNGUS
-        | MINE
-        | PHYREXIA
-        | TOWER
-        | TRAP
-        | TREASURE
-        | WILL
-        ;
+subtype : objSubtype;
 
 typeSpec : HISTORIC ;
 
@@ -162,7 +150,7 @@ propertyType : COLOR
              | costProp
              ;
 
-intProp : MANA_VALUE
+intProp : MANA VALUE
         | LIFE TOTAL?
         | POWER
         | TOUGHNESS

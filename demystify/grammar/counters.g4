@@ -28,22 +28,4 @@ counterGroup : number baseCounter ;
 
 baseCounterSet : baseCounter ( ( COMMA ( baseCounter COMMA )+ )? conj baseCounter )? ;
 
-baseCounter : ( objCounter | pt )? COUNTER ;
-
-objCounter : OBJ_COUNTER
-           | DEATH
-           | DEVOTION
-           | ECHO
-           | EGG
-           | FEATHER
-           | FUNGUS
-           | FUSE
-           | LEVEL
-           | LOYALTY
-           | MINE
-           | POISON
-           | TIME
-           | TOWER
-           | TRAP
-           | TREASURE
-           ;
+baseCounter : ( objCounter | ptMod )? COUNTER ;
