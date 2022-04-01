@@ -5,7 +5,7 @@ A Magic: The Gathering Parser
 
 Demystify is an attempt to make it possible for a computer to understand what
 general Magic: The Gathering cards do. It is currently written in a combination
-of ANTLR 3.5 and Python 3.2.
+of ANTLR 4.9 and Python 3.10.
 
 2) INSTALLATION
 
@@ -14,29 +14,33 @@ need to have installed in order to build the parser and run Demystify.
 See INSTALL for more specific instructions.
 
 - Java 1.6.0 (or later)
-- ANTLR 3.5 (or later 3.5 release)
-- ANTLR 3 Python3 runtime [available at github.com/antlr/antlr3]
-- jpackage-utils 1.7.5 (or later)
-- Python 3.2
-- python-progressbar2
+- ANTLR 4.9 (or later 4.9 release)
+- Python 3.10
+- Python packages as listed in requirements.txt
 
 3) BUILDING
 
-To build the parser generator, you need to have the macro.g and Words.g grammar
-files up-to-date. If they don't exist, or demystify/keywords.py has changed,
+To build the parser generator, you need to have the macro.g4 and Words.g4 grammar
+files up-to-date. If they don't exist, or demystify/words.py has changed,
 run
-    $ python3 demystify/keywords.py
+```
+    $ python3 demystify/words.py
+```
 to regenerate them.
 
-Then, you need to run antlr3 on the grammar. If you've followed the instructions
-in INSTALL and gotten yourself an antlr3 script, all you need to do is:
+Then, you need to run antlr4 on the grammar. If you've followed the instructions
+in INSTALL and gotten yourself an antlr4 script, all you need to do is:
+```
     $ cd demystify/grammar/
-    $ antlr3 Demystify.g
+    $ antlr4 Demystify.g4
+```
 If not, your commandline will look something like this (supposing your classpath
 is properly set):
+```
     $ cd demystify/grammar/
-    $ java org.antlr.Tool Demystify.g
-(Note that cd instruction; if you "antlr3 demystify/grammar/Demystify.g"
+    $ java org.antlr.Tool Demystify.g4
+```
+(Note that cd instruction; if you "antlr4 demystify/grammar/Demystify.g"
  instead, you'll get the .py output files where they belong, but the .tokens
  files are put in your working directory.)
 
@@ -47,8 +51,8 @@ If it worked (and it worked if all the output you received were of the form
 demystify/grammar/ should now contain a series of Demystify*.py
 files. These will be used by the main demystify.py script.
 
-If it doesn't work, and you're sure you installed antlr3 and java correctly,
-check that you followed instructions in INSTALL again. If antlr3 is actually
+If it doesn't work, and you're sure you installed antlr4 and Java correctly,
+check that you followed instructions in INSTALL again. If antlr4 is actually
 giving grammar errors, please check the Issues tab in github for the issue
 or file a new bug.
 
