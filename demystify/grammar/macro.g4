@@ -24,21 +24,60 @@ parser grammar macro;
  * DO NOT EDIT DIRECTLY
  */
 
-// TODO Many more D&D ability words
 abilityWord : ABILITY_WORD
-            | SPELL MASTERY
-            | WILL OF THE COUNCIL
-            ;
+            | HIDE;
 
-arbitraryChoice : ARB_CHOICE
-                | DEATH
-                | DRAGONS
-                | FEATHER
-                | NUMBER
-                | TIME;
+arbChoice : ARB_CHOICE
+          | DEATH
+          | DRAGONS
+          | FEATHER
+          | NUMBER
+          | PHYREXIAN
+          | TIME;
 
 numberWord : NUMBER_WORD;
 
-ordinalWord : ORDINAL_WORD
-            | FIRST
-            ;
+objCounter : OBJ_COUNTER
+           | BLOOD
+           | DEATH
+           | DEVOTION
+           | ECHO
+           | EGG
+           | FEATHER
+           | FUNGUS
+           | FUSE
+           | GOLD
+           | LEVEL
+           | LOYALTY
+           | MINE
+           | POISON
+           | TIME
+           | TOWER
+           | TRAINING
+           | TRAP
+           | TREASURE;
+
+objSubtype : OBJ_SUBTYPE
+           | BLOOD
+           | CLUE
+           | DRAGONS
+           | EGG
+           | FOOD
+           | FUNGUS
+           | GOLD
+           | MINE
+           | PHYREXIAN
+           | SHARD
+           | TOWER
+           | TRAP
+           | TREASURE;
+
+objToken : OBJ_TOKEN
+         | BLOOD
+         | CLUE
+         | FOOD
+         | GOLD
+         | SHARD
+         | TREASURE;
+
+ordinalWord : ORDINAL_WORD;

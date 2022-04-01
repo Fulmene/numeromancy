@@ -28,14 +28,16 @@ import Symbols;
 
 CUMULATIVE_UPKEEP : 'cumulative upkeep';
 SETTING_IN_MOTION : 'setting in motion';
-
+BANDS_WITH_OTHER : 'bands with other';
+FRIENDS_FOREVER : 'friends forever';
 ARABIAN_NIGHTS : 'arabian nights';
 CITYS_BLESSING : 'city\'s blessing';
 INDESTRUCTIBLE : 'indestructible';
 REDISTRIBUTING : 'redistributing';
 REDISTRIBUTION : 'redistribution';
 SIMULTANEOUSLY : 'simultaneously';
-
+CHARCTERISTIC : 'characteristics'
+              | 'characteristic';
 DOUBLE_STRIKE : 'double strike';
 LIVING_WEAPON : 'living weapon';
 PLANESWALKING : 'planeswalking';
@@ -44,41 +46,138 @@ PROLIFERATION : 'proliferation';
 REDISTRIBUTED : 'redistributed';
 SET_IN_MOTION : 'sets in motion'
               | 'set in motion';
-
-ABILITY_WORD : 'council\'s dilemma'
+ABILITY_WORD : 'animate walking statue'
+             | 'whispers of the grave'
+             | 'negative energy cone'
+             | 'perfect illumination'
+             | 'bewitching whispers'
+             | 'dark one\'s own luck'
+             | 'divine intervention'
+             | 'learn their secrets'
+             | 'two-weapon fighting'
+             | 'will of the council'
+             | 'bardic inspiration'
+             | 'break their chains'
+             | 'combat inspiration'
+             | 'distract the guard'
+             | 'grant an advantage'
+             | 'astral projection'
+             | 'council\'s dilemma'
+             | 'fight the current'
+             | 'foil their scheme'
+             | 'magical tinkering'
+             | 'binding contract'
+             | 'brave the stench'
+             | 'dominate monster'
+             | 'interrogate them'
+             | 'invoke duplicity'
+             | 'lightning breath'
+             | 'tragic backstory'
+             | 'wild magic surge'
+             | 'circle of death'
+             | 'clever conjurer'
+             | 'find a crossing'
+             | 'flurry of blows'
+             | 'intimidate them'
+             | 'rouse the party'
+             | 'search the body'
+             | 'search the room'
+             | 'smash the chest'
+             | 'stand and fight'
+             | 'stunning strike'
+             | 'antimagic cone'
+             | 'beacon of hope'
+             | 'cunning action'
+             | 'lift the curse'
+             | 'make a retreat'
+             | 'mystic arcanum'
+             | 'psionic spells'
+             | 'steal its eyes'
              | 'tempting offer'
+             | 'befriend them'
+             | 'breathe flame'
              | 'constellation'
+             | 'fend them off'
+             | 'gentle repose'
+             | 'poison breath'
+             | 'set off traps'
+             | 'siege monster'
+             | 'spell mastery'
+             | 'start a brawl'
+             | 'cone of cold'
+             | 'dispel magic'
+             | 'displacement'
              | 'fateful hour'
+             | 'form a party'
+             | 'pack tactics'
+             | 'rejuvenation'
+             | 'smash relics'
+             | 'sneak attack'
+             | 'song of rest'
+             | 'acid breath'
+             | 'charge them'
+             | 'cold breath'
+             | 'cure wounds'
+             | 'fire breath'
              | 'join forces'
+             | 'keen senses'
+             | 'pry it open'
+             | 'rappel down'
+             | 'tail spikes'
              | 'undergrowth'
+             | 'climb over'
+             | 'drag below'
+             | 'focus beam'
              | 'formidable'
+             | 'journey on'
              | 'lieutenant'
+             | 'life drain'
              | 'metalcraft'
              | 'battalion'
+             | 'bear form'
              | 'bloodrush'
              | 'ferocious'
+             | 'mage hand'
+             | 'magecraft'
+             | 'make camp'
+             | 'pact boon'
              | 'threshold'
+             | 'whirlwind'
+             | 'addendum'
              | 'converge'
              | 'delirium'
+             | 'dissolve'
              | 'eminence'
+             | 'fear ray'
              | 'grandeur'
              | 'hellbent'
              | 'inspired'
              | 'landfall'
              | 'radiance'
+             | 'smash it'
+             | 'teleport'
+             | 'trapped!'
+             | 'underdog'
+             | 'adamant'
+             | 'archery'
+             | 'berserk'
              | 'channel'
              | 'imprint'
              | 'kinship'
              | 'chroma'
              | 'cohort'
              | 'domain'
+             | 'engulf'
              | 'enrage'
              | 'heroic'
              | 'morbid'
              | 'parley'
              | 'revolt'
              | 'strive'
+             | 'tie up'
+             | 'coven'
              | 'rally'
+             | 'split'
              | 'sweep'
              | 'raid';
 BOOSTER_PACK : 'booster packs'
@@ -92,20 +191,22 @@ INVESTIGATED : 'investigated';
 JUST_BENEATH : 'just beneath';
 MULTICOLORED : 'multicolored';
 ORDINAL_WORD : 'seventh'
+             | 'twelfth'
              | 'fourth'
              | 'second'
+             | 'first'
              | 'third'
              | 'last';
 PLANESWALKED : 'planeswalked';
 PLANESWALKER : 'planeswalkers'
              | 'planeswalker';
 PROLIFERATED : 'proliferated';
+RECONFIGURED : 'reconfigured';
 REDISTRIBUTE : 'redistributes'
              | 'redistribute';
 REGENERATING : 'regenerating';
 REGENERATION : 'regeneration';
 SPLIT_SECOND : 'split second';
-
 ABANDONMENT : 'abandonment';
 ANNIHILATOR : 'annihilator';
 ANTIQUITIES : 'antiquities';
@@ -114,12 +215,14 @@ BLOODTHIRST : 'bloodthirst';
 COMBINATION : 'combination';
 CONTROLLING : 'controlling';
 DECLARATION : 'declaration';
+DEMONSTRATE : 'demonstrate';
 DIFFERENTLY : 'differently';
 DISTRIBUTED : 'distributed';
 ENCHANTMENT : 'enchantments'
             | 'enchantment';
 ETERNALIZED : 'eternalized';
 FATESEALING : 'fatesealing';
+FORETELLING : 'foretelling';
 IMMEDIATELY : 'immediately';
 INVESTIGATE : 'investigates'
             | 'investigate';
@@ -154,12 +257,17 @@ OBJ_COUNTER : 'manifestation'
             | 'petrification'
             | 'intervention'
             | 'paralyzation'
+            | 'enlightened'
+            | 'corruption'
             | 'experience'
             | 'filibuster'
+            | 'foreshadow'
             | 'phylactery'
             | 'arrowhead'
             | 'awakening'
+            | 'component'
             | 'depletion'
+            | 'ghostform'
             | 'hatchling'
             | 'hoofprint'
             | 'hourglass'
@@ -170,7 +278,6 @@ OBJ_COUNTER : 'manifestation'
             | 'divinity'
             | 'landmark'
             | 'pressure'
-            | 'training'
             | 'velocity'
             | 'vitality'
             | 'bribery'
@@ -178,11 +285,13 @@ OBJ_COUNTER : 'manifestation'
             | 'crystal'
             | 'despair'
             | 'eyeball'
+            | 'harmony'
             | 'healing'
             | 'javelin'
             | 'sleight'
             | 'slumber'
             | 'storage'
+            | 'suspect'
             | 'bounty'
             | 'charge'
             | 'corpse'
@@ -201,12 +310,15 @@ OBJ_COUNTER : 'manifestation'
             | 'silver'
             | 'strife'
             | 'vortex'
+            | 'acorn'
+            | 'aegis'
             | 'arrow'
             | 'blaze'
-            | 'blood'
             | 'brick'
+            | 'croak'
             | 'delay'
             | 'dream'
+            | 'fetch'
             | 'flood'
             | 'glyph'
             | 'music'
@@ -222,15 +334,16 @@ OBJ_COUNTER : 'manifestation'
             | 'study'
             | 'theft'
             | 'unity'
+            | 'valor'
             | 'verse'
             | 'winch'
+            | 'book'
             | 'cage'
             | 'cube'
             | 'doom'
             | 'fade'
             | 'fate'
             | 'fury'
-            | 'gold'
             | 'hour'
             | 'lore'
             | 'luck'
@@ -243,7 +356,10 @@ OBJ_COUNTER : 'manifestation'
             | 'pupa'
             | 'rust'
             | 'soot'
+            | 'soul'
+            | 'task'
             | 'tide'
+            | 'void'
             | 'wage'
             | 'wind'
             | 'wish'
@@ -256,8 +372,10 @@ OBJ_COUNTER : 'manifestation'
             | 'net'
             | 'ore'
             | 'pin'
+            | 'vow'
             | 'ki';
-OBJ_SUBTYPE : 'assembly-workers'
+OBJ_SUBTYPE : 'bolas\'s meditation realm'
+            | 'assembly-workers'
             | 'assembly-worker'
             | 'fortifications'
             | 'fortification'
@@ -268,6 +386,8 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'contraptions'
             | 'dreadnoughts'
             | 'incarnations'
+            | 'mordenkainen'
+            | 'new phyrexia'
             | 'nightstalker'
             | 'phelddagrifs'
             | 'power-plants'
@@ -297,6 +417,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'constructs'
             | 'crocodiles'
             | 'elementals'
+            | 'equipments'
             | 'flagbearer'
             | 'graveborns'
             | 'hippogriff'
@@ -309,22 +430,25 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'nautiluses'
             | 'nightmares'
             | 'pentavites'
+            | 'phyrexians'
             | 'processors'
             | 'reflection'
             | 'salamander'
             | 'saprolings'
             | 'scarecrows'
+            | 'sculptures'
             | 'shadowmoor'
             | 'tetravites'
             | 'trilobites'
             | 'werewolves'
             | 'wolverines'
-            | 'anteaters'
+            | 'adventure'
             | 'antelopes'
             | 'artificer'
             | 'assassins'
             | 'barbarian'
             | 'basilisks'
+            | 'beholders'
             | 'berserker'
             | 'blinkmoth'
             | 'brushwagg'
@@ -341,6 +465,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'freyalise'
             | 'gargoyles'
             | 'graveborn'
+            | 'halflings'
             | 'homunculi'
             | 'illusions'
             | 'innistrad'
@@ -364,13 +489,16 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'saproling'
             | 'scarecrow'
             | 'scorpions'
+            | 'sculpture'
             | 'shandalar'
             | 'skeletons'
             | 'splinters'
             | 'squirrels'
             | 'surrakars'
             | 'survivors'
+            | 'tentacles'
             | 'tetravite'
+            | 'tieflings'
             | 'treasures'
             | 'trilobite'
             | 'vedalkens'
@@ -379,10 +507,10 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'wolverine'
             | 'advisors'
             | 'aminatou'
-            | 'anteater'
             | 'antelope'
             | 'assassin'
             | 'basilisk'
+            | 'beholder'
             | 'bringers'
             | 'camarids'
             | 'carriers'
@@ -390,16 +518,22 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'cephalid'
             | 'chimeras'
             | 'citizens'
+            | 'demigods'
             | 'deserter'
             | 'dinosaur'
             | 'eldrazis'
             | 'elephant'
+            | 'ellywick'
+            | 'fractals'
             | 'gargoyle'
             | 'gremlins'
             | 'griffins'
+            | 'halfling'
+            | 'hamsters'
             | 'hellions'
             | 'homarids'
             | 'illusion'
+            | 'inklings'
             | 'iquatana'
             | 'kaldheim'
             | 'kamigawa'
@@ -418,6 +552,8 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'nautilus'
             | 'nephilim'
             | 'pangolin'
+            | 'peasants'
+            | 'phyrexia'
             | 'pinchers'
             | 'praetors'
             | 'scorpion'
@@ -430,9 +566,11 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'starfish'
             | 'surrakar'
             | 'survivor'
+            | 'tentacle'
             | 'tezzeret'
             | 'thalakos'
             | 'thopters'
+            | 'tiefling'
             | 'treefolk'
             | 'ulgrotha'
             | 'unicorns'
@@ -440,6 +578,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'vedalken'
             | 'vehicles'
             | 'viashino'
+            | 'warlocks'
             | 'warriors'
             | 'werewolf'
             | 'wildfire'
@@ -451,6 +590,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'aurochs'
             | 'avatars'
             | 'badgers'
+            | 'bahamut'
             | 'beebles'
             | 'belenon'
             | 'bringer'
@@ -461,11 +601,14 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'chandra'
             | 'chimera'
             | 'citizen'
+            | 'classes'
             | 'clerics'
             | 'cowards'
             | 'cyclops'
             | 'daretti'
             | 'dauthis'
+            | 'davriel'
+            | 'demigod'
             | 'deserts'
             | 'dwarves'
             | 'efreets'
@@ -477,23 +620,28 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'faeries'
             | 'ferrets'
             | 'forests'
+            | 'fractal'
             | 'goblins'
             | 'gorgons'
             | 'gremlin'
             | 'griffin'
+            | 'hamster'
             | 'harpies'
             | 'hellion'
             | 'homarid'
             | 'horrors'
+            | 'inkling'
             | 'insects'
             | 'islands'
             | 'jackals'
+            | 'kasmina'
             | 'kithkin'
             | 'knights'
             | 'kobolds'
             | 'krakens'
             | 'lammasu'
             | 'leeches'
+            | 'lessons'
             | 'liliana'
             | 'lizards'
             | 'merfolk'
@@ -506,6 +654,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'noggles'
             | 'octopus'
             | 'oysters'
+            | 'peasant'
             | 'pegasus'
             | 'phoenix'
             | 'pincher'
@@ -513,6 +662,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'praetor'
             | 'pyrulea'
             | 'rabbits'
+            | 'rangers'
             | 'ravnica'
             | 'regatha'
             | 'riggers'
@@ -537,6 +687,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'vampire'
             | 'vehicle'
             | 'volvers'
+            | 'warlock'
             | 'warrior'
             | 'wizards'
             | 'wombats'
@@ -551,6 +702,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'archon'
             | 'arkhos'
             | 'arlinn'
+            | 'armies'
             | 'ashiok'
             | 'avatar'
             | 'badger'
@@ -560,10 +712,12 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'cleric'
             | 'coward'
             | 'curses'
+            | 'dakkon'
             | 'dauthi'
             | 'demons'
             | 'desert'
             | 'devils'
+            | 'dihada'
             | 'djinns'
             | 'dragon'
             | 'drakes'
@@ -579,6 +733,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'garruk'
             | 'giants'
             | 'gideon'
+            | 'gnolls'
             | 'gnomes'
             | 'goblin'
             | 'golems'
@@ -586,7 +741,6 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'hippos'
             | 'horror'
             | 'horses'
-            | 'hounds'
             | 'huatli'
             | 'humans'
             | 'hydras'
@@ -601,6 +755,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'kraken'
             | 'kyneth'
             | 'lamias'
+            | 'lesson'
             | 'licids'
             | 'lizard'
             | 'lorwyn'
@@ -613,11 +768,14 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'nahiri'
             | 'narset'
             | 'ninjas'
+            | 'nobles'
             | 'noggle'
             | 'nomads'
             | 'nymphs'
+            | 'otters'
             | 'ouphes'
             | 'oyster'
+            | 'pegasi'
             | 'pilots'
             | 'pirate'
             | 'plains'
@@ -625,6 +783,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'prisms'
             | 'rabbit'
             | 'rabiah'
+            | 'ranger'
             | 'rebels'
             | 'rhinos'
             | 'rigger'
@@ -636,6 +795,8 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'servos'
             | 'shades'
             | 'shaman'
+            | 'shards'
+            | 'sharks'
             | 'shrine'
             | 'sirens'
             | 'sliths'
@@ -667,6 +828,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'wombat'
             | 'wraith'
             | 'yanggu'
+            | 'zariel'
             | 'zombie'
             | 'zubera'
             | 'ajani'
@@ -675,11 +837,16 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'atogs'
             | 'auras'
             | 'azgol'
+            | 'bards'
+            | 'basri'
             | 'bears'
             | 'beast'
             | 'birds'
             | 'boars'
+            | 'bolas'
+            | 'calix'
             | 'camel'
+            | 'class'
             | 'clues'
             | 'crabs'
             | 'curse'
@@ -695,22 +862,26 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'dwarf'
             | 'elder'
             | 'elves'
+            | 'foods'
             | 'foxes'
             | 'frogs'
             | 'fungi'
             | 'gates'
             | 'germs'
             | 'giant'
+            | 'gnoll'
             | 'gnome'
             | 'goats'
             | 'golem'
+            | 'grist'
             | 'harpy'
             | 'hippo'
             | 'horse'
-            | 'hound'
             | 'human'
             | 'hydra'
             | 'hyena'
+            | 'jeska'
+            | 'kaito'
             | 'kavus'
             | 'kiora'
             | 'kirin'
@@ -719,17 +890,22 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'leech'
             | 'licid'
             | 'locus'
+            | 'lolth'
+            | 'lukka'
             | 'mines'
             | 'moles'
             | 'monks'
+            | 'mouse'
             | 'nagas'
             | 'ninja'
             | 'nissa'
+            | 'noble'
             | 'nomad'
             | 'nymph'
             | 'ogres'
             | 'oozes'
             | 'orggs'
+            | 'otter'
             | 'ouphe'
             | 'pests'
             | 'pilot'
@@ -739,6 +915,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'rhino'
             | 'rogue'
             | 'rowan'
+            | 'runes'
             | 'sable'
             | 'sagas'
             | 'samut'
@@ -746,8 +923,10 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'scion'
             | 'scout'
             | 'serfs'
+            | 'serra'
             | 'servo'
             | 'shade'
+            | 'shark'
             | 'sheep'
             | 'siren'
             | 'slith'
@@ -760,25 +939,30 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'swamp'
             | 'traps'
             | 'troll'
+            | 'tyvar'
             | 'valla'
             | 'walls'
             | 'weird'
             | 'whale'
             | 'worms'
+            | 'wrenn'
             | 'wurms'
             | 'xerex'
             | 'ally'
             | 'apes'
+            | 'army'
             | 'atog'
+            | 'aura'
             | 'azra'
+            | 'bard'
             | 'bats'
             | 'bear'
             | 'bird'
             | 'boar'
             | 'cats'
-            | 'clue'
             | 'crab'
             | 'dack'
+            | 'dogs'
             | 'eggs'
             | 'elks'
             | 'eyes'
@@ -799,11 +983,13 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'koth'
             | 'lair'
             | 'loci'
+            | 'mice'
             | 'moag'
             | 'mole'
             | 'monk'
             | 'myrs'
             | 'naga'
+            | 'niko'
             | 'ogre'
             | 'ooze'
             | 'orbs'
@@ -813,13 +999,17 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'pest'
             | 'rath'
             | 'rats'
+            | 'rune'
             | 'saga'
             | 'sand'
             | 'serf'
             | 'slug'
+            | 'szat'
+            | 'teyo'
             | 'ugin'
             | 'vryn'
             | 'wall'
+            | 'will'
             | 'wolf'
             | 'worm'
             | 'wurm'
@@ -827,6 +1017,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'ape'
             | 'bat'
             | 'cat'
+            | 'dog'
             | 'elf'
             | 'elk'
             | 'eye'
@@ -836,6 +1027,7 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'imp'
             | 'kor'
             | 'myr'
+            | 'oko'
             | 'orb'
             | 'orc'
             | 'ral'
@@ -844,6 +1036,8 @@ OBJ_SUBTYPE : 'assembly-workers'
             | 'ox';
 PROLIFERATE : 'proliferates'
             | 'proliferate';
+RECONFIGURE : 'reconfigures'
+            | 'reconfigure';
 REGENERATED : 'regenerated';
 SACRIFICING : 'sacrificing';
 TOTEM_ARMOR : 'totem armor';
@@ -851,7 +1045,6 @@ TRANSFIGURE : 'transfigure';
 TRANSFORMED : 'transformed';
 TYPECYCLING : 'typecycling';
 UNATTACHING : 'unattaching';
-
 ABANDONING : 'abandoning';
 ACTIVATING : 'activating';
 ACTIVATION : 'activations'
@@ -869,6 +1062,7 @@ ARB_CHOICE : 'condemnation'
            | 'denial'
            | 'friend'
            | 'homage'
+           | 'mirran'
            | 'sprout'
            | 'grace'
            | 'khans'
@@ -884,12 +1078,14 @@ ASSIGNMENT : 'assignment';
 BATTLE_CRY : 'battle cry';
 CHAMPIONED : 'championed';
 CHANGELING : 'changeling';
+COMPLEATED : 'compleated';
 CONTROLLED : 'controlled';
 CONTROLLER : 'controllers'
            | 'controller';
 COUNTERING : 'countering';
 DEATHTOUCH : 'deathtouch';
 DESTROYING : 'destroying';
+DETERMINED : 'determined';
 DIFFERENCE : 'difference';
 DISCARDING : 'discarding';
 DISTRIBUTE : 'distributes'
@@ -904,15 +1100,14 @@ FATESEALED : 'fatesealed';
 GRAVESTORM : 'gravestorm';
 IMPROVISED : 'improvised';
 INTIMIDATE : 'intimidate';
-MANA_VALUE : 'mana value';
 MANIFESTED : 'manifested';
-MEDITATION : 'meditation';
 ORIGINALLY : 'originally';
 OVERLOADED : 'overloaded';
 PHASED_OUT : 'phased-out';
 PHENOMENON : 'phenomenon'
            | 'phenomena';
-PLANAR_DIE : 'planar die';
+PLANAR_DIE : 'planar dice'
+           | 'planar die';
 PLANESWALK : 'planeswalks'
            | 'planeswalk';
 POPULATING : 'populating';
@@ -928,19 +1123,19 @@ RESELECTED : 'reselected';
 RESOLUTION : 'resolution';
 RESTARTING : 'restarting';
 SACRIFICED : 'sacrificed';
+SUBTRACTED : 'subtracted';
 TRANSMUTED : 'transmuted';
 UNATTACHED : 'unattached';
-
 ABANDONED : 'abandoned';
 ABSORBING : 'absorbing';
 ACTIVATED : 'activated';
 AFFLICTED : 'afflicted';
+AFTERLIFE : 'afterlife';
 AFTERMATH : 'aftermath';
 AMPLIFIED : 'amplified';
 ASSEMBLED : 'assembled';
 ASSIGNING : 'assigning';
 ATTACHING : 'attaching';
-ATTACKERS : 'attackers';
 ATTACKING : 'attacking';
 AURA_SWAP : 'aura swap';
 BEGINNING : 'beginning';
@@ -948,6 +1143,8 @@ BOLSTERED : 'bolstered';
 COLORLESS : 'colorless';
 COMMANDER : 'commanders'
           | 'commander';
+COMPANION : 'companion';
+COMPLETED : 'completed';
 CONSPIRED : 'conspired';
 CONTAINED : 'contained';
 CONTINUED : 'continued';
@@ -957,9 +1154,12 @@ COUNTERED : 'countered';
 DECLARING : 'declaring';
 DEFENDING : 'defending';
 DESTROYED : 'destroyed';
+DETERMINE : 'determines'
+          | 'determine';
 DIFFERENT : 'different';
 DIRECTION : 'direction';
 DISCARDED : 'discarded';
+DISTURBED : 'disturbed';
 ENCHANTED : 'enchanted';
 EQUIPPING : 'equipping';
 ESCALATED : 'escalated';
@@ -985,10 +1185,12 @@ JUMPSTART : 'jump-starts'
 LEGENDARY : 'legendary';
 MEGAMORPH : 'megamorph';
 MONSTROUS : 'monstrous';
+OBJ_TOKEN : 'walker';
 OTHERWISE : 'otherwise';
 OWNERSHIP : 'ownership';
 PERMANENT : 'permanents'
           | 'permanent';
+PHYREXIAN : 'phyrexian';
 POISONOUS : 'poisonous';
 POPULATED : 'populated';
 PRECOMBAT : 'precombat';
@@ -1012,12 +1214,14 @@ SHUFFLING : 'shuffling';
 SIDEBOARD : 'sideboards'
           | 'sideboard';
 SOULSHIFT : 'soulshift';
+SPECTACLE : 'spectacle';
 SUPERTYPE : 'supertypes'
           | 'supertype';
 SUPPORTED : 'supported';
 SURVELLED : 'surveilled';
 SUSPENDED : 'suspended';
-TOUGHNESS : 'toughness';
+TOUGHNESS : 'toughnesses'
+          | 'toughness';
 TRAMPLING : 'trampling';
 TRANSFORM : 'transforms'
           | 'transform';
@@ -1032,7 +1236,6 @@ UNLEASHED : 'unleashed';
 UNTAPPING : 'untapping';
 VANISHING : 'vanishing';
 VIGILANCE : 'vigilance';
-
 ABSORBED : 'absorbed';
 ACCEPTED : 'accepted';
 ACTIVATE : 'activates'
@@ -1049,15 +1252,18 @@ ASSIGNED : 'assigned';
 ASSISTED : 'assisted';
 ATTACHED : 'attached';
 ATTACKED : 'attacked';
+ATTACKER : 'attackers'
+         | 'attacker';
 AWAKENED : 'awakened';
 BESTOWED : 'bestowed';
-BLOCKERS : 'blockers';
 BLOCKING : 'blocking';
 CHAMPION : 'champions'
          | 'champion';
 CHANGING : 'changing';
 CHOOSING : 'choosing';
 CLASHING : 'clashing';
+COMPLETE : 'completes'
+         | 'complete';
 CONSPIRE : 'conspires'
          | 'conspire';
 CONTINUE : 'continues'
@@ -1093,6 +1299,9 @@ FLANKING : 'flanking';
 FLIPPING : 'flipping';
 FOLLOWED : 'followed';
 FORECAST : 'forecast';
+FORETELL : 'foretells'
+         | 'foretell';
+FORETOLD : 'foretold';
 GREATEST : 'greatest';
 GUESSING : 'guessing';
 HAUNTING : 'haunting';
@@ -1110,6 +1319,7 @@ LIFELINK : 'lifelink';
 LIKEWISE : 'likewise';
 MANIFEST : 'manifests'
          | 'manifest';
+MODIFIED : 'modified';
 MULLIGAN : 'mulligan';
 NINJUTSU : 'ninjutsu';
 OFFERING : 'offering';
@@ -1118,10 +1328,10 @@ OPPONENT : 'opponents'
 ORIGINAL : 'original';
 OVERLOAD : 'overloads'
          | 'overload';
-PHYREXIA : 'phyrexia';
 POISONED : 'poisoned';
 POPULATE : 'populates'
          | 'populate';
+PREVIOUS : 'previous';
 PRODUCED : 'produced';
 PROVOKED : 'provoked';
 RECENTLY : 'recently';
@@ -1135,6 +1345,7 @@ RESELECT : 'reselects'
 RESOLVED : 'resolved';
 RETURNED : 'returned';
 REVEALED : 'revealed';
+REVERSED : 'reversed';
 SCAVENGE : 'scavenges'
          | 'scavenge';
 SEARCHED : 'searched';
@@ -1145,11 +1356,14 @@ SEPARATE : 'separates'
 SHUFFLED : 'shuffled';
 SOULBOND : 'soulbond';
 STARTING : 'starting';
+SUBTRACT : 'subtracts'
+         | 'subtract';
 SUNBURST : 'sunburst';
 SWITCHED : 'switched';
 TARGETED : 'targeted';
 TEAMMATE : 'teammates'
          | 'teammate';
+TRAINING : 'training';
 TRAMPLED : 'trampled';
 TREASURE : 'treasure';
 UNATTACH : 'unattaches'
@@ -1159,14 +1373,16 @@ UNPAIRED : 'unpaired';
 UNTAPPED : 'untapped';
 VANGUARD : 'vanguards'
          | 'vanguard';
-
+VENTURED : 'ventured';
 ABANDON : 'abandons'
         | 'abandon';
 ABILITY : 'abilities'
         | 'ability';
+ADAPTED : 'adapted';
 AFFLICT : 'afflicts'
         | 'afflict';
 ALREADY : 'already';
+AMASSED : 'amassed';
 AMPLIFY : 'amplifies'
         | 'amplify';
 ANOTHER : 'another';
@@ -1175,6 +1391,8 @@ BANDING : 'banding';
 BETWEEN : 'between';
 BIDDING : 'bidding';
 BLOCKED : 'blocked';
+BLOCKER : 'blockers'
+        | 'blocker';
 BOLSTER : 'bolsters'
         | 'bolster';
 BUSHIDO : 'bushido';
@@ -1192,13 +1410,14 @@ CONTROL : 'controls'
         | 'control';
 CONVOKE : 'convokes'
         | 'convoke';
-COUNCIL : 'council';
+COPYING : 'copying';
 COUNTED : 'counted';
 COUNTER : 'counters'
         | 'counter';
 CREATED : 'created';
 CYCLING : 'cycling';
 DEALING : 'dealing';
+DECAYED : 'decayed';
 DECIDED : 'decided';
 DECLARE : 'declares'
         | 'declare';
@@ -1206,10 +1425,14 @@ DESTROY : 'destroys'
         | 'destroy';
 DISCARD : 'discards'
         | 'discard';
+DISTURB : 'disturbs'
+        | 'disturb';
 DIVIDED : 'divided';
 DOUBLED : 'doubled';
 DRAFTED : 'drafted';
 DRAGONS : 'dragons';
+DUNGEON : 'dungeons'
+        | 'dungeon';
 EMERGED : 'emerged';
 EMPTIED : 'emptied';
 ENCHANT : 'enchants'
@@ -1217,6 +1440,7 @@ ENCHANT : 'enchants'
 ENCODED : 'encoded';
 ENTERED : 'entered';
 ENTWINE : 'entwine';
+ESCAPED : 'escaped';
 EVOLVED : 'evolved';
 EXACTLY : 'exactly';
 EXALTED : 'exalted';
@@ -1232,6 +1456,7 @@ FEATHER : 'feather';
 FLIPPED : 'flipped';
 FORTIFY : 'fortifies'
         | 'fortify';
+GENERIC : 'generic';
 GOADING : 'goading';
 GRAFTED : 'grafted';
 GREATER : 'greater';
@@ -1245,18 +1470,20 @@ ILLEGAL : 'illegal';
 INSTANT : 'instants'
         | 'instant';
 INSTEAD : 'instead';
+LEARNED : 'learned';
 LEAVING : 'leaving';
 LIBRARY : 'libraries'
         | 'library';
 LOYALTY : 'loyalty';
 MADNESS : 'madness';
-MASTERY : 'mastery';
 MAXIMUM : 'maximum';
 MINIMUM : 'minimum';
 MIRACLE : 'miracle';
 MODULAR : 'modular';
 MONARCH : 'monarchs'
         | 'monarch';
+MUTATED : 'mutated';
+NATURAL : 'natural';
 NEAREST : 'nearest';
 NEITHER : 'neither';
 OFFERED : 'offered';
@@ -1281,6 +1508,8 @@ PROVOKE : 'provokes'
         | 'provoke';
 PROWESS : 'prowess';
 PUTTING : 'putting';
+QUALITY : 'qualities'
+        | 'quality';
 RAMPAGE : 'rampage';
 REBOUND : 'rebound';
 RECOVER : 'recovers'
@@ -1297,6 +1526,8 @@ RESOLVE : 'resolves'
 RESTART : 'restarts'
         | 'restart';
 RETRACE : 'retrace';
+REVERSE : 'reverses'
+        | 'reverse';
 ROLLING : 'rolling';
 ROUNDED : 'rounded';
 SCRYING : 'scrying';
@@ -1322,21 +1553,24 @@ SUSPEND : 'suspends'
         | 'suspend';
 SWAPPED : 'swapped';
 TAPPING : 'tapping';
+TRAINED : 'trained';
 TRAMPLE : 'tramples'
         | 'trample';
 TRIBUTE : 'tribute';
 TRIGGER : 'triggers'
         | 'trigger';
+TRIPLED : 'tripled';
 UNDYING : 'undying';
 UNEARTH : 'unearths'
         | 'unearth';
 UNLEASH : 'unleashes'
         | 'unleash';
 UNSPENT : 'unspent';
+VENTURE : 'ventures'
+        | 'venture';
 WHETHER : 'whether';
 WINNING : 'winning';
 WITHOUT : 'without';
-
 ABSORB : 'absorbs'
        | 'absorb';
 ACCEPT : 'accepts'
@@ -1379,8 +1613,10 @@ CHOOSE : 'chooses'
        | 'choose';
 CHOSEN : 'chosen';
 CIPHER : 'cipher';
+CLEAVE : 'cleave';
 COMBAT : 'combat';
 COMMON : 'common';
+COPIED : 'copied';
 CREATE : 'creates'
        | 'create';
 CREWED : 'crewed';
@@ -1410,7 +1646,10 @@ EMERGE : 'emerges'
        | 'emerge';
 ENCODE : 'encodes'
        | 'encode';
+ENCORE : 'encore';
 ENDING : 'ending';
+ESCAPE : 'escapes'
+       | 'escape';
 EVENLY : 'evenly';
 EVOKED : 'evoked';
 EVOLVE : 'evolves'
@@ -1450,7 +1689,10 @@ MARKED : 'marked';
 MELDED : 'melded';
 MENACE : 'menace';
 MENTOR : 'mentor';
+MILLED : 'milled';
 MOVING : 'moving';
+MUTATE : 'mutates'
+       | 'mutate';
 MYRIAD : 'myriad';
 NUMBER : 'numbers'
        | 'number';
@@ -1478,6 +1720,8 @@ REMOVE : 'removes'
 RENOWN : 'renown';
 REPEAT : 'repeats'
        | 'repeat';
+RESULT : 'results'
+       | 'result';
 RETURN : 'returns'
        | 'return';
 REVEAL : 'reveals'
@@ -1501,7 +1745,6 @@ SOURCE : 'sources'
 SPLICE : 'splices'
        | 'splice';
 STAKES : 'stakes';
-STRIKE : 'strike';
 SURGED : 'surged';
 SWITCH : 'switches'
        | 'switch';
@@ -1513,20 +1756,23 @@ TARGET : 'targets'
 THOUGH : 'though';
 TRIBAL : 'tribals'
        | 'tribal';
+TRIPLE : 'triples'
+       | 'triple';
 TURNED : 'turned';
 UNLESS : 'unless';
 UPKEEP : 'upkeeps'
        | 'upkeep';
 VOTING : 'voting';
 WITHER : 'wither';
-
 ABOVE : 'above';
-ADAPT : 'adapt';
+ADAPT : 'adapts'
+      | 'adapt';
 ADDED : 'added';
 AFTER : 'after';
 AGAIN : 'again';
 ALONE : 'alone';
-AMASS : 'amass';
+AMASS : 'amasses'
+      | 'amass';
 AMONG : 'among';
 ANTED : 'anted';
 APPLY : 'applies'
@@ -1540,7 +1786,8 @@ BELOW : 'below';
 BLACK : 'black';
 BLOCK : 'blocks'
       | 'block';
-BOLAS : 'bolas';
+BLOOD : 'blood';
+BOAST : 'boast';
 CAUSE : 'causes'
       | 'cause';
 CHOSE : 'chose';
@@ -1560,6 +1807,7 @@ DOING : 'doing';
 DRAFT : 'drafts'
       | 'draft';
 DRAWN : 'drawn';
+DYING : 'dying';
 EMPTY : 'empties'
       | 'empty';
 ENDED : 'ended';
@@ -1580,8 +1828,8 @@ EXTRA : 'extra';
 FEWER : 'fewer';
 FIGHT : 'fights'
       | 'fight';
-FIRST : 'first';
 FLASH : 'flash';
+FOUND : 'found';
 FUSED : 'fused';
 GRAFT : 'grafts'
       | 'graft';
@@ -1593,7 +1841,8 @@ HAUNT : 'haunts'
       | 'haunt';
 HEADS : 'heads';
 LABEL : 'label';
-LEARN : 'learn';
+LEARN : 'learns'
+      | 'learn';
 LEAST : 'least';
 LEAVE : 'leaves'
       | 'leave';
@@ -1603,9 +1852,11 @@ LOWER : 'lower';
 MAGIC : 'magic';
 MELEE : 'melee';
 MINUS : 'minus';
+MORE_ : 'more';
 MORPH : 'morph';
 MOVED : 'moved';
 NAMED : 'named';
+NIGHT : 'night';
 NOTED : 'noted';
 OFFER : 'offers'
       | 'offer';
@@ -1622,17 +1873,20 @@ PLACE : 'places'
 PLANE : 'planes'
       | 'plane';
 POINT : 'point';
-POWER : 'power';
+POWER : 'powers'
+      | 'power';
 PROWL : 'prowl';
 REACH : 'reach';
-REALM : 'realm';
 RIGHT : 'right';
 ROUND : 'rounds'
       | 'round';
+SHARD : 'shard';
 SHARE : 'shares'
       | 'share';
 SHORT : 'short';
 SINCE : 'since';
+SKIP_ : 'skips'
+      | 'skip';
 SKULK : 'skulk';
 SPELL : 'spells'
       | 'spell';
@@ -1659,6 +1913,8 @@ TOKEN : 'tokens'
 TOTAL : 'totals'
       | 'total';
 TOWER : 'tower';
+TRAIN : 'trains'
+      | 'train';
 TWICE : 'twice';
 TYING : 'tying';
 UNDER : 'under';
@@ -1666,7 +1922,8 @@ UNTAP : 'untaps'
       | 'untap';
 UNTIL : 'until';
 USING : 'using';
-VALUE : 'value';
+VALUE : 'values'
+      | 'value';
 VOTED : 'voted';
 VOTER : 'voters'
       | 'voter';
@@ -1679,12 +1936,10 @@ WHOSE : 'whose';
 WORLD : 'world';
 WOULD : 'would';
 WRONG : 'wrong';
-
 ABLE : 'able';
 ALSO : 'also';
 ANTE : 'antes'
      | 'ante';
-AURA : 'aura';
 BACK : 'back';
 BAND : 'bands'
      | 'band';
@@ -1697,6 +1952,7 @@ CARD : 'cards'
      | 'card';
 CAST : 'casts'
      | 'cast';
+CLUE : 'clue';
 COIN : 'coins'
      | 'coin';
 COME : 'comes'
@@ -1712,7 +1968,9 @@ DEAL : 'deals'
      | 'deal';
 DECK : 'decks'
      | 'deck';
+DICE : 'dice';
 DIED : 'died';
+DONE : 'done';
 DOWN : 'down';
 DRAW : 'draws'
      | 'draw';
@@ -1723,8 +1981,11 @@ ELSE : 'else';
 EPIC : 'epic';
 EVEN : 'even';
 FEAR : 'fear';
+FIND : 'finds'
+     | 'find';
 FLIP : 'flips'
      | 'flip';
+FOOD : 'food';
 FROM : 'from';
 FULL : 'full';
 FUSE : 'fuses'
@@ -1738,9 +1999,13 @@ GIVE : 'gives'
      | 'give';
 GOAD : 'goads'
      | 'goad';
+GOLD : 'gold';
 HALF : 'half';
 HAND : 'hands'
      | 'hand';
+HAVE : 'have'
+     | '\'ve'
+     | 'has';
 HIDE : 'hides'
      | 'hide';
 HIGH : 'high';
@@ -1774,7 +2039,6 @@ MILL : 'mills'
 MINE : 'mine';
 MODE : 'modes'
      | 'mode';
-MORE_: 'more'; // Add underscore because MORE is reserved
 MOST : 'most';
 MOVE : 'moves'
      | 'move';
@@ -1804,14 +2068,13 @@ PLUS : 'plus';
 POOL : 'pools'
      | 'pool';
 REST : 'rest';
+RIOT : 'riot';
 ROLL : 'rolls'
      | 'roll';
 SAME : 'same';
 SCRY : 'scries'
      | 'scry';
 SIZE : 'size';
-SKIP_: 'skips' // Add underscore because SKIP is reserved
-     | 'skip';
 SNOW : 'snow';
 SOME : 'some';
 STEP : 'steps'
@@ -1844,18 +2107,16 @@ USED : 'used';
 VOTE : 'votes'
      | 'vote';
 WALK : 'walk';
+WARD : 'ward';
 WHEN : 'whenever'
      | 'when';
 WHOM : 'whom';
-WILL : 'will';
 WITH : 'with';
 WORD : 'words'
      | 'word';
-YOUR : 'yours'
-     | 'your';
+YOUR : 'your';
 ZONE : 'zones'
      | 'zone';
-
 ADD : 'adds'
     | 'add';
 ALL : 'all';
@@ -1865,6 +2126,10 @@ BID : 'bids'
     | 'bid';
 BUT : 'but';
 CAN : 'can';
+D10 : 'd10';
+D12 : 'd12';
+D20 : 'd20';
+DAY : 'day';
 DID : 'did';
 DIE : 'dies'
     | 'die';
@@ -1877,9 +2142,6 @@ GET : 'gets'
     | 'get';
 GOT : 'got';
 HAD : 'had';
-HAS : 'have'
-    | '\'ve'
-    | 'has';
 HER : 'her';
 HID : 'hid';
 HIM : 'him';
@@ -1924,11 +2186,13 @@ WIN : 'wins'
 WON : 'won';
 YET : 'yet';
 YOU : 'you';
-
 AS : 'as';
 AT : 'at';
 BE : 'be';
 BY : 'by';
+D4 : 'd4';
+D6 : 'd6';
+D8 : 'd8';
 DO : 'does'
    | 'do';
 HE : 'he';
@@ -1939,6 +2203,7 @@ IS : '\'re'
    | 'are'
    | 'is';
 IT : 'it';
+IV : 'iv';
 NO : 'no';
 OF : 'of';
 ON : 'on';
@@ -1946,7 +2211,6 @@ OR : 'or';
 SO : 'so';
 TO : 'to';
 UP : 'up';
-
 A : 'an'
   | 'a';
 I : 'i';
