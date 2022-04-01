@@ -16,11 +16,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with Demystify.  If not, see <http://www.gnu.org/licenses/>.
 
-"""keywords -- Library of Magic: The Gathering terms.
+""" words -- Library of Magic: The Gathering terms.
 
-If run as a script, automatically outputs an ANTLR v3 lexer grammar, Words.g,
-which forms the vast majority of Demystify's language, and an ANTLR v3 parser
-grammar, macro.g, which combines similar tokens into parser rules. """
+If run as a script, automatically outputs an ANTLR v4 lexer grammar, Words.g4,
+which forms the vast majority of Demystify's language, and an ANTLR v4 parser
+grammar, macro.g4, which combines similar tokens into parser rules. """
 
 # Because Magic is essentially a subset of English language, we need to
 # include multiple parts of speech for every word. For verbs, we need
@@ -41,12 +41,15 @@ grammar, macro.g, which combines similar tokens into parser rules. """
 # all existing Magic cards.
 
 # Some keywords are technically multiple words, such as "first strike" and
-# "cumulative upkeep". For lexing clarity, these are tokenized separately
-# if the first word appears elsewhere in Magic's vocabulary. Hence "first
-# strike" will be split into "first" and "strike" while "cumulative upkeep"
-# will not be split at all.
+# "cumulative upkeep". For lexing clarity, these are tokenized as a single
+# token. "first strike" will be tokenized to FIRST_STRIKE. This won't be a
+# problem since the lexer automatically tries to cover as many characters
+# as possible for each token. Hence, "first strike" is seen as single unit
+# while "first turn" will still be separated as it should.
 
-class Keyword(object):
+from stringcase import camelcase
+
+class Keyword:
     """ Common superclass for the types of words that are used here.
         Allows export of a mini-dictionary that contains words and tokens. """
     def __init__(self, *tokenlists):
@@ -142,9 +145,12 @@ _actions = [
             ("DIVISION", "division")),
     Verb(   ("DO", "do", "does"),
             ("DID", "did"),
-            ("DOING", "doing")),
+            ("DOING", "doing"),
+            ("DONE", "done")),
     Verb(   ("DOUBLE", "double", "doubles"),
             ("DOUBLED", "doubled")),
+    Verb(   ("TRIPLE", "triple", "triples"),
+            ("TRIPLED", "tripled")),
     Verb(   ("DRAW", "draw", "draws"),
             ("DREW", "drew")),
     Verb(   ("EMPTY", "empty", "empties"),
@@ -222,6 +228,8 @@ _actions = [
             ("RESTARTING", "restarting")),
     Verb(   ("RETURN", "return", "returns"),
             ("RETURNED", "returned")),
+    Verb(   ("REVERSE", "reverse", "reverses"),
+            ("REVERSED", "reversed")),
     Verb(   ("ROLL", "roll", "rolls"),
             ("ROLLED", "rolled"),
             ("ROLLING", "rolling")),
@@ -229,7 +237,7 @@ _actions = [
             ("SELECTED", "selected")),
     Verb(   ("SEPARATE", "separate", "separates"),
             ("SEPARATED", "separated")),
-    Verb(   ("SKIP", "skip", "skips"),
+    Verb(   ("SKIP_", "skip", "skips"),
             ("SKIPPED", "skipped")),
     Verb(   ("SPEND", "spend", "spends"),
             ("SPENT", "spent")),
@@ -266,6 +274,9 @@ _actions = [
     Verb(   ("COUNTER", "counter", "counters"),
             ("COUNTERED", "countered"),
             ("COUNTERING", "countering")),
+    Verb(   ("COPY", "copy", "copies"),
+            ("COPIED", "copied"),
+            ("COPYING", "copying")),
     Verb(   ("CREATE", "create", "creates"),
             ("CREATED", "created")),
     Verb(   ("DESTROY", "destroy", "destroys"),
@@ -283,6 +294,8 @@ _actions = [
             ("EXILING", "exiling")),
     Verb(   ("FIGHT", "fight", "fights"),
             ("FOUGHT", "fought")),
+    Verb(   ("MILL", "mill", "mills"),
+            ("MILLED", "milled")),
     Verb(   ("PAIR", "pair", "pairs"),
             ("PAIRED", "paired")),
     Verb(   ("PLAY", "play", "plays"),
@@ -315,6 +328,10 @@ _actions = [
             ("UNTAPPING", "untapping")),
          
     # non-core keyword actions
+    Verb(   ("ADAPT", "adapt", "adapts"),
+            ("ADAPTED", "adapted")),
+    Verb(   ("AMASS", "amass", "amasses"),
+            ("AMASSED", "amassed")),
     Verb(   ("BOLSTER", "bolster", "bolsters"),
             ("BOLSTERED", "bolstered")),
     Verb(   ("CLASH", "clash", "clashes"),
@@ -335,6 +352,8 @@ _actions = [
             ("GOADING", "goading")),
     Verb(   ("INVESTIGATE", "investigate", "investigates"),
             ("INVESTIGATED", "investigated")),
+    Verb(   ("LEARN", "learn", "learns"),
+            ("LEARNED", "learned")),
     Verb(   ("MANIFEST", "manifest", "manifests"),
             ("MANIFESTED", "manifested")),
     Verb(   ("MELD", "meld", "melds"),
@@ -353,6 +372,10 @@ _actions = [
             ("SURVELLED", "surveilled")),
     Verb(   ("TRANSFORM", "transform", "transforms"),
             ("TRANSFORMED", "transformed")),
+    Verb(   ("VENTURE", "venture", "ventures"),  # "venture into the dungeon"
+            ("VENTURED", "ventured")),
+    Verb(   ("COMPLETE", "complete", "completes"),  # "complete Tomb of Annihilation"
+            ("COMPLETED", "completed")),
 
     # special
     Verb(   ("ABANDON", "abandon", "abandons"),
@@ -391,7 +414,8 @@ _actions = [
             ("DEALT", "dealt"),
             ("DEALING", "dealing")),
     Verb(   ("DIE", "die", "dies"),
-            ("DIED", "died")),
+            ("DIED", "died"),
+            ("DYING", "dying")),
     Verb(   ("DRAFT", "draft", "drafts"),
             ("DRAFTED", "drafted"),
             ("DRAFTING", "drafting")),
@@ -438,7 +462,7 @@ _actions = [
             ("COULD", "could")),
     Verb(   ("IS", "is", "are", "'re"),
             ("WAS", "was", "were")),
-    Verb(   ("HAS", "has", "have", "'ve"),
+    Verb(   ("HAVE", "has", "have", "'ve"),
             ("HAD", "had"),
             ("HAVING", "having")),
     Keyword(("MAY", "may")),
@@ -479,6 +503,7 @@ _abilities = [
             ("TRAMPLED", "trampled"),
             ("TRAMPLING", "trampling")),
     Keyword(("VIGILANCE", "vigilance")),
+    Keyword(("WARD", "ward")),
 
     # set/block-specific "expert level expansions"
     Verb(   ("ABSORB", "absorb", "absorbs"),
@@ -488,6 +513,7 @@ _abilities = [
     Verb(   ("AFFLICT", "afflict", "afflicts"),
             ("AFFLICTED", "afflicted")),
     Keyword(("AFTERMATH", "aftermath")),
+    Keyword(("AFTERLIFE", "afterlife")),
     Verb(   ("AMPLIFY", "amplify", "amplifies"),
             ("AMPLIFIED", "amplified")),
     Keyword(("ANNIHILATOR", "annihilator")),
@@ -503,6 +529,7 @@ _abilities = [
     Verb(   ("BESTOW", "bestow"),
             ("BESTOWED", "bestowed")),
     Keyword(("BLOODTHIRST", "bloodthirst")),
+    Keyword(("BOAST", "boast")),
     Keyword(("BUSHIDO", "bushido")),
     Keyword(("BUYBACK", "buyback")),
     Keyword(("CASCADE", "cascade")),
@@ -511,8 +538,9 @@ _abilities = [
     Keyword(("CHANGELING", "changeling")),
     Keyword(("CIPHER", "cipher")),
     Keyword(("CITYS_BLESSING", "city's blessing")),
-    Verb(   ("ENCODE", "encode", "encodes"),
-            ("ENCODED", "encoded")),
+    Keyword(("CLEAVE", "cleave")),
+    Keyword(("COMPANION", "companion")),
+    Keyword(("COMPLEATED", "compleated")),
     Verb(   ("CONSPIRE", "conspire", "conspires"),
             ("CONSPIRED", "conspired")),
     Verb(   ("CONVOKE", "convoke", "convokes"),
@@ -524,21 +552,32 @@ _abilities = [
             ("CYCLED", "cycled"),
             ("CYCLING", "cycling")),
     Keyword(("DASH", "dash")),
+    Keyword(("DAY", "day")),
+    Keyword(("NIGHT", "night")),
+    Keyword(("DECAYED", "decayed")),
     Keyword(("DELVE", "delve")),
+    Keyword(("DEMONSTRATE", "demonstrate")),
     Keyword(("DETHRONE", "dethrone")),
     Keyword(("DEVOID", "devoid")),
     Verb(   ("DEVOUR", "devour", "devours"),
             ("DEVOURED", "devoured")),
+    Verb(   ("DISTURB", "disturb", "disturbs"),
+            ("DISTURBED", "disturbed")),
     Keyword(("DREDGE", "dredge")),
     Keyword(("ECHO", "echo")),
     Verb(   ("EMBALM", "embalm", "embalms"),
             ("EMBALMED", "embalmed")),
     Verb(   ("EMERGE", "emerge", "emerges"),
             ("EMERGED", "emerged")),
+    Verb(   ("ENCODE", "encode", "encodes"),
+            ("ENCODED", "encoded")),
+    Keyword(("ENCORE", "encore")),
     Keyword(("ENTWINE", "entwine")),
     Keyword(("EPIC", "epic")),
     Verb(   ("ESCALATE", "escalate", "escalates"),
             ("ESCALATED", "escalated")),
+    Verb(   ("ESCAPE", "escape", "escapes"),
+            ("ESCAPED", "escaped")),
     Verb(   ("ETERNALIZE", "eternalize", "eternalizes"),
             ("ETERNALIZED", "eternalized")),
     Verb(   ("EVOKE", "evoke", "evokes"),
@@ -556,8 +595,12 @@ _abilities = [
     Keyword(("FLANKING", "flanking")),
     Keyword(("FLASHBACK", "flashback")),
     Keyword(("FORECAST", "forecast")),
+    Verb(   ("FORETELL", "foretell", "foretells"),
+            ("FORETOLD", "foretold"),
+            ("FORETELLING", "foretelling")),
     Verb(   ("FORTIFY", "fortify", "fortifies"),
             ("FORTIFIED", "fortified")),
+    Keyword(("FRIENDS_FOREVER", "friends forever")),
     Keyword(("FRENZY", "frenzy")),
     Verb(   ("FUSE", "fuse", "fuses"),
             ("FUSED", "fused")),
@@ -569,10 +612,10 @@ _abilities = [
             ("HAUNTING", "haunting")),
     Keyword(("HIDEAWAY", "hideaway")),
     Keyword(("HORSEMANSHIP", "horsemanship")),
-    # Sagas
-    Keyword(("I", "i")),
+    Keyword(("I", "i")),  # Sagas
     Keyword(("II", "ii")),
     Keyword(("III", "iii")),
+    Keyword(("IV", "iv")),
     Verb(   ("IMPROVISE", "improvise", "improvises"),
             ("IMPROVISED", "improvised")),
     Keyword(("INDESTRUCTIBLE", "indestructible")),
@@ -593,6 +636,8 @@ _abilities = [
     Keyword(("MODULAR", "modular")),
     Keyword(("MONSTROSITY", "monstrosity")),
     Keyword(("MORPH", "morph")),
+    Verb(   ("MUTATE", "mutate", "mutates"),
+            ("MUTATED", "mutated")),
     Keyword(("MYRIAD", "myriad")),
     Keyword(("MULTIKICKER", "multikicker")),
     Keyword(("NINJUTSU", "ninjutsu")),
@@ -602,7 +647,6 @@ _abilities = [
             ("OVERLOADED", "overloaded")),
     Noun("PARTNER", "partner", "partners"),
     Keyword(("PERSIST", "persist")),
-    # Phasing
     Verb(   ("PHASE", "phase", "phases"),
             ("PHASED", "phased"),
             ("PHASING", "phasing")),
@@ -613,6 +657,8 @@ _abilities = [
     Keyword(("PROWL", "prowl")),
     Keyword(("RAMPAGE", "rampage")),
     Keyword(("REBOUND", "rebound")),
+    Verb(   ("RECONFIGURE", "reconfigure", "reconfigures"),
+            ("RECONFIGURED", "reconfigured")),
     Verb(   ("RECOVER", "recover", "recovers"),
             ("RECOVERED", "recovered")),
     Verb(   ("REINFORCE", "reinforce", "reinforces"),
@@ -622,6 +668,7 @@ _abilities = [
     Verb(   ("REPLICATE", "replicate", "replicates"),
             ("REPLICATED", "replicated")),
     Keyword(("RETRACE", "retrace")),
+    Keyword(("RIOT", "riot")),
     Keyword(("RIPPLE", "ripple")),
     Verb(   ("SCAVENGE", "scavenge", "scavenges"),
             ("SCAVENGED", "scavenged")),
@@ -629,6 +676,7 @@ _abilities = [
     Keyword(("SKULK", "skulk")),
     Keyword(("SOULBOND", "soulbond")),
     Keyword(("SOULSHIFT", "soulshift")),
+    Keyword(("SPECTACLE", "spectacle")),
     Verb(   ("SPLICE", "splice", "splices"),
             ("SPLICED", "spliced")),
     Keyword(("SPLIT_SECOND", "split second")),
@@ -641,6 +689,9 @@ _abilities = [
     Verb(   ("SUSPEND", "suspend", "suspends"),
             ("SUSPENDED", "suspended")),
     Keyword(("TOTEM_ARMOR", "totem armor")),
+    Verb(   ("TRAIN", "train", "trains"),
+            ("TRAINED", "trained"),
+            ("TRAINING", "training")),
     Keyword(("TRANSFIGURE", "transfigure")),
     Verb(   ("TRANSMUTE", "transmute", "transmutes"),
             ("TRANSMUTED", "transmuted")),
@@ -667,6 +718,8 @@ for ability in _abilities:
 
 # These have no rules meaning but may show up in text.
 ability_words = [
+    "adamant",
+    "addendum",
     "battalion",
     "bloodrush",
     "channel",
@@ -675,6 +728,7 @@ ability_words = [
     "constellation",
     "converge",
     "council's dilemma",
+    "coven",
     "delirium",
     "domain",
     "eminence",
@@ -691,8 +745,10 @@ ability_words = [
     "kinship",
     "landfall",
     "lieutenant",
+    "magecraft",
     "metalcraft",
     "morbid",
+    "pack tactics",
     "parley",
     "radiance",
     "raid",
@@ -703,8 +759,102 @@ ability_words = [
     "sweep",
     "tempting offer",
     "threshold",
+    "underdog",
     "undergrowth",
     "will of the council",
+
+    # D&D flavor words
+    "acid breath",
+    "animate walking statue",
+    "antimagic cone",
+    "archery",
+    "astral projection",
+    "bardic inspiration",
+    "beacon of hope",
+    "bear form",
+    "befriend them",
+    "berserk",
+    "bewitching whispers",
+    "binding contract",
+    "brave the stench",
+    "break their chains",
+    "breathe flame",
+    "charge them",
+    "clever conjurer",
+    "climb over",
+    "circle of death",
+    "combat inspiration",
+    "cold breath",
+    "cone of cold",
+    "cunning action",
+    "cure wounds",
+    "dark one's own luck",
+    "dispel magic",
+    "displacement",
+    "dissolve",
+    "distract the guard",
+    "divine intervention",
+    "dominate monster",
+    "drag below",
+    "engulf",
+    "fear ray",
+    "fend them off",
+    "fight the current",
+    "find a crossing",
+    "fire breath",
+    "flurry of blows",
+    "focus beam",
+    "foil their scheme",
+    "form a party",
+    "gentle repose",
+    "grant an advantage",
+    "hide",
+    "interrogate them",
+    "intimidate them",
+    "invoke duplicity",
+    "journey on",
+    "keen senses",
+    "learn their secrets",
+    "life drain",
+    "lift the curse",
+    "lightning breath",
+    "mage hand",
+    "magical tinkering",
+    "make a retreat",
+    "make camp",
+    "mystic arcanum",
+    "negative energy cone",
+    "pact boon",
+    "perfect illumination",
+    "poison breath",
+    "pry it open",
+    "psionic spells",
+    "rappel down",
+    "rejuvenation",
+    "rouse the party",
+    "search the body",
+    "search the room",
+    "set off traps",
+    "siege monster",
+    "smash it",
+    "smash relics",
+    "smash the chest",
+    "sneak attack",
+    "song of rest",
+    "split",
+    "stand and fight",
+    "start a brawl",
+    "steal its eyes",
+    "stunning strike",
+    "tail spikes",
+    "teleport",
+    "tie up",
+    "tragic backstory",
+    "trapped!",
+    "two-weapon fighting",
+    "whirlwind",
+    "whispers of the grave",
+    "wild magic surge",
 ]
 
 # Object, player, and card types
@@ -733,6 +883,7 @@ _types = [
     Noun("PLANESWALKER", "planeswalker", "planeswalkers"),
     Noun("SORCERY", "sorcery", "sorceries"),
     Noun("TRIBAL", "tribal", "tribals"),
+    Noun("DUNGEON", "dungeon", "dungeons"),
 
     # Player types
     Noun("PLAYER", "player", "players"),
@@ -780,10 +931,13 @@ for t in _types:
 
 # Subtypes (generally nouns)
 _artifact_types = [
+    Noun("BLOOD", "blood", "blood"),
     Noun("CLUE", "clue", "clues"),
     Noun("CONTRAPTION", "contraption", "contraptions"),
-    Noun("EQUIPMENT", "equipment", "equipment"),
+    Noun("EQUIPMENT", "equipment", "equipments"),
+    Noun("FOOD", "food", "foods"),
     Noun("FORTIFICATION", "fortification", "fortifications"),
+    Noun("GOLD", "gold", "gold"),
     Noun("TREASURE", "treasure", "treasures"),
     Noun("VEHICLE", "vehicle", "vehicles"),
 ]
@@ -791,8 +945,11 @@ _artifact_types = [
 _enchantment_types = [
     Noun("AURA", "aura", "auras"),
     Noun("CARTOUCHE", "cartouche", "cartouche"),
+    Noun("CLASS", "class", "classes"),
     Noun("CURSE", "curse", "curses"),
+    Noun("RUNE", "rune", "runes"),
     Noun("SAGA", "saga", "sagas"),
+    Noun("SHARD", "shard", "shards"),
     Noun("SHRINE", "shrine", "shrines"),
 ]
 
@@ -818,52 +975,76 @@ _planeswalker_types = [
     "angrath",
     "arlinn",
     "ashiok",
+    "bahamut",
+    "basri",
     "bolas",
+    "calix",
     "chandra",
     "dack",
+    "dakkon",
     "daretti",
+    "davriel",
+    "dihada",
     "domri",
     "dovin",
+    "ellywick",
     "elspeth",
     "estrid",
     "freyalise",
     "garruk",
     "gideon",
+    "grist",
     "huatli",
     "jace",
     "jaya",
+    "jeska",
+    "kaito",
     "karn",
+    "kasmina",
     "kaya",
     "kiora",
     "koth",
     "liliana",
+    "lolth",
+    "lukka",
+    "mordenkainen",
     "nahiri",
     "narset",
+    "niko",
     "nissa",
     "nixilis",
+    "oko",
     "ral",
     "rowan",
     "saheeli",
     "samut",
     "sarkhan",
+    "serra",
     "sorin",
+    "szat",
     "tamiyo",
     "teferi",
+    "teyo",
     "tezzeret",
     "tibalt",
+    "tyvar",
     "ugin",
     "venser",
     "vivien",
     "vraska",
     "will",
     "windgrace",
+    "wrenn",
     "xenagos",
     "yanggu",
     "yanling",
+    "zariel",
 ]
 
 _spell_types = [
+    Keyword(("ADVENTURE", "adventure")),
     Keyword(("ARCANE", "arcane")),
+    Noun("LESSON", "lesson", "lessons"),
     Noun("TRAP", "trap", "traps"),
 ]
 
@@ -872,11 +1053,11 @@ _creature_types = [
     Noun("AETHERBORN", "aetherborn", "aetherborn"),
     Noun("ALLY", "ally", "allies"),
     Noun("ANGEL", "angel", "angels"),
-    Noun("ANTEATER", "anteater", "anteaters"),
     Noun("ANTELOPE", "antelope", "antelopes"),
     Noun("APE", "ape", "apes"),
     Noun("ARCHER", "archer", "archers"),
     Noun("ARCHON", "archon", "archons"),
+    Noun("ARMY", "army", "armies"),
     Noun("ARTIFICER", "artificer", "artificers"),
     Noun("ASSASSIN", "assassin", "assassins"),
     Noun("ASSEMBLY_WORKER", "assembly-worker", "assembly-workers"),
@@ -886,11 +1067,13 @@ _creature_types = [
     Noun("AZRA", "azra", "azra"),
     Noun("BADGER", "badger", "badgers"),
     Noun("BARBARIAN", "barbarian", "barbarians"),
+    Noun("BARD", "bard", "bards"),
     Noun("BASILISK", "basilisk", "basilisks"),
     Noun("BAT", "bat", "bats"),
     Noun("BEAR", "bear", "bears"),
     Noun("BEAST", "beast", "beasts"),
     Noun("BEEBLE", "beeble", "beebles"),
+    Noun("BEHOLDER", "beholder", "beholders"),
     Noun("BERSERKER", "berserker", "berserkers"),
     Noun("BIRD", "bird", "birds"),
     Noun("BLINKMOTH", "blinkmoth", "blinkmoths"),
@@ -914,11 +1097,13 @@ _creature_types = [
     Noun("CROCODILE", "crocodile", "crocodiles"),
     Noun("CYCLOPS", "cyclops", "cyclops"),
     Noun("DAUTHI", "dauthi", "dauthis"),
+    Noun("DEMIGOD", "demigod", "demigods"),
     Noun("DEMON", "demon", "demons"),
     Noun("DESERTER", "deserter", "deserters"),
     Noun("DEVIL", "devil", "devils"),
     Noun("DINOSAUR", "dinosaur", "dinosaurs"),
     Noun("DJINN", "djinn", "djinns"),
+    Noun("DOG", "dog", "dogs"),
     Noun("DRAGON", "dragon", "dragons"),
     Noun("DRAKE", "drake", "drakes"),
     Noun("DREADNOUGHT", "dreadnought", "dreadnoughts"),
@@ -940,11 +1125,13 @@ _creature_types = [
     Noun("FISH", "fish", "fish"),
     Noun("FLAGBEARER", "flagbearer", "flagbearers"),
     Noun("FOX", "fox", "foxes"),
+    Noun("FRACTAL", "fractal", "fractals"),
     Noun("FROG", "frog", "frogs"),
     Noun("FUNGUS", "fungus", "fungi"),
     Noun("GARGOYLE", "gargoyle", "gargoyles"),
     Noun("GERM", "germ", "germs"),
     Noun("GIANT", "giant", "giants"),
+    Noun("GNOLL", "gnoll", "gnolls"),
     Noun("GNOME", "gnome", "gnomes"),
     Noun("GOAT", "goat", "goats"),
     Noun("GOBLIN", "goblin", "goblins"),
@@ -955,6 +1142,8 @@ _creature_types = [
     Noun("GREMLIN", "gremlin", "gremlins"),
     Noun("GRIFFIN", "griffin", "griffins"),
     Noun("HAG", "hag", "hags"),
+    Noun("HALFLING", "halfling", "halflings"),
+    Noun("HAMSTER", "hamster", "hamsters"),
     Noun("HARPY", "harpy", "harpies"),
     Noun("HELLION", "hellion", "hellions"),
     Noun("HIPPO", "hippo", "hippos"),
@@ -963,13 +1152,13 @@ _creature_types = [
     Noun("HOMUNCULUS", "homunculus", "homunculi"),
     Noun("HORROR", "horror", "horrors"),
     Noun("HORSE", "horse", "horses"),
-    Noun("HOUND", "hound", "hounds"),
     Noun("HUMAN", "human", "humans"),
     Noun("HYDRA", "hydra", "hydras"),
     Noun("HYENA", "hyena", "hyenas"),
     Noun("ILLUSION", "illusion", "illusions"),
     Noun("IMP", "imp", "imps"),
     Noun("INCARNATION", "incarnation", "incarnations"),
+    Noun("INKLING", "inkling", "inklings"),
     Noun("INSECT", "insect", "insects"),
     Noun("JACKAL", "jackal", "jackals"),
     Noun("JELLYFISH", "jellyfish", "jellyfish"),
@@ -985,8 +1174,7 @@ _creature_types = [
     Noun("LAMMASU", "lammasu", "lammasu"),
     Noun("LEECH", "leech", "leeches"),
     Noun("LEVIATHAN", "leviathan", "leviathans"),
-    # See Anthony Alongi, Serious Fun, July 08, 2003, mtgcom/daily/aa79
-    Noun("LHURGOYF", "lhurgoyf", "lhurgoyfu"),
+    Noun("LHURGOYF", "lhurgoyf", "lhurgoyfu"), # See Anthony Alongi, Serious Fun, July 08, 2003, mtgcom/daily/aa79
     Noun("LICID", "licid", "licids"),
     Noun("LIZARD", "lizard", "lizards"),
     Noun("MANTICORE", "manticore", "manticores"),
@@ -1002,6 +1190,7 @@ _creature_types = [
     Noun("MONK", "monk", "monks"),
     Noun("MONKEY", "monkey", "monkeys"),
     Noun("MOONFOLK", "moonfolk", "moonfolk"),
+    Noun("MOUSE", "mouse", "mice"),
     Noun("MUTANT", "mutant", "mutants"),
     Noun("MYR", "myr", "myrs"),
     Noun("MYSTIC", "mystic", "mystics"),
@@ -1011,6 +1200,7 @@ _creature_types = [
     Noun("NIGHTMARE", "nightmare", "nightmares"),
     Noun("NIGHTSTALKER", "nightstalker", "nightstalkers"),
     Noun("NINJA", "ninja", "ninjas"),
+    Noun("NOBLE", "noble", "nobles"),
     Noun("NOGGLE", "noggle", "noggles"),
     Noun("NOMAD", "nomad", "nomads"),
     Noun("NYMPH", "nymph", "nymphs"),
@@ -1020,15 +1210,18 @@ _creature_types = [
     Noun("ORB", "orb", "orbs"),
     Noun("ORC", "orc", "orcs"),
     Noun("ORGG", "orgg", "orggs"),
+    Noun("OTTER", "otter", "otters"),
     Noun("OUPHE", "ouphe", "ouphes"),
     Noun("OX", "ox", "oxen"),
     Noun("OYSTER", "oyster", "oysters"),
     Noun("PANGOLIN", "pangolin", "pangolins"),
-    Noun("PEGASUS", "pegasus", "pegasus"),
+    Noun("PEASANT", "peasant", "peasants"),
+    Noun("PEGASUS", "pegasus", "pegasi"),
     Noun("PENTAVITE", "pentavite", "pentavites"),
     Noun("PEST", "pest", "pests"),
     Noun("PHELDDAGRIF", "phelddagrif", "phelddagrifs"),
     Noun("PHOENIX", "phoenix", "phoenix"),
+    Noun("PHYREXIAN", "phyrexian", "phyrexians"),
     Noun("PILOT", "pilot", "pilots"),
     Noun("PINCHER", "pincher", "pinchers"),
     Noun("PIRATE", "pirate", "pirates"),
@@ -1037,6 +1230,7 @@ _creature_types = [
     Noun("PRISM", "prism", "prisms"),
     Noun("PROCESSOR", "processor", "processors"),
     Noun("RABBIT", "rabbit", "rabbits"),
+    Noun("RANGER", "ranger", "rangers"),
     Noun("RAT", "rat", "rats"),
     Noun("REBEL", "rebel", "rebels"),
     Noun("REFLECTION", "reflection", "reflections"),
@@ -1053,12 +1247,14 @@ _creature_types = [
     Noun("SCION", "scion", "scions"),
     Noun("SCORPION", "scorpion", "scorpions"),
     Noun("SCOUT", "scout", "scouts"),
+    Noun("SCULPTURE", "sculpture", "sculptures"),
     Noun("SERF", "serf", "serfs"),
     Noun("SERPENT", "serpent", "serpents"),
     Noun("SERVO", "servo", "servos"),
     Noun("SHADE", "shade", "shades"),
     Noun("SHAMAN", "shaman", "shamans"),
     Noun("SHAPESHIFTER", "shapeshifter", "shapeshifters"),
+    Noun("SHARK", "shark", "sharks"),
     Noun("SHEEP", "sheep", "sheep"),
     Noun("SIREN", "siren", "sirens"),
     Noun("SKELETON", "skeleton", "skeletons"),
@@ -1082,10 +1278,12 @@ _creature_types = [
     Noun("STARFISH", "starfish", "starfish"),
     Noun("SURRAKAR", "surrakar", "surrakars"),
     Noun("SURVIVOR", "survivor", "survivors"),
+    Noun("TENTACLE", "tentacle", "tentacles"),
     Noun("TETRAVITE", "tetravite", "tetravites"),
     Noun("THALAKOS", "thalakos", "thalakos"),
     Noun("THOPTER", "thopter", "thopters"),
     Noun("THRULL", "thrull", "thrulls"),
+    Noun("TIEFLING", "tiefling", "tieflings"),
     Noun("TREEFOLK", "treefolk", "treefolk"),
     Noun("TRILOBITE", "trilobite", "trilobites"),
     Noun("TRISKELAVITE", "triskelavite", "triskelavites"),
@@ -1097,6 +1295,7 @@ _creature_types = [
     Noun("VIASHINO", "viashino", "viashinos"),
     Noun("VOLVER", "volver", "volvers"),
     Noun("WALL", "wall", "walls"),
+    Noun("WARLOCK", "warlock", "warlocks"),
     Noun("WARRIOR", "warrior", "warriors"),
     Noun("WEIRD", "weird", "weirds"),
     Noun("WEREWOLF", "werewolf", "werewolves"),
@@ -1160,7 +1359,19 @@ _plane_types = [
     Keyword(("ZENDIKAR", "zendikar")),
 ]
 
+token_types = [
+    "treasure",
+    "food",
+    "gold",
+    "walker",
+    "shard",
+    "clue",
+    "blood",
+]
+
 counter_types = [
+    "acorn",
+    "aegis",
     "age",
     "aim",
     "arrow",
@@ -1168,14 +1379,18 @@ counter_types = [
     "awakening",
     "blaze",
     "blood",
+    "book",
     "bounty",
     "bribery",
     "brick",
     "cage",
     "carrion",
     "charge",
+    "component",
     "corpse",
+    "corruption",
     "credit",
+    "croak",
     "crystal",
     "cube",
     "currency",
@@ -1191,22 +1406,27 @@ counter_types = [
     "egg",
     "elixir",
     "energy",
+    "enlightened",
     "eon",
     "experience",
     "eyeball",
     "fade",
     "fate",
     "feather",
+    "fetch",
     "filibuster",
     "flood",
+    "foreshadow",
     "fungus",
     "fury",
     "fuse",
     "gem",
+    "ghostform",
     "glyph",
     "gold",
     "growth",
     "hatchling",
+    "harmony",
     "healing",
     "hit",
     "hoofprint",
@@ -1262,11 +1482,14 @@ counter_types = [
     "slime",
     "slumber",
     "soot",
+    "soul",
     "spite",
     "spore",
     "storage",
     "strife",
     "study",
+    "suspect",
+    "task",
     "theft",
     "tide",
     "time",
@@ -1275,10 +1498,13 @@ counter_types = [
     "trap",
     "treasure",
     "unity",
+    "valor",
     "velocity",
     "verse",
     "vitality",
+    "void",
     "vortex",
+    "vow",
     "wage",
     "winch",
     "wind",
@@ -1301,9 +1527,11 @@ choices = [
     "homage",
     "khans",
     "knowledge",
+    "mirran",
     "money",
     "numbers",
     "peace",
+    "phyrexian",
     "psychosis",
     "quill",
     "sickness",
@@ -1366,8 +1594,8 @@ _turn_structure = [
     Keyword(("DRAW", "draw")),
     Keyword(("BEGINNING", "beginning")), # of combat
     Keyword(("DECLARE", "declare")),
-    Keyword(("ATTACKERS", "attackers")),
-    Keyword(("BLOCKERS", "blockers")),
+    Noun("ATTACKER", "attacker", "attackers"),
+    Noun("BLOCKER", "blocker", "blockers"),
     Keyword(("DAMAGE", "damage")), # combat damage
     Keyword(("END", "end")), # of combat; end step
     Keyword(("CLEANUP", "cleanup")),
@@ -1391,6 +1619,7 @@ _concepts = [
     Noun("POOL", "pool", "pools"),
     Noun("SYMBOL", "symbol", "symbols"),
     Keyword(("UNSPENT", "unspent")),
+    Keyword(("GENERIC", "generic")),
 
     # Object or zone parts
     Noun("BOTTOM", "bottom", "bottoms"),
@@ -1398,8 +1627,8 @@ _concepts = [
     Keyword(("LIFE", "life")),
     Keyword(("LOYALTY", "loyalty")),
     Keyword(("TOTAL", "total", "totals")),
-    Keyword(("POWER", "power")),
-    Keyword(("TOUGHNESS", "toughness")),
+    Noun("POWER", "power", "powers"),
+    Noun("TOUGHNESS", "toughness", "toughnesses"),
     Keyword(("TEXT", "text")),
     Keyword(("FULL", "full")),
     Noun("INSTANCE", "instance", "instances"),
@@ -1415,7 +1644,7 @@ _concepts = [
     Keyword(("TIMES", "times")),
     Keyword(("TWICE", "twice")),
     Keyword(("TOTAL", "total")),
-    Keyword(("VALUE", "value")),
+    Noun("VALUE", "value", "values"),
     Keyword(("HALF", "half")),
     Keyword(("EVENLY", "evenly")),
     Verb(   ("ROUND", "round", "rounds"),
@@ -1425,6 +1654,8 @@ _concepts = [
     Keyword(("MAXIMUM", "maximum")),
     Keyword(("MINIMUM", "minimum")),
     Keyword(("BASE", "base")),
+    Verb(   ("SUBTRACT", "subtract", "subtracts"),
+            ("SUBTRACTED", "subtracted")),
 
     # Limits
     Keyword(("ONCE", "once")),
@@ -1454,6 +1685,10 @@ _concepts = [
     Keyword(("OTHER", "other")),
     Keyword(("ANOTHER", "another")),
     Keyword(("REST", "rest")),
+    Noun("QUALITY", "quality", "qualities"),
+    Noun("CHARCTERISTIC", "characteristic", "characteristics"),
+    Verb(   ("FIND", "find", "finds"),
+            ("FOUND", "found")),
 
     # Directions and seating
     Keyword(("DIRECTION", "direction")),
@@ -1469,7 +1704,7 @@ _concepts = [
     Keyword(("FEWEST", "fewest")),
     Keyword(("GREATEST", "greatest")),
     Keyword(("LEAST", "least")),
-    Keyword(("MORE", "more")),
+    Keyword(("MORE_", "more")),
     Keyword(("LESS", "less")),
     Keyword(("HIGH", "high")),
     Keyword(("LOW", "low")),
@@ -1508,6 +1743,7 @@ _concepts = [
     Keyword(("LABEL", "label")),
     Keyword(("LEVEL", "level")),
     Keyword(("MARKED", "marked")),
+    Keyword(("MODIFIED", "modified")),
     Keyword(("MONSTROUS", "monstrous")),
     Keyword(("ORIGINAL", "original")),
     Keyword(("PHASED_OUT", "phased-out")),
@@ -1519,7 +1755,7 @@ _concepts = [
 
     # Pronouns
     Keyword(("YOU", "you")),
-    Keyword(("YOUR", "your", "yours")),
+    Keyword(("YOUR", "your")),
     # Their, or his or her
     Keyword(("THEIR", "their")),
     # Them, or him or her
@@ -1544,15 +1780,28 @@ _concepts = [
     Keyword(("LETHAL", "lethal")),
     Keyword(("POINT", "point")),
     Keyword(("POISON", "poison")),
+    Verb(   ("DETERMINE", "determine", "determines"),
+            ("DETERMINED", "determined")),
 
     # Randomization and guessing
     Noun("COIN", "coin", "coins"),
     Keyword(("HEADS", "heads")),
     Keyword(("TAILS", "tails")),
     Keyword(("RANDOM", "random")),
+    Keyword(("CORRECTLY", "correctly")),
     Keyword(("WRONG", "wrong")),
+    Keyword(("NATURAL", "natural")),
+    Noun("RESULT", "result", "results"),
+    # D&D dice
+    Keyword(("DICE", "dice")),  # e.g. If you would roll one or more dice / The singular form "die" is never used in black border Magic
+    Keyword(("D4", "d4")),
+    Keyword(("D6", "d6")),
+    Keyword(("D8", "d8")),
+    Keyword(("D10", "d10")),
+    Keyword(("D12", "d12")),
+    Keyword(("D20", "d20")),
     # The planar die
-    Keyword(("PLANAR_DIE", "planar die")),
+    Noun("PLANAR_DIE", "planar die", "planar dice"),
 
     # Special bidding or voting
     Keyword(("BROKEN", "broken")),
@@ -1560,9 +1809,6 @@ _concepts = [
     Keyword(("SECRETLY", "secretly")),
     Keyword(("STAKES", "stakes")),
     Noun("VOTER", "voter", "voters"),
-
-    # Guessing
-    Keyword(("CORRECTLY", "correctly")),
 
     # Rules
     Keyword(("LEGAL", "legal")),
@@ -1593,6 +1839,7 @@ _concepts = [
     Keyword(("DURING", "during")),
     Keyword(("IMMEDIATELY", "immediately")),
     Keyword(("NEXT", "next")),
+    Keyword(("PREVIOUS", "previous")),
     Keyword(("PREVIOUSLY", "previously")),
     Keyword(("RECENT", "recent")),
     Keyword(("RECENTLY", "recently")),
@@ -1723,6 +1970,7 @@ ordinals = {
     "third" : 3,
     "fourth" : 4,
     "seventh": 7,
+    "twelfth": 12,
     "last" : -1,
 }
 
@@ -1735,6 +1983,7 @@ _macroables = {
     'ABILITY_WORD'  : set(ability_words),
     'ARB_CHOICE'    : set(choices),
     'NUMBER_WORD'   : set(number_words),
+    'OBJ_TOKEN'     : set(token_types),
     'OBJ_COUNTER'   : set(counter_types),
     'OBJ_SUBTYPE'   : set(subtypes),
     'ORDINAL_WORD'  : set(ordinals),
@@ -1746,73 +1995,7 @@ for mwords in _macroables.values():
 def make_token_name(s):
     return s.replace("'", '').replace(' ', '_').upper()
 
-def _check_collision(w):
-    """ If w is in all_words or macro_words, return a token for it
-        and put it in all_words if it's not there already. """
-    if w in all_words:
-        return all_words[w]
-    elif w in macro_words:
-        all_words[w] = make_token_name(w)
-        return all_words[w]
-
-def _get_collision(s, force_token=False):
-    """ Check whether s collides with an existing token followed by one of
-        the three POSS tokens (APOS_S, S_APOS, or SQUOTE),
-        or simply an existing token. If so, return a list of that token
-        (and the POSS token if applicable). If not, and force_token is True,
-        create a token and return that. """
-    t = None
-    if s[-2:] == "'s":
-        t = _check_collision(s[:-2])
-        if t:
-            return [t, 'APOS_S']
-    elif s[-2:] == "s'":
-        t = _check_collision(s[:-2])
-        if t:
-            return [t, 'S_APOS']
-        t = _check_collision(s[:-1])
-        if t:
-            return [t, 'SQUOTE']
-    t = _check_collision(s)
-    if t:
-        return [t]
-    elif force_token:
-        all_words[s] = make_token_name(s)
-        return [all_words[s]]
-
 collisions = set()
-partial_collisions = {}
-
-def get_partial_collisions(s):
-    """ If s is multi-word and the first word collides with another token,
-        returns a list of tokens to be used as a macro rule to match s. """
-    if ' ' in s:
-        words = s.split(' ')
-        pt = _get_collision(words[0])
-        if pt:
-            for w in words[1:]:
-                # Make all remaining words tokens at the all_words level.
-                wt = _get_collision(w, force_token=True)
-                pt.extend(wt)
-            return pt
-
-# Find partial collisions within nonmacroable tokens.
-# A partial collision would be eg. "first strike" and "first".
-# Wrap with list() as get_partial_collisions modifies all_words.
-for s, t in list(all_words.items()):
-    pt = get_partial_collisions(s)
-    if pt:
-        if t not in partial_collisions:
-            partial_collisions[t] = {s: pt}
-        else:
-            partial_collisions[t][s] = pt
-
-for t, mwords in _macroables.items():
-    partial_collisions[t] = {}
-    for s in mwords:
-        pt = get_partial_collisions(s)
-        if pt:
-            partial_collisions[t][s] = pt
 
 _msets = [set(all_words)] + list(_macroables.values())
 for i, m in enumerate(_msets):
@@ -1845,24 +2028,10 @@ for c in collisions:
 macro_rules = {}
 replaced = {}
 
-for t, spt in partial_collisions.items():
-    opt = []
-    for s, pt in sorted(spt.items()):
-        ft = make_token_name(s)
-        replaced[s] = ft
-        opt.append('{} -> {}'.format(' '.join(pt), ft))
-        if s in all_words:
-            del all_words[s]
-    tr = t.lower()
-    if tr in macro_rules:
-        macro_rules[tr].extend(opt)
-    else:
-        macro_rules[tr] = opt
-
 for a, b in _macroables.items():
     # Everything in b that collided (but not partially) goes in the macro rule
     col_tokens = [all_words[j] for j in ((b & collisions) - set(replaced))]
-    at = a.lower()
+    at = camelcase(a.lower())
     if at in macro_rules:
         macro_rules[at] = [a] + sorted(col_tokens) + macro_rules[at]
     else:
@@ -1875,7 +2044,7 @@ macro_tokens = {a: b - collisions - set(replaced)
 def _get_filename(grammar):
     import os
     return os.path.join(os.path.dirname(__file__), 'grammar',
-                        '{}.g'.format(grammar))
+                        '{}.g4'.format(grammar))
 
 _LICENSE = """
 // This file is part of Demystify.
@@ -1952,8 +2121,6 @@ def write_lexer():
     with open(filename, 'w') as f:
         f.write(_get_header(grammar, 'lexer', desc))
         f.write('\nimport Symbols;\n\n')
-        f.write('tokens {{\n    {tokens};\n}}\n\n'
-                .format(tokens=';\n    '.join(sorted(all_tokens))))
         for token, tlist in sorted(match_cases.items(),
                                    key=lambda x: (-len(x[0]), x[0])):
             lines = []
