@@ -22,24 +22,19 @@ import datetime
 import json
 import logging
 import os
-import shutil
 import time
 import urllib.request
+import urllib.error
 
-llog = logging.getLogger('Loader')
-llog.setLevel(logging.INFO)
-ulog = logging.getLogger('Updater')
-ulog.setLevel(logging.INFO)
-_stdout = logging.StreamHandler()
-_stdout.setLevel(logging.INFO)
-ulog.addHandler(_stdout)
-dlog = logging.getLogger('Differ')
-dlog.setLevel(logging.INFO)
+import progressbar
+
+_logger = logging.getLogger(__name__)
 
 DATADIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-ORACLE_JSON = "scryfall-oracle-cards.json"
-JSONCACHE = os.path.join(DATADIR, "cache", ORACLE_JSON)
-METADATA = os.path.join(DATADIR, "cache", "scryfall.metadata")
+CACHEDIR = os.path.join(DATADIR, "cache")
+DEFAULT_CARDS_JSON = "scryfall-default-cards.json"
+JSONCACHE = os.path.join(CACHEDIR, DEFAULT_CARDS_JSON)
+METADATA = os.path.join(CACHEDIR, "scryfall.metadata")
 
 ## Scryfall Client ##
 
@@ -54,20 +49,20 @@ def send_req(req):
     _last_req = datetime.datetime.now()
     return urllib.request.urlopen(req)
 
-def get_metadata():
+def get_metadata(data_type="default_cards"):
     """ Grab the bulk-data info for the oracle cards. """
     req = urllib.request.Request("https://api.scryfall.com/bulk-data")
     try:
         with send_req(req) as response:
             j = json.load(response)
     except urllib.error.URLError as e:
-        ulog.error("Could not download bulk-data info: {}".format(e))
+        _logger.error("Could not download bulk-data info: {}".format(e))
         return
     for obj in j["data"]:
-        if obj["type"] == "oracle_cards":
+        if obj["type"] == data_type:
             return obj
     else:
-        ulog.error("Help I don't have pagination implemented!")
+        _logger.error("Help I don't have pagination implemented!")
 
 def save_metadata(metadata, metadata_file=METADATA):
     with open(metadata_file, 'w') as f:
@@ -90,43 +85,54 @@ def download(filename=JSONCACHE, metadata=None):
     req = urllib.request.Request(metadata["download_uri"])
     try:
         with send_req(req) as response:
+            os.makedirs(os.path.dirname(filename))
             with open(filename + ".tmp", 'wb') as f:
-                shutil.copyfileobj(response, f)
+                block_size = 8192
+                pbar = progressbar.DataTransferBar().start()
+                count = 0
+                while True:
+                    chunk = response.read(block_size)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+                    count += 1
+                    pbar.update(value=count * block_size)
+                pbar.finish()
                 os.rename(filename + ".tmp", filename)
                 save_metadata(metadata)
                 return True
     except urllib.error.URLError as e:
-        ulog.error("Error retrieving JSON file: {}".format(e))
+        _logger.error("Error retrieving JSON file: {}".format(e))
         return False
 
 def maybe_download(filename=JSONCACHE):
     """ Download the file or use the cached copy. """
     if not os.path.exists(filename):
-        ulog.info("JSON file not found, downloading.")
+        _logger.info("JSON file not found, downloading.")
         return download(filename)
     age = datetime.datetime.now() - datetime.datetime.fromtimestamp(
             os.path.getmtime(filename))
-    # Within 2 days, it's extremely likely that we don't even
-    # need to check for updates.
-    if age < datetime.timedelta(days=2):
-        ulog.info("Using recent JSON file.")
+    # We only need to download new data when a new set releases
+    # so two weeks seems reasonable enough
+    if age < datetime.timedelta(weeks=2):
+        _logger.info("Using recent JSON file.")
         return True
     metadata = get_metadata()
     if not metadata:
-        ulog.info("Could not connect to the server, using cached JSON file.")
+        _logger.info("Could not connect to the server, using cached JSON file.")
         return True
     m2 = load_cached_metadata()
     if not m2:
-        ulog.info("No saved metadata, redownloading JSON.")
+        _logger.info("No saved metadata, redownloading JSON.")
         return download(filename, metadata)
     # These will not be exactly equal since the timestamp updates daily.
     # Zipped file size will be the most telling, esp. when new cards are added.
     # URIs in objects shouldn't change, so it should be the case that only
     # content updates change the file size.
     if metadata["compressed_size"] == m2["compressed_size"]:
-        ulog.info("Using unchanged JSON file.")
+        _logger.info("Using unchanged JSON file.")
         return True
-    ulog.info("Redownloading due to compressed file size change: {} => {}"
+    _logger.info("Redownloading due to compressed file size change: {} => {}"
               .format(m2["compressed_size"], metadata["compressed_size"]))
     return download(filename, metadata)
 
@@ -136,12 +142,11 @@ def load(filename=JSONCACHE):
     """ Load the cards from the Scryfall Oracle JSON file. """
     if not maybe_download(filename):
         if os.path.exists(filename):
-            ulog.info("Falling back to existing JSON file.")
+            _logger.info("Falling back to existing JSON file.")
         else:
-            ulog.critical("Failed to get JSON file.")
+            _logger.critical("Failed to get JSON file.")
             return {}
     with open(filename) as f:
         j = json.load(f)
-    llog.debug("Loaded {} objects from {}.".format(len(j), filename))
+    _logger.debug(f"Loaded {len(j)} objects from {filename}.")
     return j
-
