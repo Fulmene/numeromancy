@@ -22,76 +22,27 @@ import argparse
 import logging
 import re
 
-logging.basicConfig(level=logging.DEBUG, filename="LOG", filemode="w")
-plog = logging.getLogger("Parser")
-plog.setLevel(logging.DEBUG)
-_stdout = logging.StreamHandler()
-_stdout.setLevel(logging.WARNING)
-_stdout.setFormatter(logging.Formatter(fmt='%(levelname)s: %(message)s'))
-plog.addHandler(_stdout)
-
-import parse
+import parsing
 import card
 import data
-# import test
+import test
+from sets import MODERN_SETS
 
-def get_cards():
-    return card.get_cards();
+logging.basicConfig(level=logging.DEBUG, filename="LOG", filemode="w", encoding="utf-8")
+root_logger = logging.getLogger()
 
-def preprocess(args):
-    raw_cards = []
-    for obj in data.load():
-        # filter down to modern-legal only
-        if obj["legalities"]["modern"] in ("legal", "banned") and "token" not in obj["layout"]:
-            raw_cards.append(obj)
-            _ = card.scryfall_card(**obj)
-    numcards = len(raw_cards)
-    if numcards == 0:
-        plog.error("No cards found.")
-        return 1
-    cards = card.get_cards()
-    split = {c.name for c in cards if c.multitype == "split"}
-    xsplit = {c.multicard for c in cards if c.multitype == "split"}
-    logging.debug("Split cards: " + "; ".join(sorted(split)))
-    if split != xsplit:
-        logging.error("Difference: " + "; ".join(split ^ xsplit))
-    flip = {c.name for c in cards if c.multitype == "flip"}
-    xflip = {c.multicard for c in cards if c.multitype == "flip"}
-    logging.debug("Flip cards: " + "; ".join(sorted(flip)))
-    if flip != xflip:
-        logging.error("Difference: " + "; ".join(flip ^ xflip))
-    trans = {c.name for c in cards if c.multitype == "transform"}
-    xtrans = {c.multicard for c in cards if c.multitype == "transform"}
-    logging.debug("Transform cards: " + "; ".join(sorted(trans)))
-    if trans != xtrans:
-        logging.error("Difference: " + "; ".join(trans ^ xtrans))
-    # TODO Adventure
-    # TODO MDFC
-    s = int(len(split) / 2)
-    f = int(len(flip) / 2)
-    t = int(len(trans) / 2)
-    logging.info("Discovered {} unique (physical) cards, from {} objects, including "
-                 "{} split cards, {} flip cards, and {} transform cards."
-                 .format(len(cards) - s - f - t, numcards, s, f, t))
-    legalcards = get_cards()
-    logging.info("Found {} banned cards.".format(len(cards) - len(legalcards)))
-    card.preprocess_all(legalcards)
-    if args.interactive:
-        import code
-        code.interact(local=globals())
+stderr_handler = logging.StreamHandler()
+stderr_handler.setLevel(logging.INFO)
+stderr_handler.setFormatter(logging.Formatter(fmt='%(levelname)s: %(message)s'))
+root_logger.addHandler(stderr_handler)
 
-def main():
-    parser = argparse.ArgumentParser(
-        description='A Magic: the Gathering parser.')
-    subparsers = parser.add_subparsers()
-    # test.add_subcommands(subparsers)
-    loader = subparsers.add_parser('load')
-    loader.add_argument('-i', '--interactive', action='store_true',
-                        help='Enter interactive mode instead of exiting.')
-    loader.set_defaults(func=preprocess)
-
-    args = parser.parse_args()
-    args.func(args)
 
 if __name__ == '__main__':
-    main()
+    argparser = argparse.ArgumentParser(
+        description='A Magic: the Gathering parser.')
+    argparser.add_argument("-t", "--test", help="Run tests then exit", action="store_true")
+    argparser.add_argument("-d", "--debug", help="Enable debug logs on stderr", action="store_true")
+    args = argparser.parse_args()
+    if args.debug:
+        stderr_handler.setLevel(logging.DEBUG)
+    card.load_cards(data.load())

@@ -41,9 +41,6 @@ def print_lex(text: str):
     for token in stream.tokens:
         print('%s: %s' % (token.text, DemystifyLexer.symbolicNames[token.type]))
 
-def parse_ability(text: str) -> Ability:
-    return parse('ability', text)
-
 # Pretty printing
 # Based on the pretty printing code of SnippetsTest (Java)
 # https://github.com/grosenberg/SnippetsTest/blob/master/src/test/java/net/certiv/remark/test/TreeUtils.java
