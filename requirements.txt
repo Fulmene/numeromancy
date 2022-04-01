@@ -1,2 +1,5 @@
 antlr4-python3-runtime==4.9.3
 inflection==0.5.1
+progressbar2==4.0.0
+python-utils==3.1.0
+stringcase==1.2.0
