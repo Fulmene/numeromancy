@@ -61,7 +61,8 @@ def preprocess_capitals(text):
 # Min length is 2 to avoid the sole exception of "none".
 _non = re.compile(r"\bnon(\w{2,})", flags=re.I|re.U)
 _pw = re.compile(r"^−", flags=re.M)
-_quote = re.compile(r'([.,])"')
+_squote = re.compile(r"([.,])'")
+_dquote = re.compile(r'([.,])"')
 
 def preprocess_misc(text: str):
     """ Miscellaneous text preprocessing. """
@@ -70,7 +71,8 @@ def preprocess_misc(text: str):
     # Ensure planeswalker ability costs use minus signs.
     text = _pw.sub("-", text)
     # Move commas and periods out of quotes for simpler parsing
-    text = _quote.sub(r'"\1', text)
+    text = _squote.sub(r".'\1", text)
+    text = _dquote.sub(r'."\1', text)
     # Replace "’" with "'"
     text = text.replace("’", "'")
     return text
