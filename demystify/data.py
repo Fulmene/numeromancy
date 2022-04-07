@@ -108,31 +108,31 @@ def download(filename=JSONCACHE, metadata=None):
 def maybe_download(filename=JSONCACHE):
     """ Download the file or use the cached copy. """
     if not os.path.exists(filename):
-        _logger.info("JSON file not found, downloading.")
+        print("JSON file not found, downloading.")
         return download(filename)
     age = datetime.datetime.now() - datetime.datetime.fromtimestamp(
             os.path.getmtime(filename))
     # We only need to download new data when a new set releases
     # so two weeks seems reasonable enough
     if age < datetime.timedelta(weeks=2):
-        _logger.info("Using recent JSON file.")
+        print("Using recent JSON file.")
         return True
     metadata = get_metadata()
     if not metadata:
-        _logger.info("Could not connect to the server, using cached JSON file.")
+        print("Could not connect to the server, using cached JSON file.")
         return True
     m2 = load_cached_metadata()
     if not m2:
-        _logger.info("No saved metadata, redownloading JSON.")
+        print("No saved metadata, redownloading JSON.")
         return download(filename, metadata)
     # These will not be exactly equal since the timestamp updates daily.
     # Zipped file size will be the most telling, esp. when new cards are added.
     # URIs in objects shouldn't change, so it should be the case that only
     # content updates change the file size.
     if metadata["compressed_size"] == m2["compressed_size"]:
-        _logger.info("Using unchanged JSON file.")
+        print("Using unchanged JSON file.")
         return True
-    _logger.info("Redownloading due to compressed file size change: {} => {}"
+    print("Redownloading due to compressed file size change: {} => {}"
               .format(m2["compressed_size"], metadata["compressed_size"]))
     return download(filename, metadata)
 
@@ -142,7 +142,7 @@ def load(filename=JSONCACHE):
     """ Load the cards from the Scryfall Oracle JSON file. """
     if not maybe_download(filename):
         if os.path.exists(filename):
-            _logger.info("Falling back to existing JSON file.")
+            print("Falling back to existing JSON file.")
         else:
             _logger.critical("Failed to get JSON file.")
             return {}
