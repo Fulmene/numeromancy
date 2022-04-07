@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.DEBUG, filename="LOG", filemode="w", encoding=
 root_logger = logging.getLogger()
 
 stderr_handler = logging.StreamHandler()
-stderr_handler.setLevel(logging.INFO)
+stderr_handler.setLevel(logging.WARNING)
 stderr_handler.setFormatter(logging.Formatter(fmt='%(levelname)s: %(message)s'))
 root_logger.addHandler(stderr_handler)
 
@@ -40,9 +40,12 @@ root_logger.addHandler(stderr_handler)
 if __name__ == '__main__':
     argparser = argparse.ArgumentParser(
         description='A Magic: the Gathering parser.')
-    argparser.add_argument("-t", "--test", help="Run tests then exit", action="store_true")
-    argparser.add_argument("-d", "--debug", help="Enable debug logs on stderr", action="store_true")
+    # TODO argparser.add_argument("-t", "--test", help="Run tests then exit", action="store_true")
+    argparser.add_argument("-d", "--debug", help="Enable debug logs on stderr.", action="store_true")
+    argparser.add_argument("-n", "--nodownload", help="Disable downloading new data file. Only works if there is already an existing data file.", action="store_true")
     args = argparser.parse_args()
     if args.debug:
         stderr_handler.setLevel(logging.DEBUG)
+    if args.nodownload:
+        data.no_download = True
     card.load_cards(data.load())

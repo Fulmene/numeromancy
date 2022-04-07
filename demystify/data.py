@@ -36,6 +36,8 @@ DEFAULT_CARDS_JSON = "scryfall-default-cards.json"
 JSONCACHE = os.path.join(CACHEDIR, DEFAULT_CARDS_JSON)
 METADATA = os.path.join(CACHEDIR, "scryfall.metadata")
 
+no_download = False
+
 ## Scryfall Client ##
 
 _last_req = datetime.datetime.min
@@ -140,7 +142,7 @@ def maybe_download(filename=JSONCACHE):
 
 def load(filename=JSONCACHE):
     """ Load the cards from the Scryfall Oracle JSON file. """
-    if not maybe_download(filename):
+    if no_download or not maybe_download(filename):
         if os.path.exists(filename):
             print("Falling back to existing JSON file.")
         else:
