@@ -85,7 +85,7 @@ def download(filename=JSONCACHE, metadata=None):
     req = urllib.request.Request(metadata["download_uri"])
     try:
         with send_req(req) as response:
-            os.makedirs(os.path.dirname(filename))
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
             with open(filename + ".tmp", 'wb') as f:
                 block_size = 8192
                 pbar = progressbar.DataTransferBar().start()
