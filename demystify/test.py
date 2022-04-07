@@ -23,8 +23,8 @@ def is_parseable_card(card: Card) -> bool:
 
 
 def parseable_ratio(cards: list[Card]) -> float:
-    # Return 1 if the list is empty to avoid dividing by zero
     if len(cards) == 0:
+        # Return 1 if the list is empty to avoid dividing by zero
         return 1
 
     parseable = 0
@@ -33,10 +33,10 @@ def parseable_ratio(cards: list[Card]) -> float:
         if is_parseable_card(c):
             parseable += 1
         else:
-            unparseable += 1
             if unparseable < 10:
-                _logger.info(f"Unparseable card: {c.name}")
-                _logger.debug(c.rules_text)
+                unparseable += 1
+                _logger.info(f"Unable to parse: {repr(c)}")
+                _logger.debug(str(c))
 
     return parseable / len(cards)
 
