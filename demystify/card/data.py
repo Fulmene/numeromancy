@@ -59,9 +59,9 @@ def load_cards(scryfall_cards):
         preprocess_all(card)
 
 
-def get_cards() -> set[Card]:
+def get_cards(format="vintage") -> set[Card]:
     """ Returns a set of all the Cards loaded by the function load_cards. """
-    return set(_all_cards.values())
+    return set(c for c in _all_cards.values() if c.legalities[format] in ("legal", "restricted"))
 
 
 def get_card(cardname: str) -> Card:
