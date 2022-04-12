@@ -118,6 +118,8 @@ typeSpec : HISTORIC ;
 objectType : CARD | PERMANENT | SPELL | ABILITY | SOURCE | TOKEN ;
 
 // Object (mostly permanent) status
+statusList : status (( COMMA ( status COMMA )+ )? conj status )? ;
+
 status : TAPPED
        | UNTAPPED
        | ENCHANTED
@@ -137,6 +139,15 @@ status : TAPPED
        | REVEALED
        | MONSTROUS
        ;
+
+// Token
+token : quantity tokenProperty (NAMED REFBYNAME)?
+      | REFBYNAME COMMA A tokenProperty
+      ;
+
+tokenProperty : objToken TOKEN
+              | pt? adjectiveList? noun TOKEN ( WITH grantedAbilityList )? ( THAT is_ adjectiveList )?
+              ;
 
 // Property names
 

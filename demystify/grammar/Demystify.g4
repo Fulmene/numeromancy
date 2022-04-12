@@ -73,7 +73,7 @@ tokens {
     ZONE_SET
 }
 
-cardManaCost : mana EOF;
+cardManaCost : mana? EOF;
 
 typeline : supertype* cardType+ ( MDASH subtype+ )? EOF;
 

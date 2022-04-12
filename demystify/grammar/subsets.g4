@@ -21,7 +21,7 @@ parser grammar subsets;
 /* Rules for describing subsets of objects. */
 
 subset : quantity? TARGET? propertyList descriptor?
-       | ANY TARGET
+       | quantity TARGET
        | refObject
        | zoneSubset
        ;

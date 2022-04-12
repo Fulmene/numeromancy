@@ -30,9 +30,10 @@ quantity : number ( ( ( COMMA number )+ COMMA )? conj number )?
          | UP TO number
          | AT LEAST number
          | ( ALL | EACH | EVERY )
-         | ANY number
+         | ANY number?
          | ANY AMOUNT OF
-         | A SINGLE
+         | A SINGLE?
+         | A ordinalWord
          | ANOTHER
          | NO
          ;
@@ -78,6 +79,6 @@ multiplier : TWICE
            ;
 
 divisor : HALF
-        | ORDINAL_WORD
+        | ordinalWord
         ;
 */

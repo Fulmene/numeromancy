@@ -31,11 +31,18 @@ actCond : AS A SORCERY
         | ONCE EACH TURN
         ;
 
+grantedAbilityList : grantedAbility ( ( COMMA ( grantedAbility COMMA )+ )? conj grantedAbility )? ;
+
+grantedAbility : keywordAbility
+               | DQUOTE ability DQUOTE
+               | SQUOTE ability SQUOTE
+               ;
+
 /* Spell effects */
 
 spellEffect : sentence+ ;
 
-sentence : atomicEffect ( ( COMMA atomicEffect )* COMMA (THEN|conj) atomicEffect )? PERIOD;
+sentence : atomicEffect ( ( COMMA atomicEffect )* COMMA (THEN|conj) atomicEffect )? ( COMMA varDef )? PERIOD;
 
 atomicEffect : gameAction duration? fullCondition? ;
               // | duration COMMA gameAction -> ^(gameAction duration);
@@ -51,10 +58,12 @@ keywordActionList : keywordAction ( ( COMMA ( keywordAction COMMA )+ )? conj key
 keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                               #keywordActionTwoSubsets
               | verb=CAST subset                                                        #keywordActionSubset
               | verb=COUNTER subset                                                     #keywordActionSubset
-              // TODO | CREATE token
+              | verb=CREATE token                                                       #keywordActionToken
               | verb=DISCARD subset                                                     #keywordActionSubset
               | verb=DRAW number CARD                                                   #keywordActionNumber
-              | verb=DEAL number DAMAGE TO subset                                       #keywordActionDamage
+              | verb=DEAL number DAMAGE TO subset
+                    ( ( COMMA ( number DAMAGE TO subset COMMA )+ )?
+                    conj number DAMAGE TO subset )?                                     #keywordActionDamage
               | verb=DESTROY subset                                                     #keywordActionSubset
               // TODO | DOUBLE
               // TODO | EXCHANGE
@@ -66,7 +75,7 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
               | verb=REVEAL subset                                                      #keywordActionSubset
               | verb=SACRIFICE subset                                                   #keywordActionSubset
               | verb=SCRY number                                                        #keywordActionNumber
-              // TODO | SEARCH
+              | verb=SEARCH zoneSubset FOR subset                                       #keywordActionZone
               | verb=SHUFFLE                                                            #keywordActionIntransitive
               | verb=(TAP|UNTAP) subset                                                 #keywordActionSubset
               | verb=FATESEAL number                                                    #keywordActionNumber
@@ -91,17 +100,22 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
 
               | GAIN verb=CONTROL OF subset                                             #keywordActionSubset
               | verb=(GAIN|LOSE) number LIFE                                            #keywordActionNumber
-              | verb=(GAIN|HAVE) (keywordAbility | DQUOTE ability DQUOTE)               #keywordActionAbility
+              | verb=(GAIN|HAVE) grantedAbilityList                                     #keywordActionAbility
               | verb=GET ptMod                                                          #keywordActionPT
-              | verb=PUT counterSubset ON subset                                        #keywordActionPutCounter
+              | verb=PUT counterSubset ON subset
+                    ( ( COMMA ( counterSubset ON subset COMMA )+ )?
+                    conj counterSubset ON subset )?                                     #keywordActionPutCounter
               | verb=PAY mana                                                           #keywordActionMana
               | verb=ADD mana                                                           #keywordActionMana
               | verb=(IS|BECOME) NOT? subset
                      (IN ADDITION TO refObjPoss OTHER propertyType)?                    #keywordActionBecome
               | verb=CHOOSE subset c=FROM subset                                        #keywordActionTwoSubsets
-              | verb=RETURN subset TO zoneSubset                                        #keywordActionZone
+              | verb=PUT subset ONTO zoneSubset statusList?                             #keywordActionZone
+              | verb=RETURN subset TO zoneSubset statusList?                            #keywordActionZone
               | verb=SHUFFLE subset INTO zoneSubset                                     #keywordActionZone
               | verb=(WIN|LOSE) THE GAME                                                #keywordActionIntransitive
+
+              | verb=ENTER zoneSubset statusList? #aaa
               ;
 
 /*
