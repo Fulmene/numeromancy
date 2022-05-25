@@ -44,8 +44,10 @@ spellEffect : sentence+ ;
 
 sentence : atomicEffect ( ( COMMA atomicEffect )* COMMA (THEN|conj) atomicEffect )? ( COMMA varDef )? PERIOD;
 
-atomicEffect : gameAction duration? fullCondition? ;
-              // | duration COMMA gameAction -> ^(gameAction duration);
+atomicEffect : gameAction duration? fullCondition?
+             | fullCondition COMMA gameAction duration?
+             | duration COMMA gameAction
+             ;
 
 fullCondition : IF subset condition
               | UNLESS subset condition
@@ -56,7 +58,7 @@ gameAction : ( subset MAY? )? keywordActionList ;
 keywordActionList : keywordAction ( ( COMMA ( keywordAction COMMA )+ )? conj keywordAction )? ;
 
 keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                               #keywordActionTwoSubsets
-              | verb=CAST subset                                                        #keywordActionSubset
+              | verb=(CAST|PLAY) subset (FROM zoneSubset)?                              #keywordActionSubset
               | verb=COUNTER subset                                                     #keywordActionSubset
               | verb=CREATE token                                                       #keywordActionToken
               | verb=DISCARD subset                                                     #keywordActionSubset
@@ -70,7 +72,6 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
               | verb=EXILE subset                                                       #keywordActionSubset
               | verb=FIGHT subset                                                       #keywordActionSubset
               | verb=MILL number CARD                                                   #keywordActionNumber
-              | verb=PLAY subset                                                        #keywordActionSubset
               | verb=REGENERATE subset                                                  #keywordActionSubset
               | verb=REVEAL subset                                                      #keywordActionSubset
               | verb=SACRIFICE subset                                                   #keywordActionSubset
@@ -115,7 +116,14 @@ keywordAction : verb=(ATTACH|UNATTACH) subset c=TO subset                       
               | verb=SHUFFLE subset INTO zoneSubset                                     #keywordActionZone
               | verb=(WIN|LOSE) THE GAME                                                #keywordActionIntransitive
 
+              | PLAY WITH subset REVEALED #aaa
               | verb=ENTER zoneSubset statusList? #aaa
+
+              | poss POWER (conj TOUGHNESS)? is_ EACH? EQUAL TO number #aaa
+              
+              | CAN NOT BE BLOCKED (BY subset)? #aaa
+              | MUST BE BLOCKED IF ABLE #aaa
+              | DO NOT UNTAP DURING refPlayerPoss UNTAP STEP #aaa
               ;
 
 /*

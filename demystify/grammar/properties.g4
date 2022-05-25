@@ -73,7 +73,7 @@ objectProperty : adjectiveList? noun
 
 // Adjectives
 
-adjective : NON? ( supertype | cardType | subtype | objectType | typeSpec | color | colorSpec | status ) ;
+adjective : NON? ( supertype | cardType | subtype | objectType | typeSpec | color | colorSpec | status | ordinal ) ;
 
 adjectiveList : adjective ( ( COMMA adjective )+ COMMA )? conj adjective
               | adjective ( COMMA adjective )+
@@ -93,7 +93,7 @@ descriptorList : descriptor ;
 descriptor : NOT? NAMED REFBYNAME                                       #nameDescriptor
            | playerSubset ( DO NOT )?
              ( CONTROL | OWN | CAST | (BOTH? OWN conj CONTROL) )        #playerDescriptor
-           | ( IN | FROM | ON THE ) zoneSubset                          #zoneDescriptor
+           | ( IN | FROM | ON THE | OF ) zoneSubset                          #zoneDescriptor
            | player OWN IN EXILE                                        #zoneDescriptor
            | ( WITH | WITHOUT ) keywords                                #keywordDescriptor
            | ( WITH | WITHOUT ) counterSubset ON refObject              #counterDescriptor
@@ -139,6 +139,8 @@ status : TAPPED
        | REVEALED
        | MONSTROUS
        ;
+
+ordinal : THE (ordinalWord | TOP | BOTTOM );
 
 // Token
 token : quantity tokenProperty (NAMED REFBYNAME)?
