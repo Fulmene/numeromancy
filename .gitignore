@@ -7,6 +7,6 @@ LOG
 *.interp
 
 .env
-demystify/data
-demystify/logging
-demystify/re
+numeromancy/data
+numeromancy/logging
+numeromancy/re

@@ -22,10 +22,8 @@ import argparse
 import logging
 import re
 
-import parsing
 import card
 import data
-import test
 from sets import MODERN_SETS
 
 logging.basicConfig(level=logging.DEBUG, filename="LOG", filemode="w", encoding="utf-8")
