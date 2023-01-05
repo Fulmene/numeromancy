@@ -54,6 +54,8 @@ def send_req(req):
 def get_metadata(data_type="default_cards"):
     """ Grab the bulk-data info for the oracle cards. """
     req = urllib.request.Request("https://api.scryfall.com/bulk-data")
+    req.add_header('User-Agent', r'numeromancy/0.0.1')
+    req.add_header('Accept', r'application/json;q=0.9,*/*;q=0.8')
     try:
         with send_req(req) as response:
             j = json.load(response)
@@ -131,7 +133,7 @@ def maybe_download(filename=JSONCACHE):
     # Zipped file size will be the most telling, esp. when new cards are added.
     # URIs in objects shouldn't change, so it should be the case that only
     # content updates change the file size.
-    if metadata["compressed_size"] == m2["compressed_size"]:
+    if metadata["size"] == m2["size"]:
         print("Using unchanged JSON file.")
         return True
     print("Redownloading due to compressed file size change: {} => {}"
