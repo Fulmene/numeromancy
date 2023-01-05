@@ -18,18 +18,21 @@
 
 """ card_vector - Constructing the vector representation of a card """
 
+import os
 import csv
+import numpy as np
+import xgboost as xgb
 
 import card
-import preprocessing
+from preprocessing import prop_read
 
-
-def card_properties_vector(cardname: str):
-    card_data = card.get_card(cardname)
-
-
-def card_vector(cardname: str, text: str):
-    pass
+def card_properties_vector(properties: list[str]):
+    card_dict = dict()
+    for prop in properties:
+        prop_dict = prop_read(prop)
+        for cardname, vector in prop_dict.items():
+            card_dict[cardname] = np.append(card_dict[cardname], vector)
+    return card_dict
 
 
 def load_card_vector(filename='card_texts.csv'):
