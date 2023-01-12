@@ -109,37 +109,17 @@ def split_train_texts(card_texts_file=CARD_TEXTS, train_file=TRAIN_TEXTS, test_f
         write_augmented(test_file, cards[div:])
 
 
-def property_graph(cards: Iterable[Card], property: str) -> nx.Graph:
-    graph = nx.Graph()
-    for c in CardProgressBar(cards):
-        key = c.name
-        prop = getattr(c, property)
-        graph.add_node(key, prop=prop)
-        for n in graph.nodes:
-            if key != n and not set(prop).isdisjoint(graph.nodes[n]['prop']):
-                graph.add_edge(key, n)
-    return graph
-
-
 numerical_props = ['power', 'toughness', 'loyalty']
-list_props = ['supertypes', 'types', 'subtypes', 'colors']
+list_props = ['supertypes', 'cardtypes', 'subtypes', 'colors']
 NBNE_DIMENSIONS = 10
 
 
 def preprocess_numerical_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
     _logger.info(f'Preprocessing the numerical property {prop}...')
-    with open(os.path.join(props_dir, f'{prop}.vec'), 'w') as f:
+    with open(os.path.join(props_dir, f'{prop}.model'), 'w') as f:
         print(len(cards), 1, file=f)
         for c in CardProgressBar(cards):
             print(c.name, getattr(c, prop), file=f)
-
-
-def preprocess_nbne_prop(cards: Iterable[Card], prop: str, props_dir: str | os.PathLike = PROPSDIR) -> None:
-    _logger.info(f'Creating the property graph for property {prop}...')
-    graph = property_graph(cards, prop)
-    _logger.info('Training the NBNE model...')
-    nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
-    _logger.info('Complete!')
 
 
 def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
@@ -149,23 +129,38 @@ def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os
     for c in CardProgressBar(cards):
         values.update(getattr(c, prop))
 
+    values = list(values)
     dimensions = len(values)
+    _logger.info(f'Property {prop} has {dimensions} possible values.')
+    _logger.info(values)
+
     if dimensions > NBNE_DIMENSIONS:
-        _logger.info(f'Property {prop} has more than {NBNE_DIMENSIONS} possible values.')
-        preprocess_nbne_prop(cards, prop, props_dir)
+        _logger.info(f'Creating the property graph for property {prop}...')
+        graph = nx.Graph()
+        for c in CardProgressBar(cards):
+            key = c.name
+            property = getattr(c, prop)
+            graph.add_node(key)
+            for c2 in cards:
+                key2 = c2.name
+                property2 = getattr(c2, prop)
+                if key != key2 and not set(property).isdisjoint(property2):
+                    graph.add_edge(key, key2)
+        _logger.info('Training the NBNE model...')
+        nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
+        _logger.info('Complete!')
     else:
-        _logger.info(f'Property {prop} has {dimensions} possible values.')
-        values = list(values)
-        with open(os.path.join(props_dir, f'{prop}.vec'), 'w') as f:
+        with open(os.path.join(props_dir, f'{prop}.model'), 'w') as f:
             print(len(cards), dimensions, file=f)
             _logger.info(f'Creating sparse vectors for property {prop}...')
             for c in CardProgressBar(cards):
                 property = getattr(c, prop)
                 vector = [1 if v in property else 0 for v in values]
                 print(c.name, *vector, file=f)
+        _logger.info('Complete!')
 
 
-def preprocess_props(cards: Collection[Card], props_dir: str | os.PathLike =PROPSDIR) -> None:
+def preprocess_props(cards: Collection[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
     for prop in numerical_props:
         preprocess_numerical_prop(cards, prop, props_dir)
     for prop in list_props:
@@ -186,10 +181,18 @@ def prop_read(prop: str, props_dir: str | os.PathLike = PROPSDIR) -> dict[str, n
 
 
 if __name__ == '__main__':
+
+    logging.basicConfig(level=logging.DEBUG, filename="LOG", filemode="w", encoding="utf-8")
+    root_logger = logging.getLogger()
+    stderr_handler = logging.StreamHandler()
+    stderr_handler.setLevel(logging.INFO)
+    stderr_handler.setFormatter(logging.Formatter(fmt='%(levelname)s: %(message)s'))
+    root_logger.addHandler(stderr_handler)
+
     card.load_cards(data.load())
     cards = card.get_cards()
-    os.makedirs(TEXTSDIR)
+    os.makedirs(TEXTSDIR, exist_ok=True)
     preprocess_text(cards)
     split_train_texts()
-    os.makedirs(PROPSDIR)
+    os.makedirs(PROPSDIR, exist_ok=True)
     preprocess_props(cards)
