@@ -18,11 +18,15 @@
 
 """ preprocessing - Card data preprocessing """
 
+import logging
+_logger = logging.getLogger(__name__)
+
 import os
 import re
 import csv
 import random
-from collections.abc import Iterable
+from collections.abc import Collection, Iterable
+import sys
 import numpy as np
 
 from nltk.tokenize import word_tokenize, sent_tokenize
@@ -41,9 +45,12 @@ stemmer = PorterStemmer()
 stops = stopwords.words('english')
 
 
-CARD_TEXTS = os.path.join(data.DATADIR, 'card_texts.csv')
-TRAIN_TEXTS = os.path.join(data.DATADIR, 'train_texts.csv')
-TEST_TEXTS = os.path.join(data.DATADIR, 'test_texts.csv')
+TEXTSDIR = os.path.join(data.DATADIR, 'text')
+CARD_TEXTS = os.path.join(TEXTSDIR, 'card_texts.csv')
+TRAIN_TEXTS = os.path.join(TEXTSDIR, 'train_texts.csv')
+TEST_TEXTS = os.path.join(TEXTSDIR, 'test_texts.csv')
+
+PROPSDIR = os.path.join(data.DATADIR, 'props')
 
 
 def replace_word(word: str) -> str:
@@ -60,6 +67,7 @@ def remove_bracket_spaces(text: str) -> str:
 
 
 def preprocess_text(cards: Iterable[Card], filename=CARD_TEXTS) -> None:
+    _logger.info("Preprocessing card texts...")
     with open(filename, 'w', encoding='UTF8') as f:
         writer = csv.writer(f);
         for c in CardProgressBar(cards):
@@ -91,6 +99,7 @@ def write_augmented(filename: str, rows: list[list[str]], ratio: float = 0.3):
 
 
 def split_train_texts(card_texts_file=CARD_TEXTS, train_file=TRAIN_TEXTS, test_file=TEST_TEXTS) -> None:
+    _logger.info("Splitting card texts into train and test datasets")
     with open(card_texts_file, 'r', encoding='UTF8') as f:
         reader = csv.reader(f)
         cards = [row for row in reader]
@@ -107,25 +116,64 @@ def property_graph(cards: Iterable[Card], property: str) -> nx.Graph:
         prop = getattr(c, property)
         graph.add_node(key, prop=prop)
         for n in graph.nodes:
-            # TODO support list property
-            if key != n and prop == graph.nodes[n]['prop']:
+            if key != n and not set(prop).isdisjoint(graph.nodes[n]['prop']):
                 graph.add_edge(key, n)
     return graph
 
 
+numerical_props = ['power', 'toughness', 'loyalty']
+list_props = ['supertypes', 'types', 'subtypes', 'colors']
 NBNE_DIMENSIONS = 10
-nbne_props = ['subtypes']  # nbne_props are list_props that has more than NBNE_DIMENSIONS possible values
-number_props = ['power', 'toughness']
-list_props = ['types', 'supertypes', 'colors']
-
-def preprocess_nbne_props(cards: Iterable[Card]) -> None:
-    for p in nbne_props:
-        graph = property_graph(cards, p)
-        nbne.train_model(graph, NBNE_DIMENSIONS, output_file=f'nbne/{p}.model', embedding_dimension=NBNE_DIMENSIONS)
 
 
-def nbne_read(filename):  # -> dict[str, np.array]:
-    with open(filename, 'r') as f:
+def preprocess_numerical_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
+    _logger.info(f'Preprocessing the numerical property {prop}...')
+    with open(os.path.join(props_dir, f'{prop}.vec'), 'w') as f:
+        print(len(cards), 1, file=f)
+        for c in CardProgressBar(cards):
+            print(c.name, getattr(c, prop), file=f)
+
+
+def preprocess_nbne_prop(cards: Iterable[Card], prop: str, props_dir: str | os.PathLike = PROPSDIR) -> None:
+    _logger.info(f'Creating the property graph for property {prop}...')
+    graph = property_graph(cards, prop)
+    _logger.info('Training the NBNE model...')
+    nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
+    _logger.info('Complete!')
+
+
+def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
+    _logger.info(f'Preprocessing the list property {prop}...')
+    values = set()
+    _logger.info(f'Finding all possible values from the given list of cards...')
+    for c in CardProgressBar(cards):
+        values.update(getattr(c, prop))
+
+    dimensions = len(values)
+    if dimensions > NBNE_DIMENSIONS:
+        _logger.info(f'Property {prop} has more than {NBNE_DIMENSIONS} possible values.')
+        preprocess_nbne_prop(cards, prop, props_dir)
+    else:
+        _logger.info(f'Property {prop} has {dimensions} possible values.')
+        values = list(values)
+        with open(os.path.join(props_dir, f'{prop}.vec'), 'w') as f:
+            print(len(cards), dimensions, file=f)
+            _logger.info(f'Creating sparse vectors for property {prop}...')
+            for c in CardProgressBar(cards):
+                property = getattr(c, prop)
+                vector = [1 if v in property else 0 for v in values]
+                print(c.name, *vector, file=f)
+
+
+def preprocess_props(cards: Collection[Card], props_dir: str | os.PathLike =PROPSDIR) -> None:
+    for prop in numerical_props:
+        preprocess_numerical_prop(cards, prop, props_dir)
+    for prop in list_props:
+        preprocess_list_prop(cards, prop, props_dir)
+
+
+def prop_read(prop: str, props_dir: str | os.PathLike = PROPSDIR) -> dict[str, np.ndarray]:
+    with open(os.path.join(props_dir, prop), 'r') as f:
         header = f.readline().split()
         nodes, dims = int(header[0]), int(header[1])
         nbne_dict = dict()
@@ -137,30 +185,11 @@ def nbne_read(filename):  # -> dict[str, np.array]:
     return nbne_dict
 
 
-def create_number_props(cards: Iterable[Card], prop):
-    prop_dict = dict()
-    for c in cards:
-        prop_dict[c.name] = np.asarray(getattr(c, prop))
-    return prop_dict
-
-
-COLORS = ['w', 'u', 'b', 'r', 'g']
-
-def create_color_dict(cards: Iterable[Card]):
-    
-
-
-def prop_read(prop: str):  # -> dict[str, np.array]:
-    if prop in nbne_props:
-        return nbne_read(f'nbne/{prop}.model')
-    elif prop in number_props:
-        return create_number_props(props)
-    elif prop in list_props:
-        pass
-
-
 if __name__ == '__main__':
     card.load_cards(data.load())
     cards = card.get_cards()
+    os.makedirs(TEXTSDIR)
     preprocess_text(cards)
     split_train_texts()
+    os.makedirs(PROPSDIR)
+    preprocess_props(cards)
