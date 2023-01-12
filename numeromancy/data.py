@@ -49,13 +49,13 @@ def send_req(req):
     if n - _last_req < datetime.timedelta(milliseconds=150):
         time.sleep(.151)
     _last_req = datetime.datetime.now()
+    req.add_header('User-Agent', r'numeromancy/0.0.1')
+    req.add_header('Accept', r'application/json;q=0.9,*/*;q=0.8')
     return urllib.request.urlopen(req)
 
 def get_metadata(data_type="default_cards"):
     """ Grab the bulk-data info for the oracle cards. """
     req = urllib.request.Request("https://api.scryfall.com/bulk-data")
-    req.add_header('User-Agent', r'numeromancy/0.0.1')
-    req.add_header('Accept', r'application/json;q=0.9,*/*;q=0.8')
     try:
         with send_req(req) as response:
             j = json.load(response)
