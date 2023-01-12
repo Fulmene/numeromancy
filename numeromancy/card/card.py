@@ -26,8 +26,15 @@ import sys
 from typing import Optional
 import progressbar
 
+SUPERTYPES = {
+    'Basic',
+    'Legendary',
+    'Ongoing',
+    'Snow',
+    'World',
+}
 
-CARD_TYPES = {
+TYPES = {
     'Artifact',
     'Conspiracy',
     'Creature',
@@ -45,11 +52,17 @@ CARD_TYPES = {
 }
 
 def parse_type_line(type_line: str) -> tuple[list[str], list[str], list[str]]:
-    mdash_types = type_line.split(' — ')
-    supertypes = [t for t in mdash_types[0] if t not in CARD_TYPES]
-    types = [t for t in mdash_types[0] if t in CARD_TYPES]
-    subtypes = mdash_types[1].split() if len(mdash_types) > 1 else []
-    return supertypes, types, subtypes
+    split_type = type_line.split(' // ')
+    supertypes = []
+    cardtypes = []
+    subtypes = []
+    for typeline in split_type:
+        mdash_types = typeline.split(' — ')
+        left = mdash_types[0].split()
+        supertypes += [t for t in left if t in SUPERTYPES]
+        cardtypes += [t for t in left if t in TYPES]
+        subtypes += mdash_types[1].split() if len(mdash_types) > 1 else []
+    return supertypes, cardtypes, subtypes
 
 
 class Card:
@@ -58,7 +71,7 @@ class Card:
     mana_cost: str
     cmc: int
 
-    type_line: str
+    types: str
     oracle_text: str
     rules_text: str
 
@@ -72,7 +85,7 @@ class Card:
         self.colors = scryfall_card.get("colors")
 
         self.type_line = scryfall_card.get("type_line")
-        self.supertypes, self.types, self.subtypes = parse_type_line(self.type_line)
+        self.supertypes, self.cardtypes, self.subtypes = parse_type_line(self.type_line)
         self.oracle_text = scryfall_card.get("oracle_text") or ""
 
         self.power = scryfall_card.get("power")
