@@ -25,18 +25,17 @@ import os
 import time
 import urllib.request
 import urllib.error
+from pathlib import Path
 
 import progressbar
 
 _logger = logging.getLogger(__name__)
 
-DATADIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
-CACHEDIR = os.path.join(DATADIR, "cache")
+DATADIR = Path(Path(__file__).parents[1], "data")
+CACHEDIR = Path(DATADIR, "cache")
 DEFAULT_CARDS_JSON = "scryfall-default-cards.json"
-JSONCACHE = os.path.join(CACHEDIR, DEFAULT_CARDS_JSON)
-METADATA = os.path.join(CACHEDIR, "scryfall.metadata")
-
-no_download = False
+JSONCACHE = Path(CACHEDIR, DEFAULT_CARDS_JSON)
+METADATA = Path(CACHEDIR, "scryfall.metadata")
 
 ## Scryfall Client ##
 
@@ -137,12 +136,12 @@ def maybe_download(filename=JSONCACHE):
         print("Using unchanged JSON file.")
         return True
     print("Redownloading due to compressed file size change: {} => {}"
-              .format(m2["compressed_size"], metadata["compressed_size"]))
+              .format(m2["size"], metadata["size"]))
     return download(filename, metadata)
 
 ## Loader ##
 
-def load(filename=JSONCACHE):
+def load(filename=JSONCACHE, no_download=False):
     """ Load the cards from the Scryfall Oracle JSON file. """
     if no_download or not maybe_download(filename):
         if os.path.exists(filename):
