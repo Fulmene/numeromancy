@@ -7,6 +7,8 @@ LOG
 *.interp
 
 .env
+/data
+/output
 numeromancy/data
 numeromancy/logging
 numeromancy/re
