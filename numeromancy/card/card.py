@@ -57,11 +57,11 @@ def parse_type_line(type_line: str) -> tuple[list[str], list[str], list[str]]:
     cardtypes = []
     subtypes = []
     for typeline in split_type:
-        mdash_types = typeline.split(' — ')
-        left = mdash_types[0].split()
+        mdashed_types = typeline.split(' — ')
+        left = mdashed_types[0].split()
         supertypes += [t for t in left if t in SUPERTYPES]
         cardtypes += [t for t in left if t in TYPES]
-        subtypes += mdash_types[1].split() if len(mdash_types) > 1 else []
+        subtypes += mdashed_types[1].split() if len(mdashed_types) > 1 else []
     return supertypes, cardtypes, subtypes
 
 
@@ -69,10 +69,8 @@ class Card:
     """ Stores *gameplay* information of a Magic card. """
     name: str
     mana_cost: str
-    cmc: int
 
     types: str
-    oracle_text: str
     rules_text: str
 
     def __init__(self, scryfall_card):
