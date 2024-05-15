@@ -26,14 +26,12 @@ import re
 import csv
 import random
 from collections.abc import Collection, Iterable
-import sys
 import numpy as np
 
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 
-# from gensim.models import Word2Vec
 import networkx as nx
 import nbne
 
@@ -45,7 +43,7 @@ stemmer = PorterStemmer()
 stops = stopwords.words('english')
 
 
-TEXTSDIR = os.path.join(data.DATADIR, 'text')
+TEXTSDIR = os.path.join(data.DATADIR, 'texts')
 CARD_TEXTS = os.path.join(TEXTSDIR, 'card_texts.csv')
 TRAIN_TEXTS = os.path.join(TEXTSDIR, 'train_texts.csv')
 TEST_TEXTS = os.path.join(TEXTSDIR, 'test_texts.csv')
@@ -109,7 +107,14 @@ def split_train_texts(card_texts_file=CARD_TEXTS, train_file=TRAIN_TEXTS, test_f
         write_augmented(test_file, cards[div:])
 
 
-numerical_props = ['power', 'toughness', 'loyalty']
+def read_text(filename) -> dict[str, str]:
+    with open(filename, 'r', encoding='UTF8') as f:
+        reader = csv.reader(f)
+        texts = { r[0]: r[1] for r in reader }
+    return texts
+
+
+numerical_props = ['power', 'toughness', 'loyalty', 'cmc']
 list_props = ['supertypes', 'cardtypes', 'subtypes', 'colors']
 NBNE_DIMENSIONS = 10
 
@@ -146,18 +151,15 @@ def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os
                 property2 = getattr(c2, prop)
                 if key != key2 and not set(property).isdisjoint(property2):
                     graph.add_edge(key, key2)
-        _logger.info('Training the NBNE model...')
         nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
-        _logger.info('Complete!')
     else:
+        _logger.info(f'Creating sparse vectors for property {prop}...')
         with open(os.path.join(props_dir, f'{prop}.model'), 'w') as f:
             print(len(cards), dimensions, file=f)
-            _logger.info(f'Creating sparse vectors for property {prop}...')
             for c in CardProgressBar(cards):
                 property = getattr(c, prop)
                 vector = [1 if v in property else 0 for v in values]
                 print(c.name, *vector, file=f)
-        _logger.info('Complete!')
 
 
 def preprocess_props(cards: Collection[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
@@ -167,28 +169,21 @@ def preprocess_props(cards: Collection[Card], props_dir: str | os.PathLike = PRO
         preprocess_list_prop(cards, prop, props_dir)
 
 
-def prop_read(prop: str, props_dir: str | os.PathLike = PROPSDIR) -> dict[str, np.ndarray]:
-    with open(os.path.join(props_dir, prop), 'r') as f:
+def read_prop(cards: Iterable[Card], prop: str, props_dir: str | os.PathLike = PROPSDIR) -> dict[str, np.ndarray]:
+    with open(os.path.join(props_dir, f'{prop}.model'), 'r') as f:
         header = f.readline().split()
-        nodes, dims = int(header[0]), int(header[1])
-        nbne_dict = dict()
-        for _ in range(nodes):
+        lines, dims = int(header[0]), int(header[1])
+        vectors = dict()
+        for _ in range(lines):
             line = f.readline().split()
             cardname = ' '.join(line[:-dims])
             vector = np.asfarray(line[-dims:])
-            nbne_dict[cardname] = vector
-    return nbne_dict
+            vectors[cardname] = vector
+    vectors.update((c.name, np.zeros((dims,))) for c in cards if c.name not in vectors)
+    return vectors
 
 
 if __name__ == '__main__':
-
-    logging.basicConfig(level=logging.DEBUG, filename="LOG", filemode="w", encoding="utf-8")
-    root_logger = logging.getLogger()
-    stderr_handler = logging.StreamHandler()
-    stderr_handler.setLevel(logging.INFO)
-    stderr_handler.setFormatter(logging.Formatter(fmt='%(levelname)s: %(message)s'))
-    root_logger.addHandler(stderr_handler)
-
     card.load_cards(data.load())
     cards = card.get_cards()
     os.makedirs(TEXTSDIR, exist_ok=True)

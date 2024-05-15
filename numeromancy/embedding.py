@@ -3,12 +3,13 @@ import os
 import csv
 import re
 from gensim.models import Word2Vec
+from gensim.models.keyedvectors import KeyedVectors
 
 from data import DATADIR
 from preprocessing import CARD_TEXTS
 
 
-EMBEDDING_MODEL = os.path.join(DATADIR, 'embedding.model')
+EMBEDDING_VECTORS = os.path.join(DATADIR, 'embedding_vectors')
 
 
 def make_sents(text: str) -> list[list[str]]:
@@ -23,10 +24,10 @@ def generate_embedding(texts_csv=CARD_TEXTS) -> Word2Vec:
         return Word2Vec(sentences=sents)
 
 
-def load_embedding(filename=EMBEDDING_MODEL) -> Word2Vec:
-    return Word2Vec.load(filename)
+def load_embedding(filename=EMBEDDING_VECTORS) -> KeyedVectors:
+    return KeyedVectors.load(filename)
 
 
 if __name__ == '__main__':
     print("Saving card text embedding model", file=sys.stderr)
-    generate_embedding().save(EMBEDDING_MODEL)
+    generate_embedding().wv.save(EMBEDDING_VECTORS)

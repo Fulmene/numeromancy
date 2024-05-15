@@ -18,25 +18,25 @@
 
 """ card_vector - Constructing the vector representation of a card """
 
+from collections.abc import Iterable
 import os
 import csv
 import numpy as np
 import xgboost as xgb
 
-import card
+from card import Card, CardProgressBar, get_cards
 from preprocessing import prop_read
+from embedding import load_embedding
 
-def card_properties_vector(properties: list[str]):
-    card_dict = dict()
-    for prop in properties:
-        prop_dict = prop_read(prop)
-        for cardname, vector in prop_dict.items():
-            card_dict[cardname] = np.append(card_dict[cardname], vector)
-    return card_dict
+
+def card_properties_vectors(cards: Iterable[Card], props: list[str]) -> dict[str, np.ndarray]:
+    prop_dicts = { p: prop_read(cards, p) for p in props }
+    return { c.name: np.concatenate([prop_dicts[p][c.name] for p in props]) for c in cards }
 
 
 def load_card_vector(filename='card_texts.csv'):
     """ Loads vector representation of cards from a file containing the cards' names and their rules text """
+    cards = get_cards()
     with open(filename, 'r', encoding='UTF8') as f:
         reader = csv.reader(f)
         for row in reader:
