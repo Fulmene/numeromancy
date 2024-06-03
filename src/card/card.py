@@ -36,6 +36,7 @@ SUPERTYPES = {
 
 TYPES = {
     'Artifact',
+    'Battle',
     'Conspiracy',
     'Creature',
     'Dungeon',
