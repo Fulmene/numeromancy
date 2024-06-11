@@ -32,6 +32,7 @@ import progressbar
 _logger = logging.getLogger(__name__)
 
 DATADIR = os.path.join(Path(__file__).parents[1], "data")
+OUTPUTDIR = os.path.join(Path(__file__).parents[1], "output")
 CACHEDIR = os.path.join(DATADIR, "cache")
 DEFAULT_CARDS_JSON = "scryfall-default-cards.json"
 JSONCACHE = os.path.join(CACHEDIR, DEFAULT_CARDS_JSON)

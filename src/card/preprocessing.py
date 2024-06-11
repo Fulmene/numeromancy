@@ -20,7 +20,7 @@
 
 import re
 
-from .card import Card
+from .card import Card, CardFace
 from .names import preprocess_names, construct_shortname
 
 
@@ -89,15 +89,20 @@ def preprocess_rulestext(oracle_text: str, names) -> str:
     return preprocess_misc("\n".join(lines))
 
 
-## Main entry point for the preprocessing step ##
-def preprocess_all(card: Card):
+def preprocess_face(card_face: CardFace):
     """ Scans the rules texts of a card to replace any card names that
         appear with appropriate symbols, and eliminates reminder text. """
-    card.types = preprocess_typeline(card.type_line)
+    card_face.types = preprocess_typeline(card_face.type_line)
 
-    names = (card.name,)
-    shortname = construct_shortname(card.name)
-    if shortname and "planeswalker" not in card.types:
+    names = (card_face.name,)
+    shortname = construct_shortname(card_face.name)
+    if shortname and "planeswalker" not in card_face.types:
         names += (shortname,)
 
-    card.rules_text = preprocess_rulestext(card.oracle_text, names)
+    card_face.rules_text = preprocess_rulestext(card_face.oracle_text, names)
+
+
+## Main entry point for the preprocessing step ##
+def preprocess_all(card: Card):
+    for f in card.card_faces:
+        preprocess_face(f)

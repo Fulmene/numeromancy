@@ -26,6 +26,8 @@ import sys
 from typing import Optional
 import progressbar
 
+from .cmc import cmc
+
 SUPERTYPES = {
     'Basic',
     'Legendary',
@@ -52,6 +54,7 @@ TYPES = {
     'Vanguard',
 }
 
+
 def parse_type_line(type_line: str) -> tuple[list[str], list[str], list[str]]:
     split_type = type_line.split(' // ')
     supertypes = []
@@ -66,39 +69,22 @@ def parse_type_line(type_line: str) -> tuple[list[str], list[str], list[str]]:
     return supertypes, cardtypes, subtypes
 
 
-class Card:
-    """ Stores *gameplay* information of a Magic card. """
-    name: str
-    mana_cost: str
+class CardFace:
+    def __init__(self, scryfall_card_face):
+        self.name = scryfall_card_face.get("name")
+        self.mana_cost = scryfall_card_face.get("mana_cost") or ""
 
-    types: str
-    rules_text: str
+        self.cmc = cmc(self.mana_cost)
+        self.colors = scryfall_card_face.get("colors")
 
-    def __init__(self, scryfall_card):
-        self.name = scryfall_card.get("name")
-
-        self.mana_cost = scryfall_card.get("mana_cost") or ""
-        # Mana value of some funny cards can be fractional, but for "real" cards, it's integer only
-        self.cmc = int(scryfall_card.get("cmc"))
-        self.color_identity = scryfall_card.get("color_identity")
-        self.colors = scryfall_card.get("colors")
-
-        self.type_line = scryfall_card.get("type_line")
+        self.type_line = scryfall_card_face.get("type_line")
         self.supertypes, self.cardtypes, self.subtypes = parse_type_line(self.type_line)
-        self.oracle_text = scryfall_card.get("oracle_text") or ""
+        self.oracle_text = scryfall_card_face.get("oracle_text") or ""
 
-        self.power = scryfall_card.get("power")
-        self.toughness = scryfall_card.get("toughness")
-        self.loyalty = scryfall_card.get("loyalty")
-
-        self.layout = scryfall_card.get("layout")
-
-        self.all_parts = scryfall_card.get("all_parts") # TODO see if this is necessary
-        self.card_faces	= scryfall_card.get("card_faces")  # TODO initialise each face of the card
-
-        self.keywords = scryfall_card.get("keywords")
-        self.legalities = scryfall_card.get("legalities")
-        self.produced_mana = scryfall_card.get("produced_mana")
+        self.power = scryfall_card_face.get("power")
+        self.toughness = scryfall_card_face.get("toughness")
+        self.loyalty = scryfall_card_face.get("loyalty")
+        self.defense = scryfall_card_face.get("defense")
 
     def __repr__(self):
         return f"Card: \"{self.name}\""
@@ -107,7 +93,51 @@ class Card:
         info = f"{self.name}\t\t{self.mana_cost}\n{self.type_line}\n{self.oracle_text}"
         pt = f"\n{self.power}/{self.toughness}" if self.power is not None else ""
         loyalty = f"\n<{self.loyalty}>" if self.loyalty is not None else ""
-        return f"{info}{pt}{loyalty}"
+        defense = f"\n<{self.defense}>" if self.defense is not None else ""
+        return f"{info}{pt}{loyalty}{defense}"
+
+
+class Card:
+    """ Stores *gameplay* information of a Magic card. """
+
+    name: str
+    layout: str
+    card_faces: list[CardFace]
+
+    def __init__(self, scryfall_card):
+        self.name = scryfall_card.get("name")
+        self.layout = scryfall_card.get("layout")
+        self.legalities = scryfall_card.get("legalities")
+
+        if self.layout in ["split", "flip", "transform", "modal_dfc", "adventure", "battle"]:
+            self.card_faces = [
+                CardFace(scryfall_card.get("card_faces")[0]),
+                CardFace(scryfall_card.get("card_faces")[1]),
+            ]
+        else:
+            self.card_faces = [CardFace(scryfall_card)]
+
+        #self.mana_cost = scryfall_card.get("mana_cost") or ""
+        # Mana value of some funny cards can be fractional, but for "real" cards, it's integer only
+        #self.cmc = int(scryfall_card.get("cmc"))
+        #self.color_identity = scryfall_card.get("color_identity")
+        #self.colors = scryfall_card.get("colors")
+
+        #self.type_line = scryfall_card.get("type_line")
+        #self.supertypes, self.cardtypes, self.subtypes = parse_type_line(self.type_line)
+        #self.oracle_text = scryfall_card.get("oracle_text") or ""
+
+        #self.power = scryfall_card.get("power")
+        #self.toughness = scryfall_card.get("toughness")
+        #self.loyalty = scryfall_card.get("loyalty")
+
+    def __repr__(self):
+        return f"Card: \"{self.name}\""
+
+    def __str__(self):
+        info = f"{self.name}\t\t({self.layout})"
+        faces = ''.join('\n' + str(f) for f in self.card_faces)
+        return f"{info}{faces}"
 
 
 class CardProgressBar(list):

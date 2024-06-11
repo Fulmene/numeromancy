@@ -19,7 +19,11 @@
 """ preprocessing - Card data preprocessing """
 
 import logging
+import sys
+logging.basicConfig(level=logging.WARNING)
 _logger = logging.getLogger(__name__)
+_handler = logging.StreamHandler(sys.stderr)
+_handler.setLevel(logging.WARNING)
 
 import os
 import re
@@ -43,12 +47,12 @@ stemmer = PorterStemmer()
 stops = stopwords.words('english')
 
 
-TEXTSDIR = os.path.join(data.DATADIR, 'texts')
+TEXTSDIR = os.path.join(data.OUTPUTDIR, 'texts')
 CARD_TEXTS = os.path.join(TEXTSDIR, 'card_texts.csv')
 TRAIN_TEXTS = os.path.join(TEXTSDIR, 'train_texts.csv')
 TEST_TEXTS = os.path.join(TEXTSDIR, 'test_texts.csv')
 
-PROPSDIR = os.path.join(data.DATADIR, 'props')
+PROPSDIR = os.path.join(data.OUTPUTDIR, 'props')
 
 
 def replace_word(word: str) -> str:
@@ -68,16 +72,21 @@ def preprocess_text(cards: Iterable[Card], filename=CARD_TEXTS) -> None:
     _logger.info("Preprocessing card texts...")
     with open(filename, 'w', encoding='UTF8') as f:
         writer = csv.writer(f);
-        for c in CardProgressBar(cards):
-            texts = []
-            if c.rules_text:
-                for line in c.rules_text.split('\n'):
-                    text = []
-                    for s in sent_tokenize(line):
-                        words = map(replace_word, word_tokenize(s))
-                        text.append(remove_bracket_spaces(' '.join(words)))
-                    texts.append(' '.join(text))
-            writer.writerow((c.name, '\n'.join(texts)))
+        for card in CardProgressBar(cards):
+            all_texts = []
+            for face in card.card_faces:
+                texts = []
+                if face.rules_text:
+                    for line in face.rules_text.split('\n'):
+                        text = []
+                        for s in sent_tokenize(line):
+                            words = map(replace_word, word_tokenize(s))
+                            text.append(remove_bracket_spaces(' '.join(words)))
+                        texts.append(' '.join(text))
+                all_texts.append('\n'.join(texts))
+            if len(all_texts) < 2:
+                all_texts.append("")
+            writer.writerow((card.name, all_texts[0], all_texts[1]))
 
 
 def write_augmented(filename: str, rows: list[list[str]], ratio: float = 0.3):
@@ -86,23 +95,26 @@ def write_augmented(filename: str, rows: list[list[str]], ratio: float = 0.3):
     for i, row in enumerate(rows):
         new_rows.append(row)
         if i < augment_index:
-            split_text = row[1].split()
-            split_text.extend((len(row[1].split('\n')) - 1) * ['\n'])
-            new_text = '\n'.join(line.strip() for line in ' '.join(random.sample(split_text, len(split_text))).split('\n'))
-            new_rows.append([row[0], new_text])
+            split_text1 = row[1].split()
+            split_text1.extend((len(row[1].split('\n')) - 1) * ['\n'])
+            new_text1 = '\n'.join(line.strip() for line in ' '.join(random.sample(split_text1, len(split_text1))).split('\n'))
+            split_text2 = row[2].split()
+            split_text2.extend((len(row[2].split('\n')) - 1) * ['\n'])
+            new_text2 = '\n'.join(line.strip() for line in ' '.join(random.sample(split_text2, len(split_text2))).split('\n'))
+            new_rows.append([row[0], new_text1, new_text2])
     random.shuffle(new_rows)
     with open(filename, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         writer.writerows(new_rows)
 
 
-def split_train_texts(card_texts_file=CARD_TEXTS, train_file=TRAIN_TEXTS, test_file=TEST_TEXTS) -> None:
+def split_train_texts(card_texts_file=CARD_TEXTS, train_file=TRAIN_TEXTS, test_file=TEST_TEXTS, ratio=0.7) -> None:
     _logger.info("Splitting card texts into train and test datasets")
     with open(card_texts_file, 'r', encoding='UTF8') as f:
         reader = csv.reader(f)
         cards = [row for row in reader]
         random.shuffle(cards)
-        div = int(len(cards) * 0.7)
+        div = int(len(cards) * ratio)
         write_augmented(train_file, cards[:div])
         write_augmented(test_file, cards[div:])
 
@@ -114,25 +126,32 @@ def read_text(filename) -> dict[str, str]:
     return texts
 
 
-numerical_props = ['power', 'toughness', 'loyalty', 'cmc']
+layouts = ['choose', 'transform']
+numerical_props = ['power', 'toughness', 'loyalty', 'defense', 'cmc']
 list_props = ['supertypes', 'cardtypes', 'subtypes', 'colors']
 NBNE_DIMENSIONS = 10
+
+
+def face_count(cards: Collection[Card]) -> int:
+    return sum(len(c.card_faces) for c in cards)
 
 
 def preprocess_numerical_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
     _logger.info(f'Preprocessing the numerical property {prop}...')
     with open(os.path.join(props_dir, f'{prop}.model'), 'w') as f:
-        print(len(cards), 1, file=f)
-        for c in CardProgressBar(cards):
-            print(c.name, getattr(c, prop), file=f)
+        print(face_count(cards), 1, file=f)
+        for card in CardProgressBar(cards):
+            for face in card.card_faces:
+                print(face.name, getattr(face, prop) or 0, file=f)
 
 
 def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
     _logger.info(f'Preprocessing the list property {prop}...')
     values = set()
     _logger.info(f'Finding all possible values from the given list of cards...')
-    for c in CardProgressBar(cards):
-        values.update(getattr(c, prop))
+    for card in CardProgressBar(cards):
+        for face in card.card_faces:
+            values.update(getattr(face, prop))
 
     values = list(values)
     dimensions = len(values)
@@ -142,24 +161,28 @@ def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os
     if dimensions > NBNE_DIMENSIONS:
         _logger.info(f'Creating the property graph for property {prop}...')
         graph = nx.Graph()
-        for c in CardProgressBar(cards):
-            key = c.name
-            property = getattr(c, prop)
-            graph.add_node(key)
-            for c2 in cards:
-                key2 = c2.name
-                property2 = getattr(c2, prop)
-                if key != key2 and not set(property).isdisjoint(property2):
-                    graph.add_edge(key, key2)
-        nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
+        for card in CardProgressBar(cards):
+            for face in card.card_faces:
+                key = face.name
+                property = getattr(face, prop)
+                graph.add_node(key)
+                for c2 in cards:
+                    for f2 in c2.card_faces:
+                        key2 = f2.name
+                        property2 = getattr(f2, prop)
+                        if key != key2 and not set(property).isdisjoint(property2):
+                            graph.add_edge(key, key2)
+            _logger.info(graph.graph)
+            nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
     else:
         _logger.info(f'Creating sparse vectors for property {prop}...')
         with open(os.path.join(props_dir, f'{prop}.model'), 'w') as f:
-            print(len(cards), dimensions, file=f)
-            for c in CardProgressBar(cards):
-                property = getattr(c, prop)
-                vector = [1 if v in property else 0 for v in values]
-                print(c.name, *vector, file=f)
+            print(face_count(cards), dimensions, file=f)
+            for card in CardProgressBar(cards):
+                for face in card.card_faces:
+                    property = getattr(face, prop)
+                    vector = [1 if v in property else 0 for v in values]
+                    print(face.name, *vector, file=f)
 
 
 def preprocess_props(cards: Collection[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
@@ -183,11 +206,29 @@ def read_prop(cards: Iterable[Card], prop: str, props_dir: str | os.PathLike = P
     return vectors
 
 
+def preprocess_layout(cards: Iterable[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
+    with open(os.path.join(props_dir, 'layout.model'), 'w') as f:
+        print(len(cards), len(layouts), file=f)
+        for card in CardProgressBar(cards):
+            if card.layout in ['split', 'modal_dfc', 'adventure']:
+                vector = [1 if l == 'choose' else 0 for l in layouts]
+            elif card.layout in ['transform', 'flip', 'battle']:
+                vector = [1 if l == 'transform' else 0 for l in layouts]
+            else:
+                vector = [1 if l == 'single' else 0 for l in layouts]
+            print(card.name, *vector, file=f)
+
+
+def preprocess_all(cards: Iterable[Card]) -> None:
+    preprocess_layout(cards)
+    preprocess_text(cards)
+    split_train_texts()
+    preprocess_props(cards)
+
+
 if __name__ == '__main__':
     card.load_cards(data.load())
     cards = card.get_cards()
     os.makedirs(TEXTSDIR, exist_ok=True)
-    preprocess_text(cards)
-    split_train_texts()
     os.makedirs(PROPSDIR, exist_ok=True)
-    preprocess_props(cards)
+    preprocess_all(cards)
