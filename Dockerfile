@@ -29,3 +29,5 @@ RUN pip install progressbar2==4.4.2
 RUN pip install basedpyright
 
 USER user
+
+COPY pyrightconfig.json ./pyrightconfig.json
