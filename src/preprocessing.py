@@ -206,7 +206,7 @@ def read_prop(cards: Iterable[Card], prop: str, props_dir: str | os.PathLike = P
     return vectors
 
 
-def preprocess_layout(cards: Iterable[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
+def preprocess_layout(cards: Collection[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
     with open(os.path.join(props_dir, 'layout.model'), 'w') as f:
         print(len(cards), len(layouts), file=f)
         for card in CardProgressBar(cards):
@@ -219,7 +219,7 @@ def preprocess_layout(cards: Iterable[Card], props_dir: str | os.PathLike = PROP
             print(card.name, *vector, file=f)
 
 
-def preprocess_all(cards: Iterable[Card]) -> None:
+def preprocess_all(cards: Collection[Card]) -> None:
     preprocess_layout(cards)
     preprocess_text(cards)
     split_train_texts()
