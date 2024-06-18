@@ -173,7 +173,7 @@ def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os
                         if key != key2 and not set(property).isdisjoint(property2):
                             graph.add_edge(key, key2)
             _logger.info(graph.graph)
-            nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
+        nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
     else:
         _logger.info(f'Creating sparse vectors for property {prop}...')
         with open(os.path.join(props_dir, f'{prop}.model'), 'w') as f:
@@ -227,7 +227,7 @@ def preprocess_all(cards: Collection[Card]) -> None:
 
 
 if __name__ == '__main__':
-    card.load_cards(data.load())
+    card.load_cards(data.load(no_download=True))
     cards = card.get_cards()
     os.makedirs(TEXTSDIR, exist_ok=True)
     os.makedirs(PROPSDIR, exist_ok=True)
