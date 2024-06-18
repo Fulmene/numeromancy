@@ -1,3 +1,3 @@
 [submodule "nbne"]
 	path = nbne
-	url = git@github.com:Fulmene/nbne.git
+	url = https://github.com/Fulmene/nbne.git
