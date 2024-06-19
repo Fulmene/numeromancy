@@ -149,7 +149,7 @@ def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os
     _logger.info(f'Preprocessing the list property {prop}...')
     values = set()
     _logger.info(f'Finding all possible values from the given list of cards...')
-    for card in CardProgressBar(cards):
+    for card in cards:
         for face in card.card_faces:
             values.update(getattr(face, prop))
 
@@ -172,7 +172,6 @@ def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os
                         property2 = getattr(f2, prop)
                         if key != key2 and not set(property).isdisjoint(property2):
                             graph.add_edge(key, key2)
-            _logger.info(graph.graph)
         nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
     else:
         _logger.info(f'Creating sparse vectors for property {prop}...')
