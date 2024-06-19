@@ -70,12 +70,14 @@ def parse_type_line(type_line: str) -> tuple[list[str], list[str], list[str]]:
 
 
 class CardFace:
-    def __init__(self, scryfall_card_face):
+    def __init__(self, scryfall_card_face, card):
         self.name = scryfall_card_face.get("name")
         self.mana_cost = scryfall_card_face.get("mana_cost") or ""
 
         self.cmc = cmc(self.mana_cost)
         self.colors = scryfall_card_face.get("colors")
+        if self.colors is None:
+            self.colors = card.colors
 
         self.type_line = scryfall_card_face.get("type_line")
         self.supertypes, self.cardtypes, self.subtypes = parse_type_line(self.type_line)
@@ -108,14 +110,15 @@ class Card:
         self.name = scryfall_card.get("name")
         self.layout = scryfall_card.get("layout")
         self.legalities = scryfall_card.get("legalities")
+        self.colors = scryfall_card.get("colors")
 
         if self.layout in ["split", "flip", "transform", "modal_dfc", "adventure", "battle"]:
             self.card_faces = [
-                CardFace(scryfall_card.get("card_faces")[0]),
-                CardFace(scryfall_card.get("card_faces")[1]),
+                CardFace(scryfall_card.get("card_faces")[0], self),
+                CardFace(scryfall_card.get("card_faces")[1], self),
             ]
         else:
-            self.card_faces = [CardFace(scryfall_card)]
+            self.card_faces = [CardFace(scryfall_card, self)]
 
         #self.mana_cost = scryfall_card.get("mana_cost") or ""
         # Mana value of some funny cards can be fractional, but for "real" cards, it's integer only
