@@ -22,8 +22,8 @@ services:
         bind:
           create_host_path: true
       - type: bind
-        source: ./src
-        target: /home/user/app/src
+        source: ./numeromancy
+        target: /home/user/app/numeromancy
     deploy:
       resources:
         reservations:
