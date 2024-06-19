@@ -26,8 +26,12 @@ RUN pip install xgboost==2.0.3
 
 RUN pip install progressbar2==4.4.2
 
+USER user
+
+FROM base as dev
+
+USER root
 RUN pip install basedpyright
 
 USER user
-
 COPY pyrightconfig.json ./pyrightconfig.json

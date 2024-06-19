@@ -7,6 +7,7 @@ services:
       args:
         - USER_ID=${MY_UID}
         - GROUP_ID=${MY_GID}
+      target: ${TARGET}
     tty: true
     user: ${MY_UID}:${MY_GID}
     volumes:
