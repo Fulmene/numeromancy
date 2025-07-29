@@ -7,23 +7,22 @@ services:
       args:
         - USER_ID=${MY_UID}
         - GROUP_ID=${MY_GID}
-      target: ${TARGET}
     tty: true
     user: ${MY_UID}:${MY_GID}
     volumes:
       - type: bind
         source: ./data
-        target: /home/user/app/data
+        target: /workspace/data
         bind:
           create_host_path: true
       - type: bind
         source: ./output
-        target: /home/user/app/output
+        target: /workspace/output
         bind:
           create_host_path: true
       - type: bind
         source: ./numeromancy
-        target: /home/user/app/numeromancy
+        target: /workspace/numeromancy
     deploy:
       resources:
         reservations:

@@ -64,6 +64,7 @@ shortname_extra = {
     "Rasputin Dreamweaver"          : "Rasputin",
     "Rubinia Soulsinger"            : "Rubinia",
     "Svyelun of Sea and Sky"        : "Svyelun",
+    "Edgar Markov"                  : "Edgar",
 }
 
 def construct_shortname(name: str):

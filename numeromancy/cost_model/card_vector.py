@@ -22,15 +22,15 @@ from collections.abc import Iterable
 import os
 import csv
 import numpy as np
-import xgboost as xgb
 
 from card import Card, CardProgressBar, get_cards
-from preprocessing import prop_read
+from preprocessing import read_prop
 from embedding import load_embedding
 
 
-def card_properties_vectors(cards: Iterable[Card], props: list[str]) -> dict[str, np.ndarray]:
-    prop_dicts = { p: prop_read(cards, p) for p in props }
+PROPS = [ "layout", "colors", "supertypes", "cardtypes", "subtypes", "power", "toughness", "loyalty", "defense" ]
+def card_properties_vectors(cards: Iterable[Card], props: list[str] = PROPS) -> dict[str, np.ndarray]:
+    prop_dicts = { p: read_prop(cards, p) for p in props }
     return { c.name: np.concatenate([prop_dicts[p][c.name] for p in props]) for c in cards }
 
 

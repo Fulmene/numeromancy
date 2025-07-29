@@ -27,6 +27,7 @@ from keras.layers import Embedding, Dense, Flatten, LSTM
 from keras_self_attention import SeqSelfAttention
 from keras.utils import to_categorical
 from gensim.models import Word2Vec
+from transformers import TFRobertaModel, RobertaConfig
 
 from embedding import load_embedding
 from preprocessing import TRAIN_TEXTS, TEST_TEXTS, read_text, read_prop
@@ -71,6 +72,16 @@ def text_to_index(text: str, key_to_index: dict[str, int]) -> np.ndarray:
     return np.array([key_to_index[split_text[i]] if i < len(split_text) and split_text[i] in key_to_index else 0 for i in range(50)])
 
 
+def lstm_layer():
+    embedding = load_embedding()
+    return lstm = LSTM(50, return_sequences=False)(gensim_to_keras_embedding(embedding))
+
+
+def roberta_layer():
+    model = TFRobertaModel.from_pretrained("FacebookAI/roberta-base")
+    return model
+
+
 def train_text_model() -> None:
     card.load_cards(data.load(no_download=True))
     cards = card.get_cards()
@@ -88,12 +99,11 @@ def train_text_model() -> None:
     classifier_model.summary()
 
     key_to_index = { v: i for (i, v) in enumerate(embedding.index_to_key) }
-    train_texts = read_text(TRAIN_TEXTS)
-    test_texts = read_text(TEST_TEXTS)
+    train_texts = read_text(TRAIN_TEXTS, make_dict=False)
+    test_texts = read_text(TEST_TEXTS, make_dict=False)
     cmc = read_prop(cards, 'cmc')
 
-    tt = train_texts.items()
-    train_x, train_y = np.array([text_to_index(text, key_to_index) for (_, text) in tt]), to_categorical([min(cmc[name][0], 7) for (name, _) in tt], num_classes=8)
+    train_x, train_y = np.array([text_to_index(text, key_to_index) for (_, text) in train_texts]), to_categorical([min(cmc[name][0], 7) for (name, _) in train_texts], num_classes=8)
 
     print(train_x[:10])
     print(train_y[:10])

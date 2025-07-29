@@ -59,7 +59,7 @@ def replace_word(word: str) -> str:
     if len(word) == 1 or word.isupper():  # Single letters are usually important in Magic
         return word
     elif word in stops:
-        return 'W'
+        return '_'
     else:
         return stemmer.stem(word)
 
@@ -80,7 +80,7 @@ def preprocess_text(cards: Iterable[Card], filename=CARD_TEXTS) -> None:
                     for line in face.rules_text.split('\n'):
                         text = []
                         for s in sent_tokenize(line):
-                            words = map(replace_word, word_tokenize(s))
+                            words = word_tokenize(s)
                             text.append(remove_bracket_spaces(' '.join(words)))
                         texts.append(' '.join(text))
                 all_texts.append('\n'.join(texts))
@@ -119,21 +119,31 @@ def split_train_texts(card_texts_file=CARD_TEXTS, train_file=TRAIN_TEXTS, test_f
         write_augmented(test_file, cards[div:])
 
 
-def read_text(filename) -> dict[str, str]:
+def read_text(filename, make_dict=True):
     with open(filename, 'r', encoding='UTF8') as f:
         reader = csv.reader(f)
-        texts = { r[0]: r[1] for r in reader }
-    return texts
+        texts = [ (r[0], r[1]) for r in reader ]
+    return dict(texts) if make_dict else texts
 
 
 layouts = ['choose', 'transform']
 numerical_props = ['power', 'toughness', 'loyalty', 'defense', 'cmc']
 list_props = ['supertypes', 'cardtypes', 'subtypes', 'colors']
+feature_props = [x for x in numerical_props + list_props if x != 'cmc']
 NBNE_DIMENSIONS = 10
 
 
 def face_count(cards: Collection[Card]) -> int:
     return sum(len(c.card_faces) for c in cards)
+
+
+def to_number(s) -> int:
+    if s is None:
+        return 0
+    elif isinstance(s, str):
+        return eval(s.replace('X', '0').replace('*', '0'))
+    else:
+        return s
 
 
 def preprocess_numerical_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
@@ -142,7 +152,7 @@ def preprocess_numerical_prop(cards: Collection[Card], prop: str, props_dir: str
         print(face_count(cards), 1, file=f)
         for card in CardProgressBar(cards):
             for face in card.card_faces:
-                print(face.name, getattr(face, prop) or 0, file=f)
+                print(face.name, to_number(getattr(face, prop)), file=f)
 
 
 def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
@@ -203,6 +213,11 @@ def read_prop(cards: Iterable[Card], prop: str, props_dir: str | os.PathLike = P
             vectors[cardname] = vector
     vectors.update((c.name, np.zeros((dims,))) for c in cards if c.name not in vectors)
     return vectors
+
+
+def props_vector(cards, props = feature_props):
+    prop_dicts = { p: read_prop(cards, p) for p in props }
+    return { c.name: np.concatenate([prop_dicts[p][c.name] for p in props]) for c in cards }
 
 
 def preprocess_layout(cards: Collection[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:

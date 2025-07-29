@@ -64,6 +64,22 @@ def get_cards(format="vintage") -> set[Card]:
     return set(c for c in _all_cards.values() if c.legalities[format] in ("legal", "restricted"))
 
 
+def find_name(cardname: str) -> str:
+    """ Find the closest card name. Useful for i.e. referring to only one half of a DFC.
+        Error if multiple matched unless it is an exact match. """
+    names = [name for name in _all_cards if cardname in name]
+    if len(names) == 1:
+        return names[0]
+    elif len(names) > 1:
+        names = [name for name in names if name == cardname]
+        if len(names) == 1:
+            return names[0]
+        else:
+            raise KeyError(f"{cardname} matches multiple card names.")
+    else:
+        raise KeyError(f"{cardname} doesn't match any known card names.")
+
+
 def get_card(cardname: str) -> Card:
     """ Returns a specific card by name. Raises KeyError if no such card exists. """
     return _all_cards[cardname]
