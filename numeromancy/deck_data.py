@@ -1,10 +1,11 @@
 import os
 import random
 import csv
+from itertools import islice
 
 import torch
 from torch.utils.data import Dataset
-from preprocessing import CARD_TEXTS, props_vector, read_text
+from preprocessing import CARD_TEXTS, props_vector
 from progressbar import progressbar
 
 import card, data, util
@@ -90,27 +91,61 @@ def write_deck_data(decklists, train_file=TRAIN_SYNERGY, test_file=TEST_SYNERGY,
         writer.writerows(d)
 
 
+def card_encode(cardname, embeddings, cv):
+    # This code assumes that the cards are already loaded.
+    try:
+        c = card.get_card(cardname)
+    except KeyError:
+        c = card.get_card(card.find_name(cardname))
+    emb1 = embeddings[c.card_faces[0].name]
+    cmc1 = torch.from_numpy(cv[c.card_faces[0].name]).float()
+    emb2 = torch.tensor(64 * [0.0])
+    cmc2 = torch.tensor([0.0])
+    if c.layout in ["split", "modal_dfc", "adventure"]:
+        emb2 = embeddings[c.card_faces[1].name]
+        cmc2 = torch.from_numpy(cv[c.card_faces[1].name]).float()
+        layout_tensor = torch.tensor([1.0, 0.0])
+    elif c.layout in ["transfrom", "flip", "battle"]:
+        emb2 = embeddings[c.card_faces[1].name]
+        cmc2 = torch.from_numpy(cv[c.card_faces[1].name]).float()
+        layout_tensor = torch.tensor([0.0, 1.0])
+    else:
+        layout_tensor = torch.tensor([0.0, 0.0])
+    return emb1, cmc1, emb2, cmc2, layout_tensor
+
+
 def read_deck_data(filename):
+    # This code assumes that the cards are already loaded.
     embeddings = load_card_embedding()
+    # cv = props_vector(card.get_cards(), props=['cmc'], backface=False)
     with open(filename, 'r') as f:
         reader = csv.reader(f)
+        # rows = [row for row in reader]
         deck_data = [(
-            embeddings[c1],
-            embeddings[c2],
+            embeddings[card.get_card(c1).card_faces[0].name],
+            embeddings[card.get_card(c2).card_faces[0].name],
+        # card_encode(c1, embeddings, cv) + card_encode(c2, embeddings, cv),
             torch.tensor(int(syn)).float())
-            for c1, c2, syn in reader]
-        deck_data = util.transpose(deck_data)
-        return SynergyDataset(deck_data[0], deck_data[1], deck_data[2])
+            for c1, c2, syn in progressbar(reader)]
+    # print("Point 1")
+    deck_data = util.transpose(deck_data)
+    # print("Point 2")
+    return SynergyDataset(deck_data[0], deck_data[1], deck_data[2])
 
 
 if __name__ == '__main__':
     card.load_cards(data.load(no_download=True))
     decklists = []
     decklist_dir = '../data/decklists'
-    for filename in os.listdir(decklist_dir):
-        filepath = os.path.join(decklist_dir, filename)
-        if os.path.isfile(filepath):
-            with open(filepath, 'r') as f:
-                deck = parse_decklist(f.read())
-                decklists.append(deck)
+    for setdir in os.listdir(decklist_dir):
+        if setdir not in ['DFT', 'TDM', 'FIN']:
+            setdir = os.path.join(decklist_dir, setdir)
+            for deckdir in os.listdir(setdir):
+                deckdir = os.path.join(setdir, deckdir)
+                for deck in islice(os.listdir(deckdir), 10):
+                    filepath = os.path.join(deckdir, deck)
+                    if os.path.isfile(filepath):
+                        with open(filepath, 'r') as f:
+                            deck = parse_decklist(f.read())
+                            decklists.append(deck)
     write_deck_data(decklists)

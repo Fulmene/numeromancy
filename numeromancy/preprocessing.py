@@ -1,22 +1,22 @@
 # This file is part of Numeromancy.
-# 
+#
 # Numeromancy: an automated Magic: The Gathering deck building system
 # Copyright (C) 2022 Ada Joule
-# 
+#
 # Numeromancy is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published
 # by the Free Software Foundation; either version 3 of the License,
 # or (at your option) any later version.
-# 
+#
 # Numeromancy is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with Numeromancy.  If not, see <http://www.gnu.org/licenses/>.
 
-""" preprocessing - Card data preprocessing """
+""" preprocessing - card.Card data preprocessing """
 
 import logging
 import sys
@@ -39,8 +39,8 @@ from nltk.corpus import stopwords
 import networkx as nx
 import nbne
 
-from card import Card, CardProgressBar
-import card, data
+import numeromancy.card as card
+import numeromancy.data as data
 
 
 stemmer = PorterStemmer()
@@ -68,12 +68,11 @@ def remove_bracket_spaces(text: str) -> str:
     return re.sub(r'\{\s+([A-Za-z0-9])\s+\}', r'{\1}', text)
 
 
-def preprocess_text(cards: Iterable[Card], filename=CARD_TEXTS) -> None:
+def preprocess_text(cards: Iterable[card.Card], filename=CARD_TEXTS) -> None:
     _logger.info("Preprocessing card texts...")
     with open(filename, 'w', encoding='UTF8') as f:
         writer = csv.writer(f);
-        for card in CardProgressBar(cards):
-            all_texts = []
+        for card in card.CardProgressBar(cards):
             for face in card.card_faces:
                 texts = []
                 if face.rules_text:
@@ -83,10 +82,8 @@ def preprocess_text(cards: Iterable[Card], filename=CARD_TEXTS) -> None:
                             words = word_tokenize(s)
                             text.append(remove_bracket_spaces(' '.join(words)))
                         texts.append(' '.join(text))
-                all_texts.append('\n'.join(texts))
-            if len(all_texts) < 2:
-                all_texts.append("")
-            writer.writerow((card.name, all_texts[0], all_texts[1]))
+                all_texts = '\n'.join(texts)
+                writer.writerow((face.name, all_texts))
 
 
 def write_augmented(filename: str, rows: list[list[str]], ratio: float = 0.3):
@@ -95,13 +92,10 @@ def write_augmented(filename: str, rows: list[list[str]], ratio: float = 0.3):
     for i, row in enumerate(rows):
         new_rows.append(row)
         if i < augment_index:
-            split_text1 = row[1].split()
-            split_text1.extend((len(row[1].split('\n')) - 1) * ['\n'])
-            new_text1 = '\n'.join(line.strip() for line in ' '.join(random.sample(split_text1, len(split_text1))).split('\n'))
-            split_text2 = row[2].split()
-            split_text2.extend((len(row[2].split('\n')) - 1) * ['\n'])
-            new_text2 = '\n'.join(line.strip() for line in ' '.join(random.sample(split_text2, len(split_text2))).split('\n'))
-            new_rows.append([row[0], new_text1, new_text2])
+            split_text = row[1].split()
+            split_text.extend((len(row[1].split('\n')) - 1) * ['\n'])
+            new_text = '\n'.join(line.strip() for line in ' '.join(random.sample(split_text, len(split_text))).split('\n'))
+            new_rows.append((row[0], new_text))
     random.shuffle(new_rows)
     with open(filename, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -119,11 +113,11 @@ def split_train_texts(card_texts_file=CARD_TEXTS, train_file=TRAIN_TEXTS, test_f
         write_augmented(test_file, cards[div:])
 
 
-def read_text(filename, make_dict=True):
+def read_text(filename):
     with open(filename, 'r', encoding='UTF8') as f:
         reader = csv.reader(f)
         texts = [ (r[0], r[1]) for r in reader ]
-    return dict(texts) if make_dict else texts
+    return texts
 
 
 layouts = ['choose', 'transform']
@@ -133,7 +127,7 @@ feature_props = [x for x in numerical_props + list_props if x != 'cmc']
 NBNE_DIMENSIONS = 10
 
 
-def face_count(cards: Collection[Card]) -> int:
+def face_count(cards: Collection[card.Card]) -> int:
     return sum(len(c.card_faces) for c in cards)
 
 
@@ -146,22 +140,22 @@ def to_number(s) -> int:
         return s
 
 
-def preprocess_numerical_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
+def preprocess_numerical_prop(cards: Collection[card.Card], prop: str, props_dir: str | os.PathLike) -> None:
     _logger.info(f'Preprocessing the numerical property {prop}...')
     with open(os.path.join(props_dir, f'{prop}.model'), 'w') as f:
         print(face_count(cards), 1, file=f)
-        for card in CardProgressBar(cards):
+        for card in card.CardProgressBar(cards):
             for face in card.card_faces:
                 print(face.name, to_number(getattr(face, prop)), file=f)
 
 
-def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os.PathLike) -> None:
+def preprocess_list_prop(cards: Collection[card.Card], prop: str, props_dir: str | os.PathLike) -> None:
     _logger.info(f'Preprocessing the list property {prop}...')
     values = set()
     _logger.info(f'Finding all possible values from the given list of cards...')
-    for card in cards:
-        for face in card.card_faces:
-            values.update(getattr(face, prop))
+    for c1 in cards:
+        for f1 in c1.card_faces:
+            values.update(getattr(f1, prop))
 
     values = list(values)
     dimensions = len(values)
@@ -171,37 +165,37 @@ def preprocess_list_prop(cards: Collection[Card], prop: str, props_dir: str | os
     if dimensions > NBNE_DIMENSIONS:
         _logger.info(f'Creating the property graph for property {prop}...')
         graph = nx.Graph()
-        for card in CardProgressBar(cards):
-            for face in card.card_faces:
-                key = face.name
-                property = getattr(face, prop)
-                graph.add_node(key)
+        for c1 in card.CardProgressBar(cards):
+            for f1 in c1.card_faces:
+                key1 = f1.name
+                property = getattr(f1, prop)
+                graph.add_node(key1)
                 for c2 in cards:
                     for f2 in c2.card_faces:
                         key2 = f2.name
                         property2 = getattr(f2, prop)
-                        if key != key2 and not set(property).isdisjoint(property2):
-                            graph.add_edge(key, key2)
+                        if key1 != key2 and not set(property).isdisjoint(property2):
+                            graph.add_edge(key1, key2)
         nbne.train_model(graph, NBNE_DIMENSIONS, output_file=os.path.join(props_dir, f'{prop}.model'), embedding_dimension=NBNE_DIMENSIONS)
     else:
         _logger.info(f'Creating sparse vectors for property {prop}...')
         with open(os.path.join(props_dir, f'{prop}.model'), 'w') as f:
             print(face_count(cards), dimensions, file=f)
-            for card in CardProgressBar(cards):
-                for face in card.card_faces:
-                    property = getattr(face, prop)
+            for c1 in card.CardProgressBar(cards):
+                for f1 in c1.card_faces:
+                    property = getattr(f1, prop)
                     vector = [1 if v in property else 0 for v in values]
-                    print(face.name, *vector, file=f)
+                    print(f1.name, *vector, file=f)
 
 
-def preprocess_props(cards: Collection[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
+def preprocess_props(cards: Collection[card.Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
     for prop in numerical_props:
         preprocess_numerical_prop(cards, prop, props_dir)
     for prop in list_props:
         preprocess_list_prop(cards, prop, props_dir)
 
 
-def read_prop(cards: Iterable[Card], prop: str, props_dir: str | os.PathLike = PROPSDIR) -> dict[str, np.ndarray]:
+def read_prop(cards: Iterable[card.Card], prop: str, props_dir: str | os.PathLike = PROPSDIR) -> dict[str, np.ndarray]:
     with open(os.path.join(props_dir, f'{prop}.model'), 'r') as f:
         header = f.readline().split()
         lines, dims = int(header[0]), int(header[1])
@@ -211,19 +205,21 @@ def read_prop(cards: Iterable[Card], prop: str, props_dir: str | os.PathLike = P
             cardname = ' '.join(line[:-dims])
             vector = np.asfarray(line[-dims:])
             vectors[cardname] = vector
-    vectors.update((c.name, np.zeros((dims,))) for c in cards if c.name not in vectors)
+    vectors.update((f.name, np.zeros((dims,))) for c in cards for f in c.card_faces if f.name not in vectors)
     return vectors
 
 
-def props_vector(cards, props = feature_props):
+def props_vector(cards, props = feature_props, backface = True):
     prop_dicts = { p: read_prop(cards, p) for p in props }
-    return { c.name: np.concatenate([prop_dicts[p][c.name] for p in props]) for c in cards }
+    return { f.name: np.concatenate([prop_dicts[p][f.name] for p in props])
+        for c in cards for f in c.card_faces
+        if backface or not (c.layout in ['transform', 'flip', 'battle'] and f == c.card_faces[1]) }
 
 
-def preprocess_layout(cards: Collection[Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
+def preprocess_layout(cards: Collection[card.Card], props_dir: str | os.PathLike = PROPSDIR) -> None:
     with open(os.path.join(props_dir, 'layout.model'), 'w') as f:
         print(len(cards), len(layouts), file=f)
-        for card in CardProgressBar(cards):
+        for card in card.CardProgressBar(cards):
             if card.layout in ['split', 'modal_dfc', 'adventure']:
                 vector = [1 if l == 'choose' else 0 for l in layouts]
             elif card.layout in ['transform', 'flip', 'battle']:
@@ -233,7 +229,7 @@ def preprocess_layout(cards: Collection[Card], props_dir: str | os.PathLike = PR
             print(card.name, *vector, file=f)
 
 
-def preprocess_all(cards: Collection[Card]) -> None:
+def preprocess_all(cards: Collection[card.Card]) -> None:
     preprocess_layout(cards)
     preprocess_text(cards)
     split_train_texts()

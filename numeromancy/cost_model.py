@@ -3,12 +3,14 @@ import numpy as np
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-import xgboost as xgb
+# import xgboost as xgb
 from progressbar import progressbar
 
-from preprocessing import CARD_TEXTS, TRAIN_TEXTS, TEST_TEXTS, props_vector, read_text
-from card_embedding import CardEmbedding, CardDataset
-import card, data, util
+from numeromancy.preprocessing import CARD_TEXTS, TRAIN_TEXTS, TEST_TEXTS, props_vector, read_text
+from numeromancy.card_embedding import CardEmbedding, CardDataset
+import numeromancy.card as card
+import numeromancy.data as data
+import numeromancy.util as util
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -27,6 +29,9 @@ def load_model(emb_path=CARD_EMBEDDING, clf_path=COST_CLASSIFIER):
         nn.Linear(64, 64),
         nn.ReLU(),
         nn.Dropout(0.2),
+        nn.Linear(64, 64),
+        nn.ReLU(),
+        nn.Dropout(0.2),
         nn.Linear(64, 1)).to(device)
     clf.load_state_dict(torch.load(clf_path, weights_only=True))
     clf.eval()
@@ -36,13 +41,14 @@ def load_model(emb_path=CARD_EMBEDDING, clf_path=COST_CLASSIFIER):
 def save_card_embedding():
     emb, _ = load_model()
     card.load_cards(data.load())
-    cards = list(card for card in card.get_cards())
+    cards = card.get_cards()
+    face_names = list(f.name for c in cards for f in c.card_faces)
     pv = props_vector(cards)
-    texts = dict(read_text(CARD_TEXTS, make_dict=False)) # TODO refactor read_text to always return a list of tuples
-    dataset = [(torch.from_numpy(pv[card.name]).float().to("cpu"),
-            texts[card.name],
-            card.name)
-            for card in cards]
+    texts = dict(read_text(CARD_TEXTS))
+    dataset = [(torch.from_numpy(pv[f]).float().to("cpu"),
+            texts[f],
+            f)
+            for f in face_names]
     dataset = util.transpose(dataset)
     dataloader = DataLoader(
         CardDataset(dataset[0], dataset[1], dataset[2]),
@@ -63,7 +69,7 @@ def load_card_embedding():
 
 
 if __name__ == '__main__':
-    epochs = 100
+    epochs = 300
     batch_size = 128
     num_classes = 8
 
@@ -74,29 +80,37 @@ if __name__ == '__main__':
     for param in emb.transformer.parameters():
         param.requires_grad = True
 
-    pv = props_vector(cards)
-    cv = props_vector(cards, props=['cmc'])
+    # TODO maybe filter lands out of the data
+    pv = props_vector(cards, backface=False)
+    cv = props_vector(cards, props=['cmc'], backface=False)
 
-    train_texts = read_text(TRAIN_TEXTS, make_dict=False)
-    test_texts = read_text(TEST_TEXTS, make_dict=False)
-    train_items = [(k, v) for k, v in train_texts if k in pv]
-    test_items = [(k, v) for k, v in test_texts if k in pv]
+    train_texts = [(name, text) for name, text in read_text(TRAIN_TEXTS) if name in pv]
+    test_texts = [(name, text) for name, text in read_text(TEST_TEXTS) if name in pv]
+    # train_items = [(k, v) for k, v in train_texts if k in pv]
+    # test_items = [(k, v) for k, v in test_texts if k in pv]
 
-    y_train = [min(int(cv[name].item()), num_classes-1) for name, _ in train_items]
-    y_test = [min(int(cv[name].item()), num_classes-1) for name, _ in test_items]
+    train_dataset = [(torch.from_numpy(pv[name]).float(), text, min(int(cv[name].item()), num_classes-1)) for name, text in train_texts]
+    train_dataset = util.transpose(train_dataset)
+    test_dataset = [(torch.from_numpy(pv[name]).float(), text, min(int(cv[name].item()), num_classes-1)) for name, text in test_texts]
+    test_dataset = util.transpose(test_dataset)
+    y_train = train_dataset[2]
+    y_test = test_dataset[2]
     train_loader = DataLoader(
-        CardDataset([torch.from_numpy(pv[name]).float() for name, _ in train_items],
-                    [text for _, text in train_items],
+        CardDataset(train_dataset[0],
+                    train_dataset[1],
                     y_train),
         batch_size=batch_size,
         shuffle=True)
     test_loader = DataLoader(
-        CardDataset([torch.from_numpy(pv[name]).float() for name, _ in test_items],
-                    [text for _, text in test_items],
+        CardDataset(test_dataset[0],
+                    test_dataset[1],
                     y_test),
         batch_size=batch_size)
 
     simple_clf = nn.Sequential(
+        nn.Linear(64, 64),
+        nn.ReLU(),
+        nn.Dropout(0.2),
         nn.Linear(64, 64),
         nn.ReLU(),
         nn.Dropout(0.2),

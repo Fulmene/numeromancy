@@ -1,24 +1,35 @@
 import math
-from itertools import zip_longest
 from collections import Counter
+from itertools import zip_longest
 
 import torch
-from torch.utils.data import DataLoader, Dataset
 from progressbar import progressbar
+from torch.utils.data import DataLoader, Dataset
 
-import card, data, util
-import cost_model
-import synergy_model
-from preprocessing import CARD_TEXTS, props_vector, read_text
-from card_embedding import EmbeddedCardDataset
-from deck_data import SynergyDataset
-
+import numeromancy.card as card
+import numeromancy.cost_model as cost_model
+import numeromancy.data as data
+import numeromancy.synergy_model as synergy_model
+import numeromancy.util as util
+from numeromancy.card_embedding import EmbeddedCardDataset
+from numeromancy.deck_data import SynergyDataset
+from numeromancy.preprocessing import CARD_TEXTS, props_vector, read_text
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def sigmoid(x):
     return 1 / (1 + math.exp(-x))
+
+
+def cost_effectiveness(predicted_cost, real_cost):
+    # TODO use something other than sigmoid
+    return sigmoid(predicted_cost - real_cost)
+
+
+def normalize(matrix):
+    low, high = min(matrix.values()), max(matrix.values())
+    return { k: (v-low) / (high-low) for k, v in matrix.items() }
 
 
 COST_EFF_MATRIX: dict[str, float] = {}
@@ -28,22 +39,37 @@ def init_cost_effectiveness_matrix(legal_cards):
     global COST_EFF_MATRIX
     global EMBEDDINGS
     EMBEDDINGS = cost_model.load_card_embedding()
-    legal_card_names = [c.name for c in legal_cards]
+    face_names = [f.name for c in legal_cards for f in c.card_faces if "Land" not in f.cardtypes]
     _, clf = cost_model.load_model()
     cv = props_vector(legal_cards, props=['cmc'])
-    dataset = [(EMBEDDINGS[name], min(int(cv[name].item()), 7)) for name in legal_card_names]
+    dataset = [(EMBEDDINGS[name], min(int(cv[name].item()), 7)) for name in face_names]
     dataset = util.transpose(dataset)
     data_loader = DataLoader(
         EmbeddedCardDataset(dataset[0], dataset[1]),
-        batch_size=128)
+        batch_size=2048)
     y = dataset[1]
     y_preds = []
     with torch.no_grad():
         for emb, _ in progressbar(data_loader):
-            y_pred = clf(emb.to(device))
+            y_pred = torch.sigmoid(clf(emb.to(device)))
             #y_pred = torch.argmax(logits, dim=1)
             y_preds.extend(y_pred.tolist())
-    COST_EFF_MATRIX = {name: sigmoid((yp[0]+1)/(yr+1) - 1) for name, yr, yp in zip(legal_card_names, y, y_preds)}
+    costs = { name: (yp[0], yr) for name, yp, yr in zip(face_names, y_preds, y) }
+    COST_EFF_MATRIX = {}
+    for c in legal_cards:
+        if c.layout in ['split', 'modal_dfc', 'adventure']:
+            if "Land" in c.card_faces[0].cardtypes:
+                COST_EFF_MATRIX[c.name] = cost_effectiveness(*costs[c.card_faces[1].name])
+            elif "Land" in c.card_faces[1].cardtypes:
+                COST_EFF_MATRIX[c.name] = cost_effectiveness(*costs[c.card_faces[0].name])
+            else:
+                COST_EFF_MATRIX[c.name] = max(
+                    cost_effectiveness(*costs[c.card_faces[0].name]),
+                    cost_effectiveness(*costs[c.card_faces[1].name]))
+        else:
+            COST_EFF_MATRIX[c.name] = cost_effectiveness(*costs[c.card_faces[0].name])
+    COST_EFF_MATRIX = normalize(COST_EFF_MATRIX)
+    # COST_EFF_MATRIX = {name: normalize_cost_effectiveness(yp[0], yr) for name, yr, yp in zip(face_names, y, y_preds)}
 
 
 def init_synergy_model():
@@ -57,12 +83,13 @@ def compute_synergy_matrix(deck, legal_cards):
     matrix = {}
     clf = SYNERGY_MODEL[1]
     for c1 in progressbar(legal_cards):
-        dataset = [(EMBEDDINGS[c1.name], EMBEDDINGS[c2.name], (c1.name, c2.name)) for c2 in deck]
+        c1name = c1.name.split('//')[0].strip()
+        dataset = [(EMBEDDINGS[c1name], EMBEDDINGS[c2.name.split('//')[0].strip()], 1) for c2 in deck]
         dataset = util.transpose(dataset)
         data_loader = DataLoader(SynergyDataset(dataset[0], dataset[1], dataset[2]), batch_size=128)
         sum_score = 0.0
         with torch.no_grad():
-            for emb1, emb2, pair in data_loader:
+            for emb1, emb2, _ in data_loader:
                 logits = clf(torch.cat((emb1, emb2), dim=1).to(device))
                 sum_score += sum(logits)
         matrix[c1.name] = sum_score/len(deck)
@@ -161,6 +188,7 @@ def get_max_scoring_card(deck, legal_cards, mana_curve, card_types, weights):
     }.items()
     print(f"Card {len(deck) + 1} Top 5:")
     print(*[p for p in sorted(scores, key=lambda x: sum(x[1]), reverse=True)][:5], sep='\n')
+    print("")
     max_score_card = max(scores, key=lambda x: sum(x[1]))[0]
     return max_score_card
 
@@ -200,13 +228,27 @@ def is_nonland(c: card.Card) -> bool:
     return front or back
 
 
+_primary_colors = ["W", "U", "B", "R", "G", "C"]
+def has_mana_color(symbol, colors):
+    return all(s not in _primary_colors or s in colors for s in symbol.split('/'))
+
+
 def is_in_color(c: card.Card, colors: list[str]) -> bool:
-    # TODO handle hybrid mana
-    front = set(c.card_faces[0].colors).issubset(colors)
-    back = False
-    if not front and c.layout in ['split', 'modal_dfc', 'adventure']:
-        back = set(c.card_faces[1].colors).issubset(colors)
-    return front or back
+    # Handle adventure lands differently because scryfall decides to put mana cost on the wrong half
+    # Remove when fixed
+    if c.layout == "adventure" and "Land" in c.card_faces[0].cardtypes:
+        mana = c.card_faces[0].mana_cost.strip('{}').split('}{')
+        return all(has_mana_color(m, colors) for m in mana)
+    if c.layout == "meld" and c.card_faces[0].mana_cost == "":
+        return False
+    for f in c.card_faces:
+        if c.layout in ["transform", "flip", "battle"] and f == c.card_faces[1]:
+            continue
+        if "Land" not in f.cardtypes:
+            mana = f.mana_cost.strip('{}').split('}{')
+            if all(has_mana_color(m, colors) for m in mana):
+                return True
+    return False
 
 
 if __name__ == '__main__':
@@ -215,9 +257,17 @@ if __name__ == '__main__':
     monored = (
         4 * [card.get_card("Emberheart Challenger")],
         ["R"],
-        [0, 16, 16, 8, 4, 0],
+        [0, 16, 12, 8, 4, 0],
         [30, 10, 20],
-        (0.0, 1.0, 1.0, 1.0),
+        (1.0, 1.0, 1.0, 1.0),
+    )
+
+    monogreen = (
+        4 * [card.get_card("Traveling Chocobo"), card.get_card("Bristly Bill, Spine Sower")],
+        ["G"],
+        [0, 12, 12, 8, 2, 0],
+        [26, 8, 26],
+        (1.0, 1.0, 1.0, 1.0),
     )
 
     vivi = (
@@ -227,8 +277,40 @@ if __name__ == '__main__':
         [5, 33, 22],
         (1.0, 1.0, 1.0, 1.0),
     )
-    
-    starting_cards, colors, mana_curve, card_types, weights = monored
+
+    dimir = (
+        4 * [card.get_card("Kaito, Bane of Nightmares")],
+        ["U", "B"],
+        [0, 8, 16, 8, 4, 0],
+        [24, 12, 24],
+        (1.0, 1.0, 1.0, 1.0),
+    )
+
+    energy = (
+        4 * [card.get_card("Guide of Souls")],
+        ["W", "R"],
+        [0, 16, 16, 8, 0, 0],
+        [28, 12, 20],
+        (1.0, 1.0, 1.0, 1.0),
+    )
+
+    dnt = (
+        4 * [card.get_card("Phelia, Exuberant Shepherd")],
+        ["W", "B"],
+        [0, 12, 12, 8, 4, 4],
+        [28, 12, 20],
+        (1.0, 1.0, 1.0, 1.0),
+    )
+
+    phoenix = (
+        4 * [card.get_card("Arclight Phoenix")],
+        ["U", "R"],
+        [0, 27, 10, 1, 4, 0],
+        [9, 33, 18],
+        (1.0, 1.0, 1.0, 1.0),
+    )
+
+    starting_cards, colors, mana_curve, card_types, weights = dimir
     legal_cards = {c for c in card.get_cards() if c.legalities["standard"] == "legal" and is_nonland(c) and is_in_color(c, colors)}
 
     print("Decklist:")

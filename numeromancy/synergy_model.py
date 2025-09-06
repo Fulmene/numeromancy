@@ -37,17 +37,13 @@ def load_model(emb_path=CARD_EMBEDDING, clf_path=SYNERGY_CLASSIFIER):
 
 
 if __name__ == '__main__':
-    epochs = 100
-    batch_size = 128
+    epochs = 500
+    batch_size = 16384
 
     card.load_cards(data.load(no_download=True))
     cards = card.get_cards()
 
-    pv = props_vector(cards)
-    texts = read_text(CARD_TEXTS)
-
     train_loader = DataLoader(read_deck_data(TRAIN_SYNERGY), batch_size=batch_size, shuffle=True)
-    test_loader = DataLoader(read_deck_data(TEST_SYNERGY), batch_size=batch_size)
 
     clf = nn.Sequential(
         nn.Linear(128, 64),
@@ -56,12 +52,11 @@ if __name__ == '__main__':
         nn.Linear(64, 64),
         nn.ReLU(),
         nn.Dropout(0.2),
-        nn.Linear(64, 1),
-        nn.Sigmoid()).to(device)
+        nn.Linear(64, 1)).to(device)
     optimizer = torch.optim.Adam(
         list(clf.parameters()),
         lr=2e-5)
-    loss_fn = nn.BCELoss()
+    loss_fn = nn.BCEWithLogitsLoss()
     clf.train()
 
     for epoch in range(epochs):
@@ -78,14 +73,16 @@ if __name__ == '__main__':
         print(f"Epoch {epoch+1} | Loss: {total_loss: .4f}")
 
     clf.eval()
+    del train_loader
 
-    # TODO eval
+    test_loader = DataLoader(read_deck_data(TEST_SYNERGY), batch_size=batch_size)
     with torch.no_grad():
         hit = 0
         all = 0
         for emb1, emb2, synergy in progressbar(test_loader):
             logits = clf(torch.cat((emb1, emb2), dim=1).to(device))
-            hit += sum(1 if abs(s - l) < 0.5 else 0 for l, s in zip(logits, synergy))
+            prob = torch.sigmoid(logits)
+            hit += sum(1 if abs(s - l) < 0.5 else 0 for l, s in zip(prob, synergy))
             all += len(logits)
             # print(logits, synergy)
         print(f"Accuracy: {hit/all}")

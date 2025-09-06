@@ -71,7 +71,7 @@ def find_name(cardname: str) -> str:
     if len(names) == 1:
         return names[0]
     elif len(names) > 1:
-        names = [name for name in names if name == cardname]
+        names = [name for name in names if _all_cards[name].card_faces[0].name == cardname]
         if len(names) == 1:
             return names[0]
         else:
