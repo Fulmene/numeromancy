@@ -1,9 +1,9 @@
 import random
 from collections import Counter
 
-from deck_generator import generate_deck, is_nonland, card_group, effective_cmc
-import card
-import data
+from numeromancy.deck_generator import generate_deck, is_nonland, card_group, effective_cmc
+import numeromancy.card as card
+import numeromancy.data as data
 
 
 def evaluate(deck_counter, legal_cards, n=10):

@@ -20,10 +20,6 @@
 
 import logging
 import sys
-logging.basicConfig(level=logging.WARNING)
-_logger = logging.getLogger(__name__)
-_handler = logging.StreamHandler(sys.stderr)
-_handler.setLevel(logging.WARNING)
 
 import os
 import re
@@ -41,6 +37,12 @@ import nbne
 
 import numeromancy.card as card
 import numeromancy.data as data
+
+
+logging.basicConfig(level=logging.WARNING)
+_logger = logging.getLogger(__name__)
+_handler = logging.StreamHandler(sys.stderr)
+_handler.setLevel(logging.WARNING)
 
 
 stemmer = PorterStemmer()

@@ -5,11 +5,12 @@ import io
 import os
 sys.path.append(os.path.dirname(__file__))
 
-from deck_generator import generate_deck, is_nonland, is_in_color
-import card
-import data
 from collections import Counter
 import contextlib
+
+from numeromancy.deck_generator import generate_deck, is_nonland, is_in_color
+import numeromancy.card as card
+import numeromancy.data as data
 
 # Initialize card data once using Streamlit cache
 @st.cache_resource

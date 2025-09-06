@@ -5,8 +5,8 @@ import re
 from gensim.models import Word2Vec
 from gensim.models.keyedvectors import KeyedVectors
 
-from data import DATADIR
-from preprocessing import CARD_TEXTS
+from numeromancy.data import DATADIR
+from numeromancy.preprocessing import CARD_TEXTS
 
 
 EMBEDDING_VECTORS = os.path.join(DATADIR, 'embedding_vectors')

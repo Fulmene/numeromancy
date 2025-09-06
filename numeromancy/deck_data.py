@@ -5,13 +5,15 @@ from itertools import islice
 
 import torch
 from torch.utils.data import Dataset
-from preprocessing import CARD_TEXTS, props_vector
 from progressbar import progressbar
 
-import card, data, util
-from parse_decklist import parse_decklist
-from card_embedding import CardEmbedding
-from cost_model import CARD_EMBEDDING, load_card_embedding
+import numeromancy.card as card
+import numeromancy.data as data
+import numeromancy.util as util
+from numeromancy.preprocessing import CARD_TEXTS, props_vector
+from numeromancy.parse_decklist import parse_decklist
+from numeromancy.card_embedding import CardEmbedding
+from numeromancy.cost_model import CARD_EMBEDDING, load_card_embedding
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

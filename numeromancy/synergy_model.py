@@ -7,11 +7,12 @@ from torch.utils.data import DataLoader
 
 from progressbar import progressbar
 
-from preprocessing import CARD_TEXTS, props_vector, read_text
-from card_embedding import CardEmbedding
-from cost_model import CARD_EMBEDDING, MODELDIR
-from deck_data import read_deck_data, TRAIN_SYNERGY, TEST_SYNERGY
-import card, data
+from numeromancy.preprocessing import CARD_TEXTS, props_vector, read_text
+from numeromancy.card_embedding import CardEmbedding
+from numeromancy.cost_model import CARD_EMBEDDING, MODELDIR
+from numeromancy.deck_data import read_deck_data, TRAIN_SYNERGY, TEST_SYNERGY
+import numeromancy.card as card
+import numeromancy.data as data
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 SYNERGY_CLASSIFIER = os.path.join(MODELDIR, 'synergy_classifier')
