@@ -14,8 +14,14 @@ dependencies = [
     "streamlit>=1.49.1",
     "torch>=2.8.0",
     "torchvision>=0.23.0",
-    "transformers>=4.56.0",
+    "transformers>=4.56.1",
 ]
+
+[tool.setuptools]
+packages = ["numeromancy"]
+
+[tool.uv]
+package = true
 
 [tool.uv.workspace]
 members = [
@@ -24,3 +30,7 @@ members = [
 
 [tool.uv.sources]
 nbne = { workspace = true }
+
+[tool.pyrefly.errors]
+bad-assignment = false
+not-iterable = false
