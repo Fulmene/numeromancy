@@ -1,6 +1,10 @@
 from typing import Collection
+from datetime import datetime
 
-from numeromancy.card import Card
+from numeromancy.card import Card, get_set
+from .sets import date_and_code, get_pioneer_sets, get_modern_sets
+from .standard import find_standard_sets, get_standard_banlist
+from .banlist import get_banlist
 
 """ A Magic: the Gathering format is a set of cards legal in the format. """
 
@@ -20,7 +24,8 @@ UNLIMITED = set([
     "Snow-Covered Wastes",
 ])
 
-def get_legal_cards(all_cards: Collection[Card], legal_sets: Collection[str], banlist: Collection[str]) -> set[Card]:
+
+def _get_legal_cards(legal_sets: Collection[str], banlist: Collection[str]) -> set[Card]:
     """
     Create a format by filtering cards based on legal sets and banned cards.
 
@@ -32,10 +37,19 @@ def get_legal_cards(all_cards: Collection[Card], legal_sets: Collection[str], ba
     Returns:
         Set of cards that are legal in this format
     """
-    legal_cards = set()
-    for card in all_cards:
-        # Check if card is from at least one legal set and not banned
-        if card.sets.intersection(legal_sets) and card.name not in banlist:
-            legal_cards.add(card)
+    return {c for s in legal_sets for c in get_set(s) if c.name not in banlist}
 
-    return legal_cards
+
+def get_legal_cards(format: str, date_or_code: str|datetime) -> set[Card]:
+    date, code = date_and_code(date_or_code)
+    format = format.lower()
+    if format == 'standard':
+        sets = find_standard_sets(date_or_code)
+        banlist = get_standard_banlist(date)
+    elif format == 'pioneer':
+        sets = get_pioneer_sets(date_or_code)
+        banlist = get_banlist("pioneer", date)
+    elif format == 'modern':
+        sets = get_modern_sets(date_or_code)
+        banlist = get_banlist("modern", date)
+    return _get_legal_cards(sets, banlist)

@@ -1,20 +1,30 @@
 from datetime import datetime
+from bisect import bisect_right
+from typing import NamedTuple
 
 from numeromancy.card import Card, get_card
+from .sets import date_format
 
-date_format = '%d/%m/%Y'
+class BanlistEntry(NamedTuple):
+    date: datetime
+    banned: list[str]
+    unbanned: list[str]
 
-type BanlistTimeline = list[tuple[str, list[str], list[str]]]
+type BanlistTimeline = list[BanlistEntry]
 # date, banned cards, unbanned cards
 
 # TODO Use actual effective date instead of first day of the month
-_standard_banlist_timeline: BanlistTimeline = [
+_standard_banlist_timeline = [
+    # Early lists are out of scope for our project. I just put it here for completeness.
+    # This was summarized by AI from the fandom wiki article. It has not been verified
     ("01/01/1995", ["Balance"], []),  # Standard
     ("01/02/1996", ["Mind Twist"], []),  # Standard
     ("01/10/1996", [], ["Strip Mine"]),  # Standard (unban)
     ("01/12/1998", ["Tolarian Academy", "Windfall"], []),  # Standard
     ("01/03/1999", ["Dream Halls", "Earthcraft", "Fluctuator", "Lotus Petal", "Recurring Nightmare", "Time Spiral", "Memory Jar"], []),  # Standard
     ("01/06/1999", ["Mind Over Matter"], []),  # Standard
+
+    # These parts are verified by me (Ada).
     ("01/06/2004", ["Skullclamp"], []),  # Standard
     ("01/03/2005", ["Arcbound Ravager", "Disciple of the Vault", "Darksteel Citadel", "Ancient Den", "Great Furnace", "Seat of the Synod", "Tree of Tales", "Vault of Whispers"], []),  # Standard
     ("01/06/2011", ["Jace, the Mind Sculptor", "Stoneforge Mystic"], []),
@@ -33,7 +43,7 @@ _standard_banlist_timeline: BanlistTimeline = [
     ("01/06/2025", ["Cori-Steel Cutter", "Abuelo's Awakening", "Monstrous Rage", "Heartfire Hero", "Up the Beanstalk", "Hopeless Nightmare", "This Town Ain't Big Enough"], []),  # Standard
 ]
 
-_pioneer_banlist_timeline: BanlistTimeline = [
+_pioneer_banlist_timeline = [
     # Pioneer
     ("01/10/2019", [], ["Bloodstained Mire", "Flooded Strand", "Polluted Delta", "Windswept Heath", "Wooded Foothills"]),  # Fetch lands preemptive ban
     ("01/11/2019", ["Felidar Guardian", "Leyline of Abundance", "Oath of Nissa"], []),  # Pioneer
@@ -48,7 +58,7 @@ _pioneer_banlist_timeline: BanlistTimeline = [
     ("01/08/2024", ["Amalia Benavides Aguirre", "Sorin, Imperious Bloodlord"], []),  # Pioneer
 ]
 
-_modern_banlist_timeline: BanlistTimeline = [
+_modern_banlist_timeline = [
     # Modern
     ("01/08/2011", ["Ancestral Vision", "Ancient Den", "Bitterblossom", "Chrome Mox", "Dark Depths", "Dread Return", "Glimpse of Nature", "Golgari Grave-Troll", "Great Furnace", "Hypergenesis", "Jace, the Mind Sculptor", "Mental Misstep", "Seat of the Synod", "Sensei's Divining Top", "Skullclamp", "Stoneforge Mystic", "Sword of the Meek", "Tree of Tales", "Umezawa's Jitte", "Valakut, the Molten Pinnacle", "Vault of Whispers"], []),  # Modern intro banlist
     ("01/12/2011", ["Punishing Fire", "Wild Nacatl"], []),  # Modern
@@ -76,17 +86,29 @@ _modern_banlist_timeline: BanlistTimeline = [
     ("01/03/2025", ["Underworld Breach"], []),  # Modern
 ]
 
+
+def convert_to_datetime(entry: tuple[str, list[str], list[str]]) -> BanlistEntry:
+    date, banned, unbanned = entry
+    return BanlistEntry(datetime.strptime(date, date_format), banned, unbanned)
+
+
+_standard_banlist_timeline = [convert_to_datetime(e) for e in _standard_banlist_timeline]
+_pioneer_banlist_timeline = [convert_to_datetime(e) for e in _pioneer_banlist_timeline]
+_modern_banlist_timeline = [convert_to_datetime(e) for e in _modern_banlist_timeline]
+
 BANLIST_TIMELINE = {
     'standard': _standard_banlist_timeline,
     'pioneer': _pioneer_banlist_timeline,
     'modern': _modern_banlist_timeline,
 }
 
-def get_banlist(timeline: BanlistTimeline, date_until: str) -> set[Card]:
+def get_banlist(format: str, date_until: str|datetime, date_start: str|datetime = '1/1/1993') -> set[str]:
+    timeline = BANLIST_TIMELINE[format]
     banned_cards = []
-    datetime_until = datetime.strptime(date_until, date_format)
+    if not isinstance(date_until, datetime):
+        date_until = datetime.strptime(date_until, date_format)
     for date, banned, unbanned in timeline:
-        if datetime.strptime(date, date_format) > datetime_until:
+        if date > date_until:
             break
         banned_cards = [c for c in banned_cards + banned if c not in unbanned]
-    return set(get_card(c) for c in banned_cards)
+    return set(banned_cards)
