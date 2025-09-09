@@ -85,7 +85,7 @@ _set_timeline = [
     ('IKR', '24/4/2020', "standard", "ELD"),
     ('M21', '3/7/2020', "standard", "ELD"),
     ('ZNR', '25/9/2020', "standard", "ZNR"),
-    ('KLD', '5/2/2021', "standard", "ZNR"),
+    ('KHM', '5/2/2021', "standard", "ZNR"),
     ('STX', '23/4/2021', "standard", "ZNR"),
     ('MH2', '18/6/2021', "modern", "modern"), # Modern Horizon 2
     ('AFR', '23/7/2021', "standard", "ZNR"),
@@ -109,7 +109,7 @@ _set_timeline = [
     ('DSK', '27/9/2024', "standard", "WOE"),
     ('FDN', '15/11/2024', "standard", "FDN"), # Foundation
     ('DFT', '14/2/2025', "standard", "DFT"),
-    (SETS11/4/2025', "standard", "DFT"),
+    ('TDM', '11/4/2025', "standard", "DFT"),
     ('FIN', '13/6/2025', "standard", "DFT"),
     ('EOE', '1/8/2025', "standard", "DFT"),
 ]

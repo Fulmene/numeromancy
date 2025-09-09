@@ -26,6 +26,7 @@ standard_cycle = [
     'BFZ',
     'SOI',
     'KLD',
+    'AKH',
     'XLN',
     'GRN',
     'ELD',
@@ -36,8 +37,7 @@ standard_cycle = [
     'DFT',
     'ECL',
 ]
-# This will become the norm in the future
-three_standards = ('DSK', 'WOE', 'DTK', 'BFZ', 'SOI', 'KLD', 'AKH', 'XLN')
+
 two_group_standards = (
     'ZEN', 'SOM', 'ISD', 'RTR', 'THS', 'KTK', # Post M10, Pre three block structures
     'GRN', 'ELD', 'ZNR', 'MID', 'DMU', # Post block structures

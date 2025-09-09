@@ -105,17 +105,27 @@ class Card:
     name: str
     layout: str
     card_faces: list[CardFace]
+    colors: list[str]
+    sets: set[str]
 
     def __init__(self, scryfall_card):
         self.name = scryfall_card.get("name")
         self.layout = scryfall_card.get("layout")
         self.legalities = scryfall_card.get("legalities")
         self.colors = scryfall_card.get("colors")
+        self.sets = set([scryfall_card.get("set")])
 
         if self.layout in ["split", "flip", "transform", "modal_dfc", "adventure", "battle"]:
+            # Scryfall puts mana cost of adventure lands on the land side instead of adventure side
+            #     as of the implementing of this part of the code. Remove if it ever gets fixed.
+            faces = scryfall_card.get("card_faces")
+            if self.layout == "adventure" and "Land" in faces[0]['type_line']:
+                faces[1]['mana_cost'] = faces[0]['mana_cost']
+                faces[0]['mana_cost'] = ''
+
             self.card_faces = [
-                CardFace(scryfall_card.get("card_faces")[0], self),
-                CardFace(scryfall_card.get("card_faces")[1], self),
+                CardFace(faces[0], self),
+                CardFace(faces[1], self),
             ]
         else:
             self.card_faces = [CardFace(scryfall_card, self)]

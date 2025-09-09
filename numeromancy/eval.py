@@ -6,12 +6,12 @@ import numeromancy.card as card
 import numeromancy.data as data
 
 
-def evaluate(deck_counter, legal_cards, n=10):
+def evaluate(decklist: Counter[str], legal_cards, n=10):
     """
     Evaluate the deck generation model by removing random cards and checking if they are suggested back.
 
     Parameters:
-    deck_counter (Counter): A counter object containing MTG card names and their counts in the deck
+    deck_counter (Counter[str]): A counter object containing MTG card names and their counts in the deck
     n (int): Number of evaluation iterations
 
     Returns:
@@ -19,7 +19,7 @@ def evaluate(deck_counter, legal_cards, n=10):
     """
     # Get Card objects from counter
     deck_cards = []
-    for name, count in deck_counter.items():
+    for name, count in decklist.items():
         c = card.get_card(name)
         deck_cards.extend([c] * count)
 
@@ -39,7 +39,7 @@ def evaluate(deck_counter, legal_cards, n=10):
 
     # 3. Remove all lands from the deck
     nonland_deck_counter = Counter({
-        name: count for name, count in deck_counter.items()
+        name: count for name, count in decklist.items()
         if is_nonland(card.get_card(name))
     })
 
@@ -54,21 +54,21 @@ def evaluate(deck_counter, legal_cards, n=10):
         removed_names = random.sample(list(nonland_deck_counter.keys()), 3)
         for name in removed_names:
             del new_counter[name]
+        removed_counter = Counter({ name: count for name, count in nonland_deck_counter.items() if name in removed_names })
 
         # Convert new counter to list of Card objects for starting_cards
-        starting_cards = list(new_counter.elements())
+        starting_cards = list(card.get_card(c) for c in new_counter.elements())
 
         # 4.2. Call generate_deck using this new counter
         generated_deck = generate_deck(starting_cards, legal_cards, mana_curve, card_types)
 
         # 4.3. Compare the newly added cards with the cards cut in 4.1
         added_cards = generated_deck[len(starting_cards):]
-        added_names = [c.name for c in added_cards]
+        added_counter = Counter(added_cards)
 
         # 4.4. Accuracy = The number of cards that match the removed cards / The number of cut cards
-        # TODO This is still inaccurate. fixing later
-        matches = sum(1 for name in removed_names if name in added_names)
-        accuracy = matches / 3
+        matches = sum(count for count in (removed_counter & added_counter).values())
+        accuracy = matches / len(added_cards)
         accuracies.append(accuracy)
 
     # 5. Return average accuracy

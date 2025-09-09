@@ -6,6 +6,8 @@ import torch
 from progressbar import progressbar
 from torch.utils.data import DataLoader, Dataset
 
+import sys
+
 import numeromancy.card as card
 import numeromancy.cost_model as cost_model
 import numeromancy.data as data
@@ -23,17 +25,18 @@ def sigmoid(x):
 
 
 def cost_effectiveness(predicted_cost, real_cost):
-    # TODO use something other than sigmoid
-    return sigmoid(predicted_cost - real_cost)
+    return predicted_cost - real_cost
 
 
 def normalize(matrix):
-    low, high = min(matrix.values()), max(matrix.values())
-    return { k: (v-low) / (high-low) for k, v in matrix.items() }
+    # TODO use something other than sigmoid
+    # low, high = min(matrix.values()), max(matrix.values())
+    # return { k: (v-low) / (high-low) for k, v in matrix.items() }
+    return { k: sigmoid(v) for k, v in matrix.items() }
 
 
 COST_EFF_MATRIX: dict[str, float] = {}
-SYNERGY_MODEL = (0,0)
+SYNERGY_MODEL = (None, None)
 EMBEDDINGS = {}
 def init_cost_effectiveness_matrix(legal_cards):
     global COST_EFF_MATRIX
@@ -310,7 +313,7 @@ if __name__ == '__main__':
         (1.0, 1.0, 1.0, 1.0),
     )
 
-    starting_cards, colors, mana_curve, card_types, weights = dimir
+    starting_cards, colors, mana_curve, card_types, weights = monored
     legal_cards = {c for c in card.get_cards() if c.legalities["standard"] == "legal" and is_nonland(c) and is_in_color(c, colors)}
 
     print("Decklist:")

@@ -1,18 +1,18 @@
 # This file is part of Demystify.
-# 
+#
 # Demystify: a Magic: The Gathering parser
 # Copyright (C) 2022 Ada Joule
-# 
+#
 # Demystify is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published
 # by the Free Software Foundation; either version 3 of the License,
 # or (at your option) any later version.
-# 
+#
 # Demystify is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU Lesser General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU Lesser General Public License
 # along with Demystify.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -43,12 +43,14 @@ def load_cards(scryfall_cards):
     for sc in CardProgressBar(scryfall_cards):
         if is_loadable(sc):
             name = sc["name"]
+            card_set = sc["set"].upper()
             if name not in _all_cards:
                 card = Card(sc)
                 _all_cards[name] = card
                 add_name(name)
+            else:
+                _all_cards[name].sets.add(card_set)
 
-            card_set = sc["set"]
             if card_set not in _cards_by_sets:
                 _cards_by_sets[card_set] = {name}
             else:
@@ -87,6 +89,7 @@ def get_card(cardname: str) -> Card:
 
 def get_set(setcode: str) -> set[Card]:
     """ Returns a set of all the Cards in the given set. """
+    setcode = setcode.upper()
     if setcode not in _cards_by_sets:
         return set()
     return {get_card(cardname) for cardname in _cards_by_sets[setcode]}
