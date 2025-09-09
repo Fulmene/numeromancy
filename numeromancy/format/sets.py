@@ -9,7 +9,7 @@ class SetEntry(NamedTuple):
     format: Literal["standard", "modern"]
     group: str
 
-set_timeline = [
+_set_timeline = [
     # These parts were copied from Deepseek
     ("ONS", "07/10/2002", "standard", "ONS"),
     ("LGN", "03/02/2003", "standard", "ONS"),
@@ -59,8 +59,8 @@ set_timeline = [
     ("M15", "18/07/2014", "standard", "THS"),
     ("KTK", "26/09/2014", "standard", "KTK"),
     ("FRF", "23/01/2015", "standard", "KTK"),
-    ("DTK", "27/03/2015", "standard", "KTK"),
-    ("ORI", "17/07/2015", "standard", "ORI"),
+    ("DTK", "27/03/2015", "standard", "DTK"),
+    ("ORI", "17/07/2015", "standard", "DTK"),
     ("BFZ", "02/10/2015", "standard", "BFZ"),
     ("OGW", "22/01/2016", "standard", "BFZ"),
     ("SOI", "08/04/2016", "standard", "SOI"),
@@ -109,19 +109,19 @@ set_timeline = [
     ('DSK', '27/9/2024', "standard", "WOE"),
     ('FDN', '15/11/2024', "standard", "FDN"), # Foundation
     ('DFT', '14/2/2025', "standard", "DFT"),
-    ('TDM', '11/4/2025', "standard", "DFT"),
+    (SETS11/4/2025', "standard", "DFT"),
     ('FIN', '13/6/2025', "standard", "DFT"),
     ('EOE', '1/8/2025', "standard", "DFT"),
 ]
-set_timeline = [(st, datetime.strptime(date, date_format), f, prev_st) for st, date, f, prev_st in set_timeline]
-set_dict = {st: SetEntry(date, f, prev_st) for st, date, f, prev_st in set_timeline}
+_set_timeline = [(st, datetime.strptime(date, date_format), f, prev_st) for st, date, f, prev_st in _set_timeline]
+SETS = {st: SetEntry(date, f, prev_st) for st, date, f, prev_st in _set_timeline}
 
 
 def find_set(date: datetime):
     # if not isinstance(date, datetime):
     #     date = datetime.strptime(date, date_format)
-    idx = bisect_right(set_timeline, date, key=lambda x: x[1]) - 1
-    return set_timeline[idx][0]
+    idx = bisect_right(_set_timeline, date, key=lambda x: x[1]) - 1
+    return _set_timeline[idx][0]
 
 
 def date_and_code(date_or_code: str|datetime) -> tuple[datetime, str]:
@@ -134,17 +134,17 @@ def date_and_code(date_or_code: str|datetime) -> tuple[datetime, str]:
             code = find_set(date)
         except ValueError:
             code = date_or_code.upper()
-            date = set_dict[code].date
+            date = SETS[code].date
     return date, code
 
 
 def get_modern_sets(date_or_code):
-    eightedition_date = set_dict['8ED'].date
+    eightedition_date = SETS['8ED'].date
     date, code = date_and_code(date_or_code)
-    return [k for k in set_dict if set_dict[k].format in ('standard', 'modern') and eightedition_date <= set_dict[k].date and set_dict[k].date <= date]
+    return [k for k in SETS if SETS[k].format in ('standard', 'modern') and eightedition_date <= SETS[k].date and SETS[k].date <= date]
 
 
 def get_pioneer_sets(date_or_code):
-    rtr_date = set_dict['RTR'].date
+    rtr_date = SETS['RTR'].date
     date, code = date_and_code(date_or_code)
-    return [k for k in set_dict if set_dict[k].format == 'standard' and rtr_date <= set_dict[k].date and set_dict[k].date <= date]
+    return [k for k in SETS if SETS[k].format == 'standard' and rtr_date <= SETS[k].date and SETS[k].date <= date]
