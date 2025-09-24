@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from progressbar import progressbar
 
 from numeromancy.preprocessing import CARD_TEXTS, TRAIN_TEXTS, TEST_TEXTS, props_vector, read_text
-from numeromancy.card_embedding import CardEmbedding, CardDataset
+from .card_embedding import CardEmbedding, CardDataset
 import numeromancy.card as card
 import numeromancy.data as data
 import numeromancy.util as util

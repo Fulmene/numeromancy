@@ -12,8 +12,9 @@ import numeromancy.data as data
 import numeromancy.util as util
 from numeromancy.preprocessing import CARD_TEXTS, props_vector
 from numeromancy.parse_decklist import parse_decklist
-from numeromancy.card_embedding import CardEmbedding
-from numeromancy.cost_model import CARD_EMBEDDING, load_card_embedding
+from numeromancy.format import SETS
+from .card_embedding import CardEmbedding
+from .cost_model import CARD_EMBEDDING, load_card_embedding
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -133,6 +134,26 @@ def read_deck_data(filename):
     deck_data = util.transpose(deck_data)
     # print("Point 2")
     return SynergyDataset(deck_data[0], deck_data[1], deck_data[2])
+
+
+def create_deck_data(set_code, train_file=TRAIN_SYNERGY, test_file=TEST_SYNERGY, train_rate=0.7):
+    card.load_cards(data.load(no_download=True))
+    decklists = []
+    decklist_dir = '../data/decklists'
+
+    setdirs = [ os.path.join(decklist_dir, s) for s in os.listdir(decklist_dir) if SETS[s].date <= SETS[set_code].date ]
+    for setdir in os.listdir(decklist_dir):
+        if SETS[setdir].date <= SETS[set_code].date:
+            setdir = os.path.join(decklist_dir, setdir)
+            for deckdir in os.listdir(setdir):
+                deckdir = os.path.join(setdir, deckdir)
+                for deck in islice(os.listdir(deckdir), 10):
+                    filepath = os.path.join(deckdir, deck)
+                    if os.path.isfile(filepath):
+                        with open(filepath, 'r') as f:
+                            deck = parse_decklist(f.read())
+                            decklists.append(deck)
+    write_deck_data(decklists, train_file, test_file, train_rate)
 
 
 if __name__ == '__main__':
