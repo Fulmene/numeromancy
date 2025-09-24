@@ -1,7 +1,7 @@
 from collections import Counter
 import re
 
-def parse_decklist(decklist):
+def parse_decklist(decklist, limit=2222):
     """
     Parses a Magic: The Gathering deck list into a Counter object.
 
@@ -12,6 +12,7 @@ def parse_decklist(decklist):
         Counter: A Counter object mapping card names to their counts.
     """
     card_counter = Counter()
+    total = 0
 
     for line in decklist.split('\n'):
         line = line.strip()
@@ -24,6 +25,10 @@ def parse_decklist(decklist):
             quantity = int(match.group(1))
             card_name = match.group(2).strip()
             card_counter[card_name] += quantity
+            total += quantity
+
+        if total >= limit:
+            break
 
     return card_counter
 
