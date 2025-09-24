@@ -9,12 +9,11 @@ from torch.utils.data import DataLoader, Dataset
 import sys
 
 import numeromancy.card as card
-import numeromancy.cost_model as cost_model
 import numeromancy.data as data
-import numeromancy.synergy_model as synergy_model
 import numeromancy.util as util
-from numeromancy.card_embedding import EmbeddedCardDataset
-from numeromancy.deck_data import SynergyDataset
+from numeromancy.model import cost_model, synergy_model, EmbeddedCardDataset, SynergyDataset
+from numeromancy.train_synergy import load_trained_synergy
+from numeromancy.format import get_legal_cards, UNLIMITED
 from numeromancy.preprocessing import CARD_TEXTS, props_vector, read_text
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -36,7 +35,7 @@ def normalize(matrix):
 
 
 COST_EFF_MATRIX: dict[str, float] = {}
-SYNERGY_MODEL = (None, None)
+SYNERGY_MODEL = None
 EMBEDDINGS = {}
 def init_cost_effectiveness_matrix(legal_cards):
     global COST_EFF_MATRIX
@@ -84,7 +83,7 @@ def compute_synergy_matrix(deck, legal_cards):
     global SYNERGY_MODEL
     global EMBEDDINGS
     matrix = {}
-    clf = SYNERGY_MODEL[1]
+    clf = SYNERGY_MODEL
     for c1 in progressbar(legal_cards):
         c1name = c1.name.split('//')[0].strip()
         dataset = [(EMBEDDINGS[c1name], EMBEDDINGS[c2.name.split('//')[0].strip()], 1) for c2 in deck]
@@ -175,7 +174,6 @@ def compute_strategy_matrix(deck, legal_cards, card_types):
     return legal_card_score
 
 
-UNLIMITED = ["Plains", "Island", "Swamp", "Mountain", "Forest", "Wastes"]
 def get_max_scoring_card(deck, legal_cards, mana_curve, card_types, weights):
     global COST_EFF_MATRIX
     legal_cards = {c for c in legal_cards if c.name in UNLIMITED or deck.count(c) < 4}
@@ -252,6 +250,13 @@ def is_in_color(c: card.Card, colors: list[str]) -> bool:
             if all(has_mana_color(m, colors) for m in mana):
                 return True
     return False
+
+
+""" Create deck of a specified format at a specified date or release of certain set """
+def create_deck(starting_cards, format, date_or_code, colors, mana_curve, card_types, weights=(1.0,1.0,1.0,1.0)):
+    card.load_cards(data.load(no_download=True))
+    legal_cards = { c for c in get_legal_cards(format, date_or_code) if is_nonland(c) and is_in_color(c, colors) }
+    return generate_deck(starting_cards, legal_cards, mana_curve, card_types, weights)
 
 
 if __name__ == '__main__':
