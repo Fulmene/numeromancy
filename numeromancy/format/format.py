@@ -9,6 +9,7 @@ from .banlist import get_banlist
 """ A Magic: the Gathering format is a set of cards legal in the format. """
 
 # Set of cards that can be run any number of copies in a deck
+# TODO add more
 UNLIMITED = set([
     "Plains",
     "Island",

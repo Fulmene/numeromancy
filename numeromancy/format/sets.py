@@ -103,6 +103,7 @@ _set_timeline = [
     ('LCI', '17/11/2023', "standard", "WOE"),
     ('MKM', '9/2/2024', "standard", "WOE"),
     ('OTJ', '19/4/2024', "standard", "WOE"),
+    ('BIG', '19/4/2024', "standard", "WOE"),
     ('MH3', '14/6/2024', "modern", "modern"), # Modern Horizon 3
     ('ACR', '5/7/2024', "modern", "modern"), # Assassin's Creed
     ('BLB', '2/8/2024', "standard", "WOE"),
@@ -118,8 +119,8 @@ SETS = {st: SetEntry(date, f, prev_st) for st, date, f, prev_st in _set_timeline
 
 
 def find_set(date: datetime):
-    # if not isinstance(date, datetime):
-    #     date = datetime.strptime(date, date_format)
+    if not isinstance(date, datetime):
+        date = datetime.strptime(date, date_format)
     idx = bisect_right(_set_timeline, date, key=lambda x: x[1]) - 1
     return _set_timeline[idx][0]
 
