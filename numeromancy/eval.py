@@ -1,12 +1,12 @@
 import random
 from collections import Counter
 
-from numeromancy.deck_generator import generate_deck, is_nonland, card_group, effective_cmc
+from numeromancy.deck_generator import PRIMARY_COLORS, generate_deck, create_deck, is_nonland, is_in_color, card_group, effective_cmc
 import numeromancy.card as card
 import numeromancy.data as data
 
 
-def evaluate(decklist: Counter[str], legal_cards, n=10):
+def evaluate(decklist: Counter[str], format, date_or_code, n=10):
     """
     Evaluate the deck generation model by removing random cards and checking if they are suggested back.
 
@@ -43,6 +43,9 @@ def evaluate(decklist: Counter[str], legal_cards, n=10):
         if is_nonland(card.get_card(name))
     })
 
+    # Calculate colors
+    colors = [c for c in PRIMARY_COLORS if any(is_in_color(card, c) for card in nonland_cards)]
+
     # 4. For n number of times
     accuracies = []
     for _ in range(n):
@@ -60,7 +63,7 @@ def evaluate(decklist: Counter[str], legal_cards, n=10):
         starting_cards = list(card.get_card(c) for c in new_counter.elements())
 
         # 4.2. Call generate_deck using this new counter
-        generated_deck = generate_deck(starting_cards, legal_cards, mana_curve, card_types)
+        generated_deck = create_deck(starting_cards, format, date_or_code, colors, mana_curve, card_types)
 
         # 4.3. Compare the newly added cards with the cards cut in 4.1
         added_cards = generated_deck[len(starting_cards):]

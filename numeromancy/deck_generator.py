@@ -13,7 +13,7 @@ import numeromancy.data as data
 import numeromancy.util as util
 from numeromancy.model import cost_model, synergy_model, EmbeddedCardDataset, SynergyDataset
 from numeromancy.train_synergy import load_trained_synergy
-from numeromancy.format import get_legal_cards, UNLIMITED
+from numeromancy.format import get_legal_cards, UNLIMITED, date_and_code
 from numeromancy.preprocessing import CARD_TEXTS, props_vector, read_text
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -74,9 +74,12 @@ def init_cost_effectiveness_matrix(legal_cards):
     # COST_EFF_MATRIX = {name: normalize_cost_effectiveness(yp[0], yr) for name, yr, yp in zip(face_names, y, y_preds)}
 
 
-def init_synergy_model():
+def init_synergy_model(set_code=None):
     global SYNERGY_MODEL
-    SYNERGY_MODEL = synergy_model.load_model()
+    if set_code:
+        SYNERGY_MODEL = load_trained_synergy(set_code)
+    else:
+        SYNERGY_MODEL = synergy_model.load_model()
 
 
 def compute_synergy_matrix(deck, legal_cards):
@@ -205,6 +208,7 @@ def generate_deck(starting_cards, legal_cards, mana_curve, card_types, weights=(
         Best if the last number in the list is 0
     card_types (tuple[int, int, int]): The desired number of each card type, in order: creature, noncreature, land
         The sum of this tuple is the desired deck size. In typical constructed formats, this number should be 60.
+    set_code (str): The set code to use for loading the synergy model (optional)
 
     Returns:
     list[Card]: A list of the Card objects of the card in the final deck
@@ -213,8 +217,6 @@ def generate_deck(starting_cards, legal_cards, mana_curve, card_types, weights=(
     deck = starting_cards
     # cost effectiveness score should be computed outside of the loop
     # since it stays the same throughout the entire process
-    init_cost_effectiveness_matrix(legal_cards)
-    init_synergy_model()
     while (len(deck) < deck_size):
         c = get_max_scoring_card(deck, legal_cards, mana_curve, card_types, weights)
         deck.append(card.get_card(c))
@@ -229,9 +231,9 @@ def is_nonland(c: card.Card) -> bool:
     return front or back
 
 
-_primary_colors = ["W", "U", "B", "R", "G", "C"]
+PRIMARY_COLORS = ["W", "U", "B", "R", "G", "C"]
 def has_mana_color(symbol, colors):
-    return all(s not in _primary_colors or s in colors for s in symbol.split('/'))
+    return all(s not in PRIMARY_COLORS or s in colors for s in symbol.split('/'))
 
 
 def is_in_color(c: card.Card, colors: list[str]) -> bool:
@@ -256,6 +258,10 @@ def is_in_color(c: card.Card, colors: list[str]) -> bool:
 def create_deck(starting_cards, format, date_or_code, colors, mana_curve, card_types, weights=(1.0,1.0,1.0,1.0)):
     card.load_cards(data.load(no_download=True))
     legal_cards = { c for c in get_legal_cards(format, date_or_code) if is_nonland(c) and is_in_color(c, colors) }
+    # Extract set code for synergy model
+    _, set_code = date_and_code(date_or_code)
+    init_cost_effectiveness_matrix(legal_cards)
+    init_synergy_model(set_code)
     return generate_deck(starting_cards, legal_cards, mana_curve, card_types, weights)
 
 
@@ -322,6 +328,7 @@ if __name__ == '__main__':
     legal_cards = {c for c in card.get_cards() if c.legalities["standard"] == "legal" and is_nonland(c) and is_in_color(c, colors)}
 
     print("Decklist:")
-    for c, n in Counter(c.name for c in generate_deck(starting_cards, legal_cards, mana_curve, card_types, weights)).items():
+    # Using the default synergy model for the main function
+    for c, n in Counter(c.name for c in generate_deck(starting_cards, legal_cards, mana_curve, card_types, weights, None)).items():
         print(n, c)
     print(f"{card_types[2]} Lands")
