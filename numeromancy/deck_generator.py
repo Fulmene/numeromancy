@@ -13,7 +13,7 @@ import numeromancy.data as data
 import numeromancy.util as util
 from numeromancy.model import cost_model, synergy_model, EmbeddedCardDataset, SynergyDataset
 from numeromancy.train_synergy import load_trained_synergy
-from numeromancy.format import get_legal_cards, UNLIMITED, date_and_code
+from numeromancy.format import get_legal_cards, UNLIMITED, date_and_code, find_previous_set
 from numeromancy.preprocessing import CARD_TEXTS, props_vector, read_text
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -29,9 +29,9 @@ def cost_effectiveness(predicted_cost, real_cost):
 
 def normalize(matrix):
     # TODO use something other than sigmoid
-    # low, high = min(matrix.values()), max(matrix.values())
-    # return { k: (v-low) / (high-low) for k, v in matrix.items() }
-    return { k: sigmoid(v) for k, v in matrix.items() }
+    low, high = min(matrix.values()), max(matrix.values())
+    return { k: (v-low) / (high-low) for k, v in matrix.items() }
+    # return { k: sigmoid(v) for k, v in matrix.items() }
 
 
 COST_EFF_MATRIX: dict[str, float] = {}
@@ -214,7 +214,7 @@ def generate_deck(starting_cards, legal_cards, mana_curve, card_types, weights=(
     list[Card]: A list of the Card objects of the card in the final deck
     """
     deck_size = card_types[0] + card_types[1]
-    deck = starting_cards
+    deck = starting_cards.copy()
     # cost effectiveness score should be computed outside of the loop
     # since it stays the same throughout the entire process
     while (len(deck) < deck_size):
@@ -256,12 +256,12 @@ def is_in_color(c: card.Card, colors: list[str]) -> bool:
 
 """ Create deck of a specified format at a specified date or release of certain set """
 def create_deck(starting_cards, format, date_or_code, colors, mana_curve, card_types, weights=(1.0,1.0,1.0,1.0)):
-    card.load_cards(data.load(no_download=True))
+    # card.load_cards(data.load(no_download=True))
     legal_cards = { c for c in get_legal_cards(format, date_or_code) if is_nonland(c) and is_in_color(c, colors) }
     # Extract set code for synergy model
-    _, set_code = date_and_code(date_or_code)
+    date, set_code = date_and_code(date_or_code)
     init_cost_effectiveness_matrix(legal_cards)
-    init_synergy_model(set_code)
+    init_synergy_model(find_previous_set(date, standard_only=True))
     return generate_deck(starting_cards, legal_cards, mana_curve, card_types, weights)
 
 

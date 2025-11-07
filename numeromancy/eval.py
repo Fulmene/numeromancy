@@ -2,6 +2,7 @@ import random
 from collections import Counter
 
 from numeromancy.deck_generator import PRIMARY_COLORS, generate_deck, create_deck, is_nonland, is_in_color, card_group, effective_cmc
+from numeromancy.parse_decklist import parse_decklist
 import numeromancy.card as card
 import numeromancy.data as data
 
@@ -55,6 +56,7 @@ def evaluate(decklist: Counter[str], format, date_or_code, n=10):
 
         new_counter = nonland_deck_counter.copy()
         removed_names = random.sample(list(nonland_deck_counter.keys()), 3)
+        print(f"Removed: {removed_names}")
         for name in removed_names:
             del new_counter[name]
         removed_counter = Counter({ name: count for name, count in nonland_deck_counter.items() if name in removed_names })
@@ -78,6 +80,36 @@ def evaluate(decklist: Counter[str], format, date_or_code, n=10):
     return sum(accuracies) / len(accuracies) if accuracies else 0.0
 
 
+def evaluate_deck(decklist_file: str, format, date_or_code):
+    """
+    Evaluate a deck by parsing its decklist file and calling evaluate on the resulting counter.
+
+    Args:
+        decklist_file (str): Path to the decklist file
+
+    Returns:
+        float: Average accuracy of the model in recovering removed cards
+    """
+    # Read the decklist file
+    with open(decklist_file, 'r') as f:
+        decklist_content = f.read()
+
+    # Parse the decklist with a limit of 60
+    deck_counter = parse_decklist(decklist_content, limit=60)
+
+    # Load cards and get legal cards
+    card.load_cards(data.load(no_download=True))
+
+    # Call evaluate on the resulting counter
+    return evaluate(deck_counter, format, date_or_code)
+
+
 if __name__ == '__main__':
     # Load cards if not loaded
-    card.load_cards(data.load(no_download=True))
+    # card.load_cards(data.load(no_download=True))
+    acc = evaluate_deck(
+        '../data/decklists/standard/WAR/Boros Feather/TOP8_MCQ Barcelona @ Mana Base (Malaysia) #1 Boros Feather - Justin Chin.dek',
+        'standard',
+        'WAR',
+    )
+    print(acc)

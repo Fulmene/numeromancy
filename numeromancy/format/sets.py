@@ -118,11 +118,42 @@ _set_timeline = [(st, datetime.strptime(date, date_format), f, prev_st) for st, 
 SETS = {st: SetEntry(date, f, prev_st) for st, date, f, prev_st in _set_timeline}
 
 
-def find_set(date: datetime):
+def find_set(date: datetime, standard_only=False):
     if not isinstance(date, datetime):
         date = datetime.strptime(date, date_format)
-    idx = bisect_right(_set_timeline, date, key=lambda x: x[1]) - 1
-    return _set_timeline[idx][0]
+    if standard_only:
+        set_timeline = [t for t in _set_timeline if t[2] == "standard"]
+    else:
+        set_timeline = _set_timeline
+    idx = bisect_right(set_timeline, date, key=lambda x: x[1]) - 1
+    return set_timeline[idx][0]
+
+
+# def find_standard_set(date: datetime):
+#     if not isinstance(date, datetime):
+#         date = datetime.strptime(date, date_format)
+#     set_timeline = [t for t in _set_timeline if t[2] == "standard"]
+#     idx = bisect_right(set_timeline, date, key=lambda x: x[1]) - 1
+#     return set_timeline[idx][0]
+
+
+def find_previous_set(date: datetime, standard_only=False):
+    if not isinstance(date, datetime):
+        date = datetime.strptime(date, date_format)
+    if standard_only:
+        set_timeline = [t for t in _set_timeline if t[2] == "standard"]
+    else:
+        set_timeline = _set_timeline
+    idx = bisect_right(set_timeline, date, key=lambda x: x[1]) - 2
+    return set_timeline[idx][0]
+
+
+# def find_previous_standard_set(date: datetime):
+#     if not isinstance(date, datetime):
+#         date = datetime.strptime(date, date_format)
+#     set_timeline = [t for t in _set_timeline if t[2] == "standard"]
+#     idx = bisect_right(set_timeline, date, key=lambda x: x[1]) - 2
+#     return set_timeline[idx][0]
 
 
 def date_and_code(date_or_code: str|datetime) -> tuple[datetime, str]:

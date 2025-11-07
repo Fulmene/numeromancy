@@ -36,7 +36,7 @@ def load_model(model_file=SYNERGY_CLASSIFIER):
     return model
 
 
-def train_model(model, train_file=TRAIN_SYNERGY, model_file=SYNERGY_CLASSIFIER, epochs=500, batch_size=16384):
+def train_model(model, train_file=TRAIN_SYNERGY, model_file=SYNERGY_CLASSIFIER, epochs=100, batch_size=16384):
     card.load_cards(data.load(no_download=True))
     cards = card.get_cards()
 

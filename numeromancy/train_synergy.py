@@ -24,3 +24,9 @@ def load_trained_synergy(set_code):
     file_dir = os.path.join(SYNERGYDIR, set_code)
     model_file = os.path.join(file_dir, 'classifier.pt')
     return synergy_model.load_model(model_file)
+
+
+if __name__ == '__main__':
+    train_synergy('RNA')
+    # train_synergy('M20')
+    # train_synergy('FDN')
